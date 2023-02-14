@@ -15,6 +15,8 @@ import com.readers.be3.entity.BookInfoEntity;
 import com.readers.be3.entity.OneCommentEntity;
 import com.readers.be3.entity.ScheduleInfoEntity;
 import com.readers.be3.entity.UserInfoEntity;
+import com.readers.be3.exception.ErrorResponse;
+import com.readers.be3.exception.ReadersProjectException;
 import com.readers.be3.repository.BookInfoRepository;
 import com.readers.be3.repository.OneCommentRepository;
 import com.readers.be3.repository.ScheduleInfoRepository;
@@ -35,17 +37,16 @@ public class OneCommentService {
     Map<String,Object> map = new HashMap<String, Object>();
     //유저 체크
     UserInfoEntity userInfoEntity = useInfoRepository.findByUiSeq(uiSeq);
-    if (userInfoEntity == null){
-      map.put("status", HttpStatus.NOT_FOUND);
-      map.put("msg", "not found user");
-      return map;
-    }
+    if (userInfoEntity == null)
+      throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND,String.format("%s   not found userSeq", uiSeq)));
+
     BookInfoEntity bookInfoEntity = bookRepository.findByBiSeq(bookSeq);
-    if (bookInfoEntity == null){
-      map.put("status", HttpStatus.NOT_FOUND);
-      map.put("msg", "not found book");
-      return map;
-    }
+    if (bookInfoEntity == null)
+      throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND, String.format("%s not found book", bookSeq)));
+    
+    List<OneCommentEntity> oneCommentEntityList = oneCommentRepository.findByUserInfoEntityAndBookInfoEntity(userInfoEntity, bookInfoEntity);
+    if (oneCommentEntityList.size() > 0)
+      throw new ReadersProjectException(ErrorResponse.of(HttpStatus.CREATED, String.format("already wrote oneComment")));
     oneCommentRepository.saveAndFlush(OneCommentEntity.of(comment, score, userInfoEntity, bookInfoEntity));
     map.put("status", HttpStatus.OK);
     map.put("msg", "comment add");
@@ -56,17 +57,11 @@ public class OneCommentService {
   public Map<String, Object> OneCommentDelete(Long uiSeq, Long oneCommentSeq) {
     Map<String,Object> map = new HashMap<String, Object>();
     UserInfoEntity userInfoEntity = useInfoRepository.findByUiSeq(uiSeq);
-    if (userInfoEntity == null){
-      map.put("status", HttpStatus.NOT_FOUND);
-      map.put("msg", "not found user");
-      return map;
-    }
+    if (userInfoEntity == null)
+      throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND,String.format("%s   not found userSeq", uiSeq)));
     OneCommentEntity oneEntity = oneCommentRepository.findByOcSeq(oneCommentSeq);
-    if(oneEntity == null){
-      map.put("status", HttpStatus.NOT_FOUND);
-      map.put("msg", "not found comment");
-      return map;
-    }
+    if(oneEntity == null)
+      throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND, String.format("%s not found oneComment", uiSeq)));
     oneEntity.setOcStatus(2);
     oneCommentRepository.save(oneEntity);
     map.put("status", HttpStatus.OK);
@@ -78,21 +73,19 @@ public class OneCommentService {
   public Map<String, Object> oneCommentList(Long bookSeq, Pageable pageable){
     Map<String,Object> map = new HashMap<String, Object>();
     BookInfoEntity bookInfoEntity = bookRepository.findByBiSeq(bookSeq);
-    if (bookInfoEntity == null){
-      map.put("status", HttpStatus.NOT_FOUND);
-      map.put("msg", "not found book");
-      return map;
-    }
+    if (bookInfoEntity == null)
+      throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND, String.format("%s not found book", bookSeq)));
     Page<OneCommentEntity> commentList = oneCommentRepository.findByBookInfoEntityAndOcStatus(bookInfoEntity,pageable, 1);
+    
     if (commentList.isEmpty()){
-      map.put("status", HttpStatus.NOT_FOUND);
+      map.put("status", HttpStatus.OK);
       map.put("msg", "not found comment");
       return map;
     }
     Page<OneCommentListDTO> onecommentDto = commentList.map(e-> OneCommentListDTO.toDto(e));
     map.put("status", HttpStatus.OK);
-      map.put("msg", "ok");
-      map.put("commetList", onecommentDto);
+    map.put("msg", "ok");
+    map.put("commetList", onecommentDto);
     return map;
   }
 }
