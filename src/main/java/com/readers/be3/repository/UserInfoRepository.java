@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.readers.be3.entity.UserInfoEntity;
 
 public interface UserInfoRepository extends JpaRepository<UserInfoEntity, Long>{
-
-  UserInfoEntity findByUiSeq(Long uiSeq);
+  public Integer countByUiEmail(String uiEmail);
+  public Integer countByUiNickname(String uiNickname);
+  public UserInfoEntity findTop1ByUiEmailAndUiPwd(String uiEmail, String uiPwd);
+  public UserInfoEntity findByUiSeq(Long uiSeq);
 }
