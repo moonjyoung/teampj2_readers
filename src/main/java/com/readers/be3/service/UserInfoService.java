@@ -1,10 +1,16 @@
 package com.readers.be3.service;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,13 +18,20 @@ import org.springframework.web.multipart.MultipartFile;
 import com.readers.be3.entity.UserInfoEntity;
 import com.readers.be3.entity.image.UserImgEntity;
 import com.readers.be3.repository.UserInfoRepository;
+import com.readers.be3.repository.image.UserImgRepository;
 import com.readers.be3.utilities.AESAlgorithm;
 import com.readers.be3.vo.mypage.UserImageVO;
 import com.readers.be3.vo.mypage.UserInfoVO;
+import com.readers.be3.vo.mypage.UserLoginVO;
+import com.readers.be3.vo.mypage.UserNameVO;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 public class UserInfoService {
+    @Autowired UserImgRepository i_repo;
     @Autowired UserInfoRepository u_repo;
+    @Value("${file.image.user}") String user_img_path;
     public Map<String, Object> addUser(UserInfoVO data) { //회원가입
     Map<String ,Object> resultMap = new LinkedHashMap<String, Object>();
     String name_pattern = "^[0-9|a-z|A-Z|ㄱ-ㅎ|ㅏ-ㅣ|가-힣]*$";
@@ -73,7 +86,7 @@ public class UserInfoService {
     return resultMap;
     }
 
-    public Map<String, Object> loginUser(UserInfoVO data) { //로그인
+    public Map<String, Object> loginUser(UserLoginVO data) { //로그인
         Map<String ,Object> resultMap = new LinkedHashMap<String, Object>();
         UserInfoEntity loginUser = null; 
     try {
@@ -113,7 +126,7 @@ public class UserInfoService {
     return resultMap;
 }
 
-    public Map<String, Object> updateUserName(Long uiSeq, UserInfoVO data) { //닉네임 수정
+    public Map<String, Object> updateUserName(Long uiSeq, UserNameVO data) { //닉네임 수정
         String name_pattern = "^[0-9|a-z|A-Z|ㄱ-ㅎ|ㅏ-ㅣ|가-힣]*$";
         Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
         UserInfoEntity login = u_repo.findByUiSeq(uiSeq);
@@ -142,32 +155,42 @@ public class UserInfoService {
         return resultMap;
     }
 
-  //   public Map<String , Object> updateUserPhoto(Long uiSeq,UserImageVO data, MultipartFile img) { 
-  //     Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
-  //     String savedFilePath = "";
-  //     try {
-  //         savedFilePath = fileService.saveImageFile("artist_group", img);
-  //     }
-  //     catch(Exception e) {
-  //         System.out.println("파일 전송 실패");
-  //         resultMap.put("status", false);
-  //         resultMap.put("message", "파일 전송에 실패했습니다");
-  //         resultMap.put("code", HttpStatus.INTERNAL_SERVER_ERROR);
-  //         return resultMap;
-  //     }
-      
-  //     ArtistGroupInfoEntity entity = ArtistGroupInfoEntity.builder()
-  //             .agiName(data.getName())
-  //             .agiDebutYear(data.getDebutYear())
-  //             .company(companyRepository.findById(data.getCompany()).get())
-  //             .agiImg(savedFilePath)
-  //             .build();
-  //     agiRepo.save(entity);
+  public Map<String, Object> updateUserPhoto(UserImageVO data) { // 유저 사진 추가
+  Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
+  UserInfoEntity login = u_repo.findByUiSeq(data.getUiSeq());
 
-  //     resultMap.put("status", true);
-  //     resultMap.put("message", "사진 수정이 완료 되었습니다");
-  //     resultMap.put("code", HttpStatus.OK);
+  String originalFileName = data.getImg().getOriginalFilename();
+  String[] split = originalFileName.split("\\.");
+  String ext = split[split.length - 1];
+  String filename = "";
+  for (int i=0; i<split.length-1; i++) {
+    filename += split[i];
+  }
+  String saveFilename = "user_" + LocalDateTime.now().getNano() + "."+ext;
+  
+  Path forderLocation = Paths.get(user_img_path);
+  Path targetFile = forderLocation.resolve(saveFilename);
 
-  //     return resultMap;
-  // }
+  try {
+    Files.copy(data.getImg().getInputStream(), targetFile, StandardCopyOption.REPLACE_EXISTING);
+  }
+  catch (Exception e) {
+    resultMap.put("status", false);
+    resultMap.put("message", "파일 전송에 실패했습니다");
+    resultMap.put("code", HttpStatus.INTERNAL_SERVER_ERROR);
+    return resultMap;
+  }
+
+  UserImgEntity imgEntity = UserImgEntity.builder()
+  .uimgFilename(saveFilename)
+  .uimgUri(filename)
+  .uimgUiSeq(login.getUiSeq()).build();
+
+  i_repo.save(imgEntity);
+  resultMap.put("status", true);
+  resultMap.put("message", "사진 등록이 완료되었습니다");
+  resultMap.put("code", HttpStatus.OK);
+  return resultMap;
+  } 
 }
+
