@@ -5,6 +5,10 @@ import lombok.Data;
 
 @Data
 public class BookInfoVO {
+    @Schema(description = "성공여부")
+    private Boolean status;
+    @Schema(description = "메시지")
+    private String message;
     @Schema(description = "책 고유번호(입력시엔 null로 입력)", example = "1")
     private Long biSeq;
     @Schema(description = "제목", example = "생에 감사해")
@@ -19,4 +23,13 @@ public class BookInfoVO {
     private String biIsbn;
     @Schema(description = "책 이미지", example = "생에 감사해.jpg")
     private String bimgUri;
+
+    public BookInfoVO(BookInfoImgVO data) {
+        this.biName = data.getBiName();
+        this.biAuthor = data.getBiAuthor();
+        this.biPublisher = data.getBiPublisher();
+        this.biPage = data.getBiPage();
+        this.biIsbn = data.getBiIsbn();
+    }
+    public BookInfoVO() {}
 }

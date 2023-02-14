@@ -32,8 +32,7 @@ public class BookService {
     private final BookImgRepository bookImgRepository;
     @Value("${file.image.book}") String book_img_path;
 
-    public Map<String, Object> addBookInfo(BookInfoImgVO data) {
-        Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
+    public BookInfoVO addBookInfo(BookInfoImgVO data) {
         BookInfoEntity entity = BookInfoEntity.builder()
                 .biName(data.getBiName())
                 .biAuthor(data.getBiAuthor())
@@ -57,10 +56,10 @@ public class BookService {
             Files.copy(data.getImg().getInputStream(), targetFile, StandardCopyOption.REPLACE_EXISTING);
         }
         catch (Exception e) {
-            resultMap.put("status", false);
-            resultMap.put("message", "파일 전송에 실패했습니다..");
-            resultMap.put("code", HttpStatus.INTERNAL_SERVER_ERROR);
-            return resultMap;
+            BookInfoVO vo = new BookInfoVO();
+            vo.setStatus(false);
+            vo.setMessage("파일 전송 실패");
+            return vo;
         }
         
         bookInfoRepository.save(entity);
@@ -72,10 +71,10 @@ public class BookService {
                 
         bookImgRepository.save(imgEntity);
 
-        resultMap.put("status", true);
-        resultMap.put("message", "새로운 책 정보가 등록됐습니다.");
-        resultMap.put("code", HttpStatus.OK);
-        return resultMap;
+        BookInfoVO vo = new BookInfoVO(data);
+        vo.setStatus(true);
+        vo.setMessage("책과 책 이미지 정보 추가 성공");
+        return vo;
     }
     
     public Map<String, Object> searchBookInfo(String keyword) {
@@ -146,4 +145,24 @@ public class BookService {
         resultMap.put("code", HttpStatus.OK);
         return resultMap;
     }
+
+    // 책 이미지도 따로 업로드 하지 않을 경우
+    // public Map<String, Object> addBookInfoTest(BookInfoImgUrlVO data) {
+    //     Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
+
+    //     BookInfoTestEntity entity = BookInfoTestEntity.builder()
+    //             .bitName(data.getBiName())
+    //             .bitAuthor(data.getBiAuthor())
+    //             .bitPublisher(data.getBiPublisher())
+    //             .bitPage(data.getBiPage())
+    //             .bitIsbn(data.getBiIsbn())
+    //             .bitCover(data.getBimgUri()).build();
+        
+    //     testRepository.save(entity);
+
+    //     resultMap.put("status", true);
+    //     resultMap.put("message", "새로운 책 정보가 등록됐습니다.");
+    //     resultMap.put("code", HttpStatus.OK);
+    //     return resultMap;
+    // }
 }

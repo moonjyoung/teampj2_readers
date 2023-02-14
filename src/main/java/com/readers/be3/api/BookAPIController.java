@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.readers.be3.service.BookService;
 import com.readers.be3.vo.book.BookInfoImgVO;
+import com.readers.be3.vo.book.BookInfoVO;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -27,7 +28,7 @@ public class BookAPIController {
 
     @Operation(summary = "책 정보 추가", description = "책을 추가합니다.")
     @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> addBookInfo(
+    public ResponseEntity<BookInfoVO> addBookInfo(
         @Parameter(description = "formdata로 데이터와 이미지 파일을 입력합니다.") @ModelAttribute BookInfoImgVO data
     ) {
         return new ResponseEntity<>(bookService.addBookInfo(data), HttpStatus.OK);
