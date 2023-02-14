@@ -46,7 +46,7 @@ public class OneCommentService {
     
     List<OneCommentEntity> oneCommentEntityList = oneCommentRepository.findByUserInfoEntityAndBookInfoEntity(userInfoEntity, bookInfoEntity);
     if (oneCommentEntityList.size() > 0)
-      throw new ReadersProjectException(ErrorResponse.of(HttpStatus.CREATED, String.format("already wrote oneComment", null)));
+      throw new ReadersProjectException(ErrorResponse.of(HttpStatus.CREATED, String.format("already wrote oneComment")));
     oneCommentRepository.saveAndFlush(OneCommentEntity.of(comment, score, userInfoEntity, bookInfoEntity));
     map.put("status", HttpStatus.OK);
     map.put("msg", "comment add");
