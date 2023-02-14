@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,22 +37,26 @@ public class OneCommentController {
 
   @Operation(summary = "한줄평 추가", description = "한줄평을 추가합니다")
   @PostMapping("/add")
-  public Map<String,Object> OneCommentAdd(@Parameter(description = "한줄평추가 dto") @RequestBody OneCommentRequest request){
-    return oneCommentService.OneCommentAdd(request.getUserSeq(),request.getBookSeq(),request.getComment(),request.getScore());
+  public ResponseEntity<Object> OneCommentAdd(@Parameter(description = "한줄평추가 dto") @RequestBody OneCommentRequest request){
+    Map<String,Object> map = oneCommentService.OneCommentAdd(request.getUserSeq(),request.getBookSeq(),request.getComment(),request.getScore());
+    return new ResponseEntity<>(map,HttpStatus.OK);
   }
 
   @Operation(summary = "한줄평 삭제", description = "등록된 한줄평 delete를 삭제처리합니다")
   @DeleteMapping("/delete")
-  public Map<String,Object> OneCommentAdd(@Parameter(description = "삭제dto") @RequestBody OneCommentDeleteRequest request){
-    return oneCommentService.OneCommentDelete(request.getUserSeq(), request.getOneCommentSeq());
+  public ResponseEntity<Object> OneCommentAdd(@Parameter(description = "삭제dto") @RequestBody OneCommentDeleteRequest request){
+    Map<String,Object> map = oneCommentService.OneCommentDelete(request.getUserSeq(), request.getOneCommentSeq());
+    return new ResponseEntity<>(map,HttpStatus.OK);
+
   }
 
   @Operation(summary = "한줄평 리스트", description = "등록된 한줄평을 10개단위로 책번호를통해 조회합니다")
   @GetMapping("/{bookseq}/list")
-  public Map<String,Object> OneCommentList(@Parameter(description = "책번호", example = "1") @PathVariable("bookseq") Long bookseq,
+  public ResponseEntity<Object> OneCommentList(@Parameter(description = "책번호", example = "1") @PathVariable("bookseq") Long bookseq,
   @Parameter(description = "페이지", example = "0") @RequestParam Integer page){
     Sort sort2 = Sort.by("ocSeq").ascending();
     Pageable pageable = PageRequest.of(page, 10, sort2);
-    return oneCommentService.oneCommentList(bookseq, pageable);
+    Map<String,Object> map = oneCommentService.oneCommentList(bookseq, pageable);
+    return new ResponseEntity<>(map,HttpStatus.OK);
   }
 }

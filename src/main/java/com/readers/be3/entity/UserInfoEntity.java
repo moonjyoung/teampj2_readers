@@ -32,4 +32,6 @@ public class UserInfoEntity {
     @Column(name = "ui_nickname") private String uiNickname;
     @Column(name = "ui_reg_dt") private LocalDateTime uiRegDt;
     @Column(name = "ui_point") private Integer uiPoint;
+    @Column(name = "ui_total_page") private Integer uiTotalPage;
+    @Column(name = "ui_total_book") private Integer uiTotalBook;
 }
