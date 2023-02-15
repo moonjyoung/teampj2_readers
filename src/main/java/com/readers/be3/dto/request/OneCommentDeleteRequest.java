@@ -5,9 +5,9 @@ import lombok.Data;
 
 @Data
 public class OneCommentDeleteRequest {
-    @Schema(description = "유저 번호")
+    @Schema(description = "유저 번호" , example = "30")
     private Long userSeq;
-    @Schema(description = "한줄평번호")
+    @Schema(description = "한줄평번호", example = "20")
     private Long oneCommentSeq;
   
 }
