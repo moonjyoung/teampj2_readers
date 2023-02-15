@@ -22,6 +22,7 @@ import org.springframework.data.domain.Sort;
 
 import com.readers.be3.dto.request.OneCommentDeleteRequest;
 import com.readers.be3.dto.request.OneCommentRequest;
+import com.readers.be3.dto.response.OneCommentResponse;
 import com.readers.be3.service.OneCommentService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,16 +38,15 @@ public class OneCommentController {
 
   @Operation(summary = "한줄평 추가", description = "한줄평을 추가합니다")
   @PostMapping("/add")
-  public ResponseEntity<Object> OneCommentAdd(@Parameter(description = "한줄평추가 dto") @RequestBody OneCommentRequest request){
-    Map<String,Object> map = oneCommentService.OneCommentAdd(request.getUserSeq(),request.getBookSeq(),request.getComment(),request.getScore());
-    return new ResponseEntity<>(map,HttpStatus.OK);
+  public ResponseEntity<Object> OneCommentAdd(@Parameter(description = "한줄평추가 request") @RequestBody OneCommentRequest request){
+    OneCommentResponse result = OneCommentResponse.toResponse(oneCommentService.OneCommentAdd(request.getUserSeq(),request.getBookSeq(),request.getComment(),request.getScore()));
+    return new ResponseEntity<>(result,HttpStatus.OK);
   }
 
   @Operation(summary = "한줄평 삭제", description = "등록된 한줄평 delete를 삭제처리합니다")
   @DeleteMapping("/delete")
   public ResponseEntity<Object> OneCommentAdd(@Parameter(description = "삭제dto") @RequestBody OneCommentDeleteRequest request){
-    Map<String,Object> map = oneCommentService.OneCommentDelete(request.getUserSeq(), request.getOneCommentSeq());
-    return new ResponseEntity<>(map,HttpStatus.OK);
+    return new ResponseEntity<>(OneCommentResponse.toResponse(oneCommentService.OneCommentDelete(request.getUserSeq(), request.getOneCommentSeq())),HttpStatus.OK);
 
   }
 
@@ -56,7 +56,6 @@ public class OneCommentController {
   @Parameter(description = "페이지", example = "0") @RequestParam Integer page){
     Sort sort2 = Sort.by("ocSeq").ascending();
     Pageable pageable = PageRequest.of(page, 10, sort2);
-    Map<String,Object> map = oneCommentService.oneCommentList(bookseq, pageable);
-    return new ResponseEntity<>(map,HttpStatus.OK);
+    return new ResponseEntity<>(oneCommentService.oneCommentList(bookseq, pageable),HttpStatus.OK);
   }
 }

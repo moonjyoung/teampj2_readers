@@ -21,7 +21,7 @@ import com.readers.be3.service.RankService;
 
 @RestController
 @RequestMapping("/api/rank")
-public class RandkAPIController {
+public class RankAPIController {
   
 
   @Autowired RankService rankService;
@@ -34,8 +34,7 @@ public class RandkAPIController {
   }
 
   @GetMapping("/my")
-  public ResponseEntity<Object> getMyRank(@RequestBody RankMyRequest request){
-   rankService.getMyRank(request.getUiSeq());
-    return new ResponseEntity<>(rankService.getMyRank(request.getUiSeq()),HttpStatus.OK);
+  public ResponseEntity<Object> getMyRank(@RequestParam Long uiSeq){
+    return new ResponseEntity<>(rankService.getMyRank(uiSeq),HttpStatus.OK);
   }
 }

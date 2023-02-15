@@ -19,4 +19,6 @@ public interface OneCommentRepository extends JpaRepository<OneCommentEntity, Lo
   List<OneCommentEntity> findByBookInfoEntity(BookInfoEntity bookInfoEntity);
 
   List<OneCommentEntity> findByUserInfoEntityAndBookInfoEntity(UserInfoEntity userInfoEntity, BookInfoEntity bookInfoEntity);
+
+  OneCommentEntity findByOcSeqAndUserInfoEntity(Long oneCommentSeq, UserInfoEntity userInfoEntity);
 }

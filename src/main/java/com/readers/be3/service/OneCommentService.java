@@ -33,8 +33,7 @@ public class OneCommentService {
   @Autowired BookInfoRepository bookRepository;
 
   @Transactional
-  public Map<String,Object> OneCommentAdd(Long uiSeq, Long bookSeq, String comment, Integer score){
-    Map<String,Object> map = new HashMap<String, Object>();
+  public OneCommentEntity OneCommentAdd(Long uiSeq, Long bookSeq, String comment, Integer score){
     //유저 체크
     UserInfoEntity userInfoEntity = useInfoRepository.findByUiSeq(uiSeq);
     if (userInfoEntity == null)
@@ -47,45 +46,33 @@ public class OneCommentService {
     List<OneCommentEntity> oneCommentEntityList = oneCommentRepository.findByUserInfoEntityAndBookInfoEntity(userInfoEntity, bookInfoEntity);
     if (oneCommentEntityList.size() > 0)
       throw new ReadersProjectException(ErrorResponse.of(HttpStatus.CREATED, String.format("already wrote oneComment")));
-    oneCommentRepository.saveAndFlush(OneCommentEntity.of(comment, score, userInfoEntity, bookInfoEntity));
-    map.put("status", HttpStatus.OK);
-    map.put("msg", "comment add");
-    return map;
+    OneCommentEntity oneCommentEntity = oneCommentRepository.save(OneCommentEntity.of(comment, score, userInfoEntity, bookInfoEntity));
+    return oneCommentEntity;
   }
 
   @Transactional
-  public Map<String, Object> OneCommentDelete(Long uiSeq, Long oneCommentSeq) {
-    Map<String,Object> map = new HashMap<String, Object>();
+  public OneCommentEntity OneCommentDelete(Long uiSeq, Long oneCommentSeq) {
     UserInfoEntity userInfoEntity = useInfoRepository.findByUiSeq(uiSeq);
     if (userInfoEntity == null)
       throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND,String.format("%s   not found userSeq", uiSeq)));
-    OneCommentEntity oneEntity = oneCommentRepository.findByOcSeq(oneCommentSeq);
+    OneCommentEntity oneEntity = oneCommentRepository.findByOcSeqAndUserInfoEntity(oneCommentSeq, userInfoEntity);
     if(oneEntity == null)
       throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND, String.format("%s not found oneComment", uiSeq)));
     oneEntity.setOcStatus(2);
-    oneCommentRepository.save(oneEntity);
-    map.put("status", HttpStatus.OK);
-    map.put("msg", "delete OneComment");
-    return map;
+    OneCommentEntity oneCommentEntity = oneCommentRepository.save(oneEntity);
+    return oneCommentEntity;
   }
 
   @Transactional
-  public Map<String, Object> oneCommentList(Long bookSeq, Pageable pageable){
-    Map<String,Object> map = new HashMap<String, Object>();
+  public Page<OneCommentListDTO> oneCommentList(Long bookSeq, Pageable pageable){
     BookInfoEntity bookInfoEntity = bookRepository.findByBiSeq(bookSeq);
     if (bookInfoEntity == null)
       throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND, String.format("%s not found book", bookSeq)));
     Page<OneCommentEntity> commentList = oneCommentRepository.findByBookInfoEntityAndOcStatus(bookInfoEntity,pageable, 1);
-    
-    if (commentList.isEmpty()){
-      map.put("status", HttpStatus.OK);
-      map.put("msg", "not found comment");
-      return map;
-    }
     Page<OneCommentListDTO> onecommentDto = commentList.map(e-> OneCommentListDTO.toDto(e));
-    map.put("status", HttpStatus.OK);
-    map.put("msg", "ok");
-    map.put("commetList", onecommentDto);
-    return map;
+    
+    if (onecommentDto.isEmpty())
+      return onecommentDto;
+    return onecommentDto;
   }
 }
