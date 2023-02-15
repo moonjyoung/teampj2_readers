@@ -59,7 +59,7 @@ public class UserInfoController {
     return new ResponseEntity<Object>(resultMap, (HttpStatus)resultMap.get("code"));
   }
   @Operation(summary = "회원 사진추가", description = "회원정보 번호(uiSeq)를 통해 회원사진을 추가합니다.")
-    @PostMapping(value = "/update/photo", consumes= MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PatchMapping(value = "/update/photo", consumes= MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> updateUserPhoto(
         @Parameter(description = "formdata로 사진 데이터를 입력합니다")
         @ModelAttribute UserImageVO data

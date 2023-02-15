@@ -9,6 +9,6 @@ public class UserInfoVO {
 private String uiEmail;
 @Schema(description = "유저비밀번호", example = "12341234") 
 private String uiPwd;
-@Schema(description = "유저닉네임", example = "user01") 
-private String uiNickname;
+// @Schema(description = "유저닉네임", example = "user01") 
+// private String uiNickname;
 }
