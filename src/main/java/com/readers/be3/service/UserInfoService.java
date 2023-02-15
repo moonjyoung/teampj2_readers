@@ -5,8 +5,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,18 +36,32 @@ public class UserInfoService {
     @Value("${file.image.user}") String user_img_path;
     public Map<String, Object> addUser(UserInfoVO data) { //회원가입
     Map<String ,Object> resultMap = new LinkedHashMap<String, Object>();
-    String name_pattern = "^[0-9|a-z|A-Z|ㄱ-ㅎ|ㅏ-ㅣ|가-힣]*$";
+    // String name_pattern = "^[0-9|a-z|A-Z|ㄱ-ㅎ|ㅏ-ㅣ|가-힣]*$";
     String pwd_pattern = "^[a-zA-Z0-9!@#$%^&*()-_=+]*$";
+    
+      // int leftLimit = 48; // numeral '0'
+      // int rightLimit = 122; // letter 'z'
+      // int length = 10;
+      // Random random = new Random();
+      // String nickname = "user#"+random.ints(leftLimit, rightLimit + 1)
+      //     .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+      //     .limit(length)
+      //     .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+      //     .toString();
+
+      Long num = Calendar.getInstance().getTimeInMillis();
+          
     if(u_repo.countByUiEmail(data.getUiEmail())>=1) { 
         resultMap.put("status", false);
         resultMap.put("message", data.getUiEmail()+"은/는 이미 등록된 이메일 입니다");
         resultMap.put("code", HttpStatus.BAD_REQUEST);
     }
-    else if(u_repo.countByUiNickname(data.getUiNickname())>=1) { 
-        resultMap.put("status", false);
-        resultMap.put("message", data.getUiEmail()+"은/는 이미 등록된 닉네임 입니다");
-        resultMap.put("code", HttpStatus.BAD_REQUEST);
-    }
+
+    // else if(u_repo.countByUiNickname(data.getUiNickname())>=1) { 
+    //     resultMap.put("status", false);
+    //     resultMap.put("message", data.getUiEmail()+"은/는 이미 등록된 닉네임 입니다");
+    //     resultMap.put("code", HttpStatus.BAD_REQUEST);
+    // }
 
     else if(data.getUiPwd().length()<8) {
       resultMap.put("status", false);
@@ -58,11 +74,11 @@ public class UserInfoService {
       resultMap.put("message", "비밀번호에 공백문자를 사용 할 수 없습니다");
       resultMap.put("code", HttpStatus.BAD_REQUEST);
     } 
-    else if(!Pattern.matches(name_pattern, data.getUiNickname())) {
-      resultMap.put("status", false);
-      resultMap.put("message", "닉네임에 공백문자나 특수문자를 사용 할 수 없습니다");
-      resultMap.put("code", HttpStatus.BAD_REQUEST);
-    } 
+    // else if(!Pattern.matches(name_pattern, data.getUiNickname())) { 
+    //   resultMap.put("status", false);
+    //   resultMap.put("message", "닉네임에 공백문자나 특수문자를 사용 할 수 없습니다");
+    //   resultMap.put("code", HttpStatus.BAD_REQUEST);
+    // } 
     else {
       try {
         String encPwd = AESAlgorithm.Encrypt(data.getUiPwd());
@@ -72,9 +88,7 @@ public class UserInfoService {
       UserInfoEntity member = UserInfoEntity.builder()
         .uiPwd(data.getUiPwd())
         .uiEmail(data.getUiEmail())
-        .uiNickname(data.getUiNickname())
-        // .uiRegDt(data.getUiRegdt())
-        // .uiPoint(data.getUiPoint())
+        .uiNickname("user#"+ num)
         .build();
 
         u_repo.save(member);
