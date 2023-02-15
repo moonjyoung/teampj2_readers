@@ -17,11 +17,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.readers.be3.entity.MyPageView;
 import com.readers.be3.entity.UserInfoEntity;
 import com.readers.be3.entity.image.UserImgEntity;
+import com.readers.be3.exception.ErrorResponse;
+import com.readers.be3.exception.ReadersProjectException;
+import com.readers.be3.repository.MyPageViewRepository;
 import com.readers.be3.repository.UserInfoRepository;
 import com.readers.be3.repository.image.UserImgRepository;
 import com.readers.be3.utilities.AESAlgorithm;
+import com.readers.be3.vo.mypage.ResponseUserInfoVO;
 import com.readers.be3.vo.mypage.UserImageVO;
 import com.readers.be3.vo.mypage.UserInfoVO;
 import com.readers.be3.vo.mypage.UserLoginVO;
@@ -33,21 +38,12 @@ import lombok.RequiredArgsConstructor;
 public class UserInfoService {
     @Autowired UserImgRepository i_repo;
     @Autowired UserInfoRepository u_repo;
+    @Autowired MyPageViewRepository v_repo;
     @Value("${file.image.user}") String user_img_path;
     public Map<String, Object> addUser(UserInfoVO data) { //회원가입
     Map<String ,Object> resultMap = new LinkedHashMap<String, Object>();
     // String name_pattern = "^[0-9|a-z|A-Z|ㄱ-ㅎ|ㅏ-ㅣ|가-힣]*$";
     String pwd_pattern = "^[a-zA-Z0-9!@#$%^&*()-_=+]*$";
-    
-      // int leftLimit = 48; // numeral '0'
-      // int rightLimit = 122; // letter 'z'
-      // int length = 10;
-      // Random random = new Random();
-      // String nickname = "user#"+random.ints(leftLimit, rightLimit + 1)
-      //     .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
-      //     .limit(length)
-      //     .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-      //     .toString();
 
       Long num = Calendar.getInstance().getTimeInMillis();
           
@@ -172,39 +168,85 @@ public class UserInfoService {
   public Map<String, Object> updateUserPhoto(UserImageVO data) { // 유저 사진 추가
   Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
   UserInfoEntity login = u_repo.findByUiSeq(data.getUiSeq());
-
-  String originalFileName = data.getImg().getOriginalFilename();
-  String[] split = originalFileName.split("\\.");
-  String ext = split[split.length - 1];
-  String filename = "";
-  for (int i=0; i<split.length-1; i++) {
-    filename += split[i];
-  }
-  String saveFilename = "user_" + LocalDateTime.now().getNano() + "."+ext;
+  UserImgEntity img = i_repo.findByUimgUiSeq(data.getUiSeq());
   
-  Path forderLocation = Paths.get(user_img_path);
-  Path targetFile = forderLocation.resolve(saveFilename);
 
-  try {
-    Files.copy(data.getImg().getInputStream(), targetFile, StandardCopyOption.REPLACE_EXISTING);
-  }
-  catch (Exception e) {
-    resultMap.put("status", false);
-    resultMap.put("message", "파일 전송에 실패했습니다");
-    resultMap.put("code", HttpStatus.INTERNAL_SERVER_ERROR);
+      if(img==null) { //이미지 값이 없을경우 , 이미지를 바로추가
+
+      String originalFileName = data.getImg().getOriginalFilename();
+      String[] split = originalFileName.split("\\.");
+      String ext = split[split.length - 1];
+      String filename = "";
+      for (int i=0; i<split.length-1; i++) {
+        filename += split[i];
+      }
+      String saveFilename = "user_" + LocalDateTime.now().getNano() + "."+ext;
+      
+      Path forderLocation = Paths.get(user_img_path);
+      Path targetFile = forderLocation.resolve(saveFilename);
+
+      try {
+        Files.copy(data.getImg().getInputStream(), targetFile, StandardCopyOption.REPLACE_EXISTING);
+      }
+      catch (Exception e) {
+        resultMap.put("status", false);
+        resultMap.put("message", "파일 전송에 실패했습니다");
+        resultMap.put("code", HttpStatus.INTERNAL_SERVER_ERROR);
+        return resultMap;
+      }
+
+      UserImgEntity imgEntity = UserImgEntity.builder()
+      .uimgFilename(saveFilename)
+      .uimgUri(filename)
+      .uimgUiSeq(login.getUiSeq()).build();
+
+      i_repo.save(imgEntity);
+      resultMap.put("status", true);
+      resultMap.put("message", "사진 등록이 완료되었습니다");
+      resultMap.put("code", HttpStatus.OK);
+    } 
+    else { // 이미지 값이 있을경우 데이터를 지우고 이미지추가
+      i_repo.delete(img);
+      String originalFileName = data.getImg().getOriginalFilename();
+      String[] split = originalFileName.split("\\.");
+      String ext = split[split.length - 1];
+      String filename = "";
+      for (int i=0; i<split.length-1; i++) {
+        filename += split[i];
+      }
+      String saveFilename = "user_" + LocalDateTime.now().getNano() + "."+ext;
+      
+      Path forderLocation = Paths.get(user_img_path);
+      Path targetFile = forderLocation.resolve(saveFilename);
+
+      try {
+        Files.copy(data.getImg().getInputStream(), targetFile, StandardCopyOption.REPLACE_EXISTING);
+      }
+      catch (Exception e) {
+        resultMap.put("status", false);
+        resultMap.put("message", "파일 전송에 실패했습니다");
+        resultMap.put("code", HttpStatus.INTERNAL_SERVER_ERROR);
+        return resultMap;
+      }
+
+      UserImgEntity imgEntity = UserImgEntity.builder()
+      .uimgFilename(saveFilename)
+      .uimgUri(filename)
+      .uimgUiSeq(login.getUiSeq()).build();
+
+      i_repo.save(imgEntity);
+      resultMap.put("status", true);
+      resultMap.put("message", "사진 등록이 완료되었습니다");
+      resultMap.put("code", HttpStatus.OK);
+      
+    }
     return resultMap;
   }
-
-  UserImgEntity imgEntity = UserImgEntity.builder()
-  .uimgFilename(saveFilename)
-  .uimgUri(filename)
-  .uimgUiSeq(login.getUiSeq()).build();
-
-  i_repo.save(imgEntity);
-  resultMap.put("status", true);
-  resultMap.put("message", "사진 등록이 완료되었습니다");
-  resultMap.put("code", HttpStatus.OK);
-  return resultMap;
-  } 
+  public ResponseUserInfoVO getUserInfo(Long uiSeq) {
+    MyPageView mView= v_repo.findByUiSeq(uiSeq);
+    if (mView == null)
+      throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND, String.format("not found user %d ", uiSeq)));
+    return ResponseUserInfoVO.toResponse(mView);
+  }
 }
 

@@ -33,6 +33,7 @@ public class UserImgEntity {
     @Column(name = "uimg_filename") private String uimgFilename;
     @Column(name = "uimg_uri") private String uimgUri;
     @Column(name = "uimg_ui_seq") private Long uimgUiSeq;
- 	@OneToOne(cascade=CascadeType.ALL)
+ 	@OneToOne
+    // (cascade=CascadeType.ALL)
     @JoinColumn(name = "uimg_ui_seq", insertable = false, updatable = false) UserInfoEntity userInfoEntity;
 }

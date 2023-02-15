@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.readers.be3.service.UserInfoService;
+import com.readers.be3.vo.mypage.ResponseUserInfoVO;
 import com.readers.be3.vo.mypage.UserImageVO;
 import com.readers.be3.vo.mypage.UserInfoVO;
 import com.readers.be3.vo.mypage.UserLoginVO;
@@ -59,11 +61,17 @@ public class UserInfoController {
     return new ResponseEntity<Object>(resultMap, (HttpStatus)resultMap.get("code"));
   }
   @Operation(summary = "회원 사진추가", description = "회원정보 번호(uiSeq)를 통해 회원사진을 추가합니다.")
-    @PatchMapping(value = "/update/photo", consumes= MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/update/photo", consumes= MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> updateUserPhoto(
         @Parameter(description = "formdata로 사진 데이터를 입력합니다")
         @ModelAttribute UserImageVO data
     ) {
         return new ResponseEntity<>(uService.updateUserPhoto(data), HttpStatus.OK);
     }
+
+  @Operation(summary = "회원 정보", description = "회원정보 번호(uiSeq)를 통해 회원의 정보를 조회합니다.")
+    @GetMapping("/info") //회원정보 조회
+    public ResponseEntity<ResponseUserInfoVO> getMyRank(@RequestParam Long uiSeq){
+      return new ResponseEntity<>(uService.getUserInfo(uiSeq),HttpStatus.OK);
+    }  
 }
