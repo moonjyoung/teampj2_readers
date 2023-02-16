@@ -3,6 +3,9 @@ package com.readers.be3.api;
 import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+
+import javax.management.InvalidApplicationException;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -23,6 +26,7 @@ import org.springframework.web.multipart.MultipartException;
 import com.readers.be3.service.BookService;
 import com.readers.be3.utilities.ResponseMessageUtils;
 import com.readers.be3.vo.book.BookInfoImgVO;
+import com.readers.be3.vo.book.InvalidInputException;
 import com.readers.be3.vo.book.ResponseBookInfoVO;
 import com.readers.be3.vo.response.BasicResponse;
 
@@ -53,17 +57,31 @@ public class BookAPIController {
     public ResponseEntity<ResponseBookInfoVO> addBookInfo(
         @Parameter(description = "formdata로 데이터와 이미지 파일을 입력합니다.") @ModelAttribute BookInfoImgVO data
     ) {
-        if(data.getImg().isEmpty())
+        if(data.getImg().isEmpty()) {
             throw new MultipartException("이미지는 필수값입니다.");
+        }
         return new ResponseEntity<>(bookService.addBookInfo(data), HttpStatus.CREATED);
     }
 
-    @Operation(summary = "책 검색", description = "제목에 검색어가 포함된 책을 검색합니다.")
+    @Operation(summary = "책 검색", description = "검색어가 제목 or 작가 or 출판사에 포함된 책을 검색합니다.",
+        responses = {
+            @ApiResponse(responseCode = "200", description = ResponseMessageUtils.TRUE),
+            @ApiResponse(responseCode = "400", description = ResponseMessageUtils.FALSE,
+                content = @Content(schema = @Schema(implementation = BasicResponse.class))),
+            @ApiResponse(responseCode = "500", description = ResponseMessageUtils.FALSE,
+                content = @Content(schema = @Schema(implementation = BasicResponse.class)))
+        })
     @GetMapping("/search")
-    public ResponseEntity<Object> searchBookInfo(
+    public ResponseEntity< List<ResponseBookInfoVO> > searchBookInfo(
         @Parameter(description = "검색어", example = "생에") @RequestParam String keyword
     ) {
-        return new ResponseEntity<>(bookService.searchBookInfo(keyword), HttpStatus.OK);
+        if (keyword.trim()==null || keyword.trim()=="") {
+            throw new NullPointerException("검색어가 없거나 공백입니다.");
+        }
+        else if (keyword.trim().length()==1) {
+            throw new InvalidInputException("검색어는 2글자 이상이어야 합니다.");
+        }
+        return new ResponseEntity<>(bookService.searchBookInfo(keyword.trim()), HttpStatus.OK);
     }
 
     @Operation(summary = "책 이미지 다운로드", description = "가장 최근에 등록된 책 이미지를 다운받습니다.")

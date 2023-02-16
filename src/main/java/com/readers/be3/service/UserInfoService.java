@@ -8,14 +8,12 @@ import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.readers.be3.entity.MyPageView;
 import com.readers.be3.entity.UserInfoEntity;
@@ -31,8 +29,6 @@ import com.readers.be3.vo.mypage.UserImageVO;
 import com.readers.be3.vo.mypage.UserInfoVO;
 import com.readers.be3.vo.mypage.UserLoginVO;
 import com.readers.be3.vo.mypage.UserNameVO;
-
-import lombok.RequiredArgsConstructor;
 
 @Service
 public class UserInfoService {

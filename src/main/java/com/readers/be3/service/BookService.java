@@ -39,7 +39,7 @@ public class BookService {
                 .biPublisher(data.getBiPublisher())
                 .biPage(data.getBiPage())
                 .biIsbn(data.getBiIsbn()).build();
-        
+                
         String originalFileName = data.getImg().getOriginalFilename();
         String[] split = originalFileName.split("\\.");
         String ext = split[split.length - 1];
@@ -65,40 +65,30 @@ public class BookService {
                 .bimgFilename(saveFilename)
                 .bimgUri(filename)
                 .bimgBiSeq(entity.getBiSeq()).build();
+        
         bookImgRepository.save(imgEntity);
-
         ResponseBookInfoVO vo = new ResponseBookInfoVO(data);
+        vo.setBimgUri(imgEntity.getBimgUri());
+
         return vo;
     }
     
-    public Map<String, Object> searchBookInfo(String keyword) {
-        Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
+    public List<ResponseBookInfoVO> searchBookInfo(String keyword) {
         List<ResponseBookInfoVO> list = new ArrayList<ResponseBookInfoVO>();
 
-        if (keyword==null) {
-            keyword = "";
-        }
-        for (BookInfoEntity data : bookInfoRepository.findAllByBiNameContains(keyword)) {
+        for (BookInfoEntity data : bookInfoRepository.findByBiNameContainsOrBiAuthorContainsOrBiPublisherContains(keyword, keyword, keyword)) {
+            System.out.println(data.getBiName());
+            ResponseBookInfoVO vo = new ResponseBookInfoVO(data);
             // nullpointexception 회피코드. 나중에 check해서 수정
-            if (data.getBiSeq()==null || bookImgRepository.findByBimgBiSeq(data.getBiSeq())==null) {
-                continue;
+            if (bookImgRepository.findByBimgBiSeq(data.getBiSeq())==null) {
+                vo.setBimgUri("");
             }
-            ResponseBookInfoVO vo = new ResponseBookInfoVO();
-            vo.setBiSeq(data.getBiSeq());
-            vo.setBiName(data.getBiName());
-            vo.setBiAuthor(data.getBiAuthor());
-            vo.setBiPublisher(data.getBiPublisher());
-            vo.setBiPage(data.getBiPage());
-            vo.setBiIsbn(data.getBiIsbn());
-            vo.setBimgUri(bookImgRepository.findByBimgBiSeq(data.getBiSeq()).getBimgUri());
+            else {
+                vo.setBimgUri(bookImgRepository.findByBimgBiSeq(data.getBiSeq()).getBimgUri());
+            }
             list.add(vo);
         }
-
-        resultMap.put("status", true);
-        resultMap.put("message", "검색 완료");
-        resultMap.put("code", HttpStatus.OK);
-        resultMap.put("list", list);
-        return resultMap;
+        return list;
     }
 
 
