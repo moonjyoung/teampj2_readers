@@ -32,5 +32,6 @@ public class ArticleInfoEntity {
     @Column(name = "ai_status") private Integer aiStatus;
     @Column(name = "ai_purpose") private Integer aiPurpose;
     @Column(name = "ai_public") private Integer aiPublic;
-    @Column(name = "ai_ui_seq") private Long aiUiSeq;
+    @Column(name = "ai_ui_seq") private Integer aiUiSeq;
+    @Column(name = "ai_bi_seq") private Integer aiBiSeq;
 }

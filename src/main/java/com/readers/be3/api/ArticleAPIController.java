@@ -22,11 +22,18 @@ import com.readers.be3.vo.article.writeArticleVO;
 public class ArticleAPIController {
     @Autowired ArticleService articleService;
 
+    // 게시글 등록 api
     @PostMapping("/article")
-    public ResponseEntity<Object> writeArticle(@ModelAttribute writeArticleVO data, List<MultipartFile> files, @RequestParam Long uiSeq){
-        Map <String, Object> resultMap = articleService.writeArticle(data, files, uiSeq);
+    public ResponseEntity<Object> writeArticle(@ModelAttribute writeArticleVO data, List<MultipartFile> files){
+        Map <String, Object> resultMap = articleService.writeArticle(data, files);
         return new ResponseEntity<Object>(resultMap, (HttpStatus)resultMap.get("code"));
     }
+
+    // 게시글 조회 api
+    // @getMapping("/article")
+    // public ResponseEntity<Object> 
+
+    
     
 
 }

@@ -14,4 +14,6 @@ public class writeArticleVO {
     private String aiTitle;
     private String aiContent;
     private Integer aiPublic;
+    private Integer uiSeq;
+    private Integer biSeq;
 }

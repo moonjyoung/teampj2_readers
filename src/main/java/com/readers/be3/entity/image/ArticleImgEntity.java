@@ -27,4 +27,5 @@ public class ArticleImgEntity {
     @Column(name = "aimg_uri") private String aimgUri;
     @Column(name = "aimg_order") private Integer aimgOrder;
     @Column(name = "aimg_ai_seq") private Long aimgAiSeq;
+     // @ManyToOne @JoinColumn(name = "aimg_ai_seq")  ArticleInfoEntity article;
 }

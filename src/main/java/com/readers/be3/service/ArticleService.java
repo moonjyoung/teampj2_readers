@@ -11,14 +11,18 @@ import java.util.Map;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.readers.be3.entity.ArticleInfoEntity;
+import com.readers.be3.entity.UserInfoEntity;
 import com.readers.be3.entity.image.ArticleImgEntity;
 import com.readers.be3.repository.ArticleInfoRepository;
+import com.readers.be3.repository.UserInfoRepository;
 import com.readers.be3.repository.image.ArticleImgRepository;
 import com.readers.be3.vo.article.articleImgVO;
 import com.readers.be3.vo.article.writeArticleVO;
@@ -27,9 +31,10 @@ import com.readers.be3.vo.article.writeArticleVO;
 public class ArticleService {
     @Autowired ArticleImgRepository articleImgRepo;
     @Autowired ArticleInfoRepository articleInfoRepo;
+    @Autowired UserInfoRepository userInfoRepo;
     
     // 독후감 작성 기능
-    public Map<String, Object> writeArticle(writeArticleVO data, List<MultipartFile> files, Long uiSeq){
+    public Map<String, Object> writeArticle(writeArticleVO data, List<MultipartFile> files){
         // VO를 통해 게시글 제목과 내용, 파일(이미지)을 입력받음
         Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
         ArticleInfoEntity articleInfoEntity = null;
@@ -57,7 +62,8 @@ public class ArticleService {
                                 .aiTitle(data.getAiTitle())
                                 .aiContent(data.getAiContent())
                                 .aiPublic(data.getAiPublic())
-                                .aiUiSeq(uiSeq)
+                                .aiUiSeq(data.getUiSeq())
+                                .aiBiSeq(data.getBiSeq())
                                 .build();
             articleInfoRepo.save(articleInfoEntity);
             // 이미지 저장
@@ -75,9 +81,6 @@ public class ArticleService {
         }
         return resultMap;
     }
-
-
-
 
     // 사용자로부터 이미지파일을 받아서 articleImgeEntity 에 저장 
     // public void imgfileHandler(List<MultipartFile> files, ArticleInfoEntity article)throws Exception {
@@ -150,4 +153,54 @@ public class ArticleService {
     }
 
     }
+
+// 게시글 조회
+// 검색(작성자, 제목, 내용)
+// pathvarible 로 검색타입(작성자, 제목, 내용 )
+// type => (writer, title, content)
+
+public Map<String, Object> getArticleList(String type, String keyword, Pageable pageable){
+Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
+if(type == null){
+    Page<ArticleInfoEntity> page = articleInfoRepo.findAll(pageable);
+
+    resultMap.put("data", page);
+    resultMap.put("status", true);
+    resultMap.put("message", "전체 게시글 리스트 조회.");
+    resultMap.put("code", HttpStatus.OK);
+}
+else if(type == "writer"){
+    // 유저 아이디 검색해서 해당하는 유저정보 가져오기
+    UserInfoEntity writerInfo = userInfoRepo.findByUiEmail(keyword);
+    // 검색한 유저정보에서 유저seq로 작성한 게시글 검색
+    Page<ArticleInfoEntity> page = articleInfoRepo.findByAiUiSeq(writerInfo.getUiSeq(), pageable);
+
+    resultMap.put("data", page);
+    resultMap.put("status", true);
+    resultMap.put("message", "작성자로 검색.");
+    resultMap.put("code", HttpStatus.OK);
+}
+else if(type == "title"){
+    Page<ArticleInfoEntity> page = articleInfoRepo.findByAiTitleContains(keyword, pageable);
+    
+    resultMap.put("data", page);
+    resultMap.put("status", true);
+    resultMap.put("message", "제목을 검색.");
+    resultMap.put("code", HttpStatus.OK);
+}
+else if(type == "content"){
+    Page<ArticleInfoEntity> page = articleInfoRepo.findByAiContentContains(keyword, pageable);
+
+    resultMap.put("data", page);
+    resultMap.put("status", true);
+    resultMap.put("message", "내용으로 검색.");
+    resultMap.put("code", HttpStatus.OK);
+}
+else{
+    resultMap.put("status", false);
+    resultMap.put("message", "잘못된 검색 타입이에요 (type = (writer, title, content)).");
+    resultMap.put("code", HttpStatus.BAD_REQUEST);
+}
+return resultMap;
+}
 }
