@@ -1,5 +1,7 @@
 package com.readers.be3.vo.book;
 
+import com.readers.be3.entity.BookInfoEntity;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -21,6 +23,14 @@ public class ResponseBookInfoVO {
     private String bimgUri;
 
     public ResponseBookInfoVO(BookInfoImgVO data) {
+        this.biName = data.getBiName();
+        this.biAuthor = data.getBiAuthor();
+        this.biPublisher = data.getBiPublisher();
+        this.biPage = data.getBiPage();
+        this.biIsbn = data.getBiIsbn();
+    }
+    public ResponseBookInfoVO(BookInfoEntity data) {
+        this.biSeq = data.getBiSeq();
         this.biName = data.getBiName();
         this.biAuthor = data.getBiAuthor();
         this.biPublisher = data.getBiPublisher();
