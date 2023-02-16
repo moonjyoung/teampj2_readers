@@ -3,6 +3,8 @@ package com.readers.be3.vo.book;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -19,6 +21,6 @@ public class BookInfoImgVO {
     private Integer biPage;
     @Schema(description = "ISBN", example = "9791190382915")
     private String biIsbn;
-    @Schema(description = "책 표지", example = "생에 감사해.jpg")
+    @Schema(description = "책 표지", example = "생에 감사해.jpg", required = true)
     private MultipartFile img;
 }

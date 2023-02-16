@@ -6,4 +6,5 @@ import com.readers.be3.entity.image.BookImgEntity;
 
 public interface BookImgRepository extends JpaRepository<BookImgEntity, Long>{
     public BookImgEntity findByBimgBiSeq(Long bimgBiSeq);
+    public BookImgEntity findTopByBimgUri(String bimgUri);
 }

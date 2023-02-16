@@ -4,7 +4,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedHashMap;
@@ -20,8 +19,9 @@ import com.readers.be3.entity.BookInfoEntity;
 import com.readers.be3.entity.image.BookImgEntity;
 import com.readers.be3.repository.BookInfoRepository;
 import com.readers.be3.repository.image.BookImgRepository;
+import com.readers.be3.vo.book.InvalidInputException;
 import com.readers.be3.vo.book.BookInfoImgVO;
-import com.readers.be3.vo.book.BookInfoVO;
+import com.readers.be3.vo.book.ResponseBookInfoVO;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,7 +32,7 @@ public class BookService {
     private final BookImgRepository bookImgRepository;
     @Value("${file.image.book}") String book_img_path;
 
-    public BookInfoVO addBookInfo(BookInfoImgVO data) {
+    public ResponseBookInfoVO addBookInfo(BookInfoImgVO data) {
         BookInfoEntity entity = BookInfoEntity.builder()
                 .biName(data.getBiName())
                 .biAuthor(data.getBiAuthor())
@@ -47,7 +47,7 @@ public class BookService {
         for (int i=0; i<split.length-1; i++) {
             filename += split[i];
         }
-        String saveFilename = "book_" + LocalDateTime.now().getNano() + "." + ext;
+        String saveFilename = "book_" + Calendar.getInstance().getTimeInMillis() + "." + ext;
         
         Path forderLocation = Paths.get(book_img_path);
         Path targetFile = forderLocation.resolve(saveFilename);
@@ -56,10 +56,7 @@ public class BookService {
             Files.copy(data.getImg().getInputStream(), targetFile, StandardCopyOption.REPLACE_EXISTING);
         }
         catch (Exception e) {
-            BookInfoVO vo = new BookInfoVO();
-            vo.setStatus(false);
-            vo.setMessage("파일 전송 실패");
-            return vo;
+            throw new InvalidInputException(e.getMessage());
         }
         
         bookInfoRepository.save(entity);
@@ -68,18 +65,15 @@ public class BookService {
                 .bimgFilename(saveFilename)
                 .bimgUri(filename)
                 .bimgBiSeq(entity.getBiSeq()).build();
-                
         bookImgRepository.save(imgEntity);
 
-        BookInfoVO vo = new BookInfoVO(data);
-        vo.setStatus(true);
-        vo.setMessage("책과 책 이미지 정보 추가 성공");
+        ResponseBookInfoVO vo = new ResponseBookInfoVO(data);
         return vo;
     }
     
     public Map<String, Object> searchBookInfo(String keyword) {
         Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
-        List<BookInfoVO> list = new ArrayList<BookInfoVO>();
+        List<ResponseBookInfoVO> list = new ArrayList<ResponseBookInfoVO>();
 
         if (keyword==null) {
             keyword = "";
@@ -89,7 +83,7 @@ public class BookService {
             if (data.getBiSeq()==null || bookImgRepository.findByBimgBiSeq(data.getBiSeq())==null) {
                 continue;
             }
-            BookInfoVO vo = new BookInfoVO();
+            ResponseBookInfoVO vo = new ResponseBookInfoVO();
             vo.setBiSeq(data.getBiSeq());
             vo.setBiName(data.getBiName());
             vo.setBiAuthor(data.getBiAuthor());
@@ -144,6 +138,11 @@ public class BookService {
         resultMap.put("message", "새로운 책 이미지가 등록됐습니다.");
         resultMap.put("code", HttpStatus.OK);
         return resultMap;
+    }
+
+    public String getFilenameByUri(String uri) {
+        BookImgEntity img = bookImgRepository.findTopByBimgUri(uri);
+        return img.getBimgFilename();
     }
 
     // 책 이미지도 따로 업로드 하지 않을 경우
