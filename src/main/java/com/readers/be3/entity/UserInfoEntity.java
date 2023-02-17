@@ -4,11 +4,14 @@ import java.time.LocalDateTime;
 
 import org.hibernate.annotations.DynamicInsert;
 
+import com.readers.be3.entity.image.UserImgEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,4 +37,5 @@ public class UserInfoEntity {
     @Column(name = "ui_point") private Integer uiPoint;
     @Column(name = "ui_total_page") private Integer uiTotalPage;
     @Column(name = "ui_total_book") private Integer uiTotalBook;
+    @OneToOne(mappedBy = "userInfoEntity") private UserImgEntity userImgEntity;
 }

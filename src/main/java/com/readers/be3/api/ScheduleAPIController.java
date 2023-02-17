@@ -16,6 +16,7 @@ import com.readers.be3.service.ScheduleService;
 import com.readers.be3.vo.book.InvalidInputException;
 import com.readers.be3.vo.response.BasicResponse;
 import com.readers.be3.vo.schedule.AddScheduleVO;
+import com.readers.be3.vo.schedule.UpdateScheduleVO;
 import com.readers.be3.vo.schedule.ViewScheduleVO;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -61,5 +62,13 @@ public class ScheduleAPIController {
         @Parameter(description = "회원 번호", example = "2") @RequestParam Long uiSeq
     ) {
         return new ResponseEntity<>(scheduleService.getSchedule(uiSeq), HttpStatus.OK);
+    }
+
+    @Operation(summary = "일정 수정", description = "일정을 수정합니다.")
+    @PostMapping("/update")
+    public ResponseEntity<ViewScheduleVO> updateSchedule(
+        @Parameter(description = "회원정보 수정 양식") @RequestBody UpdateScheduleVO data
+    ){
+        return new ResponseEntity<>(scheduleService.updateSchedule(data), HttpStatus.CREATED);
     }
 }

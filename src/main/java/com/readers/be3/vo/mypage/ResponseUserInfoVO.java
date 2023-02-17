@@ -1,7 +1,5 @@
 package com.readers.be3.vo.mypage;
 
-import java.util.List;
-
 import com.readers.be3.entity.MyPageView;
 
 import io.swagger.v3.oas.annotations.media.Schema;

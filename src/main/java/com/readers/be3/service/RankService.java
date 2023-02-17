@@ -1,10 +1,5 @@
 package com.readers.be3.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,9 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import com.readers.be3.repository.UserInfoRepository;
 import com.readers.be3.repository.UserRankViewRepository;
-import com.readers.be3.dto.request.RankMyRequest;
 import com.readers.be3.dto.response.UserRankDTO;
-import com.readers.be3.entity.UserInfoEntity;
 import com.readers.be3.entity.UserRankView;
 import com.readers.be3.exception.ErrorResponse;
 import com.readers.be3.exception.ReadersProjectException;

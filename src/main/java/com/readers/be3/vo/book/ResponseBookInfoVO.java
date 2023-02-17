@@ -33,7 +33,7 @@ public class ResponseBookInfoVO {
         this.biSeq = data.getBiSeq();
         this.biName = data.getBiName();
         this.biAuthor = data.getBiAuthor();
-        this.biPublisher = data.getBiPublisher();
+        this.biPublisher = data.getBiPublisher();System.out.println();
         this.biPage = data.getBiPage();
         this.biIsbn = data.getBiIsbn();
     }

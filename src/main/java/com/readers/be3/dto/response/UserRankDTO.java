@@ -1,6 +1,5 @@
 package com.readers.be3.dto.response;
 
-import com.readers.be3.entity.UserInfoEntity;
 import com.readers.be3.entity.UserRankView;
 
 import lombok.AllArgsConstructor;

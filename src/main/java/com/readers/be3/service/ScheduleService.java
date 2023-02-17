@@ -10,6 +10,7 @@ import com.readers.be3.repository.BookInfoRepository;
 import com.readers.be3.repository.ScheduleInfoRepository;
 import com.readers.be3.vo.book.InvalidInputException;
 import com.readers.be3.vo.schedule.AddScheduleVO;
+import com.readers.be3.vo.schedule.UpdateScheduleVO;
 import com.readers.be3.vo.schedule.ViewScheduleVO;
 
 import lombok.RequiredArgsConstructor;
@@ -61,7 +62,34 @@ public class ScheduleService {
     }
 
     public void deleteSchedule(Long siSeq) {
-        ScheduleInfoEntity entity = scheduleInfoRepository.findById(siSeq).get();
+        ScheduleInfoEntity entity = scheduleInfoRepository.findById(siSeq)
+                .orElseThrow(() -> new InvalidInputException("존재하지 않는 스케쥴입니다."));
         scheduleInfoRepository.delete(entity);
+    }
+
+    public ViewScheduleVO updateSchedule(UpdateScheduleVO data) {
+        ScheduleInfoEntity entity = scheduleInfoRepository.findById(data.getSiSeq())
+                .orElseThrow(() -> new InvalidInputException("존재하지 않는 스케쥴입니다."));
+        
+        Long uiSeq = entity.getSiUiSeq();
+        Long biSeq = entity.getSiBiSeq();
+        Integer status = 1;
+        if (data.getSiStartDate()!=null) {
+            status = 2;
+            if (data.getSiEndDate()!=null) {
+                status = 4;
+            }
+        }
+
+        ScheduleInfoEntity newEntity = ScheduleInfoEntity.builder()
+                .siBiSeq(data.getSiSeq())
+                .siContent(data.getSiContent())
+                .siStartDate(data.getSiStartDate())
+                .siEndDate(data.getSiEndDate())
+                .siUiSeq(uiSeq).siBiSeq(biSeq)
+                .siStatus(status).build();
+        scheduleInfoRepository.save(newEntity);
+
+        return new ViewScheduleVO(newEntity);
     }
 }
