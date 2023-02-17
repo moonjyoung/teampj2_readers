@@ -18,9 +18,11 @@ import lombok.Setter;
 public class OneCommentResponse {
   @Schema(description = "한줄평 내용")
   private String comment;
-  @Schema(description = "한줄평 내용")
+  @Schema(description = "한줄평 점수")
   private Integer score;
+  @Schema(description = "한줄평 등록일")
   private LocalDateTime regDt;
+  @Schema(description = "한줄평 닉네임")
   private String nickName;
 
   public static OneCommentResponse toResponse(OneCommentEntity entity){
