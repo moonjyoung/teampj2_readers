@@ -35,6 +35,10 @@ public class ResponseUserArticleVO {
     @Schema(description = "한줄평 날짜" , example = "2023-02-16 17:00:00")
     private LocalDateTime commentTime;
 
+    // private String title;
+
+    // private String uri;
+
 
 // 게시판 제목, 게시판 내용, 게시판 날짜
 // 한줄평 내용, 한줄평 별점, 한줄평 날짜

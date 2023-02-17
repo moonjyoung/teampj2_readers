@@ -5,6 +5,7 @@ import java.util.List;
 import com.readers.be3.entity.FinishedBookView;
 import com.readers.be3.entity.MyPageView;
 import com.readers.be3.entity.ScheduleInfoEntity;
+import com.readers.be3.entity.image.BookImgEntity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -20,7 +21,7 @@ public class ResponseFinishedBookVO {
     private String author;
     @Schema(description = "출판사명" , example = "민음사")
     private String publisher;
-    @Schema(description = "책표지" , example = "생에 감사해")
+    @Schema(description = "책표지" , example = "달과 6펜스.jpg")
     private String uri;
 
     public ResponseFinishedBookVO (FinishedBookView fBookView) {
@@ -33,5 +34,6 @@ public class ResponseFinishedBookVO {
         this.bookTitle = data.getBookInfoEntity().getBiName();
         this.author = data.getBookInfoEntity().getBiAuthor();
         this.publisher = data.getBookInfoEntity().getBiPublisher();
+        this.uri = data.getBookInfoEntity().getBookImgEntity().getBimgUri();
     }
 }
