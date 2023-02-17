@@ -26,4 +26,5 @@ public class FinishedBookView {
   @Column(name="bi_author") private String biAuthor;
   @Column(name="bi_publisher") private String biPublisher;
   @Column(name="si_status") private Integer siStatus;
+  @Column(name="bimg_uri") private String bimgUri;
 }

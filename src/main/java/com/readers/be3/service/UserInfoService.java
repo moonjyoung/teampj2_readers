@@ -5,8 +5,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -19,6 +21,7 @@ import com.readers.be3.entity.ArticleView;
 import com.readers.be3.entity.FinishedBookView;
 import com.readers.be3.entity.MyPageView;
 import com.readers.be3.entity.OneCommentView;
+import com.readers.be3.entity.ScheduleInfoEntity;
 import com.readers.be3.entity.UserInfoEntity;
 import com.readers.be3.entity.image.UserImgEntity;
 import com.readers.be3.exception.ErrorResponse;
@@ -28,6 +31,7 @@ import com.readers.be3.repository.FinishedBookViewRepository;
 import com.readers.be3.repository.MyPageViewRepository;
 import com.readers.be3.repository.OneCommentViewRepository;
 import com.readers.be3.repository.UserInfoRepository;
+import com.readers.be3.repository.ScheduleInfoRepository;
 import com.readers.be3.repository.image.UserImgRepository;
 import com.readers.be3.utilities.AESAlgorithm;
 import com.readers.be3.vo.mypage.ResponseFinishedBookVO;
@@ -42,6 +46,7 @@ import com.readers.be3.vo.mypage.UserNameVO;
 public class UserInfoService {
     @Autowired UserImgRepository i_repo;
     @Autowired UserInfoRepository u_repo;
+    @Autowired ScheduleInfoRepository scheduleInfoRepository;
     @Autowired MyPageViewRepository v_repo;
     @Autowired ArticleViewRepository a_repo;
     @Autowired OneCommentViewRepository o_repo;
@@ -248,11 +253,15 @@ public class UserInfoService {
     return ResponseUserInfoVO.toResponse(mView);
   }
 
-  public ResponseFinishedBookVO getUserBook(Long uiSeq) { //완독한 책 출력
-    FinishedBookView fView= f_repo.findByUiSeqAndSiStatus(uiSeq, 4);
-    if (fView == null)
-      throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND, String.format("not found user %d ", uiSeq)));
-    return ResponseFinishedBookVO.toResponse(fView);
+  public List<ResponseFinishedBookVO> getUserBook(Long uiSeq) { //완독한 책 출력
+    List<ResponseFinishedBookVO> list = new ArrayList<ResponseFinishedBookVO>();
+    for (ScheduleInfoEntity data : scheduleInfoRepository.findBySiUiSeqAndSiStatus(uiSeq, 4)) {
+      if (data == null)
+        throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND, String.format("not found user %d ", uiSeq)));
+      ResponseFinishedBookVO vo = new ResponseFinishedBookVO(data);
+      list.add(vo);
+    }
+    return list;
   }
 
   // public ResponseUserArticleVO getUserArticle(Long uiSeq, Long biSeq) { //마이페이지 유저가 쓴 독후감과 평점 출력

@@ -13,4 +13,5 @@ public interface ScheduleInfoRepository extends JpaRepository<ScheduleInfoEntity
   ScheduleInfoEntity findBySiSeq(Long SiSeq);
     @Query(value = "select * from schedule_info where si_ui_seq = :siUiSeq", nativeQuery = true)
     public List<ScheduleInfoEntity> findBySiUiSeq(@Param("siUiSeq") Long siUiSeq);
+  List<ScheduleInfoEntity> findBySiUiSeqAndSiStatus(Long siUiSeq, Integer siStatus);
 }

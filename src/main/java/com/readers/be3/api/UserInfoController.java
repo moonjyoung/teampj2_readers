@@ -1,5 +1,6 @@
 package com.readers.be3.api;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,9 +82,9 @@ public class UserInfoController {
       return new ResponseEntity<>(uService.getUserInfo(uiSeq),HttpStatus.OK);
     }  
 
-  @Operation(summary = "완독한 책 출력", description = "회원정보 번호(uiSeq)를 통해 회원이 완독한 책을 조회합니다.")
+  @Operation(summary = "완독한 책 출력", description = "마이페이지에서 회원정보 번호(uiSeq)를 통해 회원이 완독한 책을 조회합니다.")
     @GetMapping("/finish") //회원정보 조회
-    public ResponseEntity<ResponseFinishedBookVO> getUserBook(@RequestParam Long uiSeq){
+    public ResponseEntity< List<ResponseFinishedBookVO> > getUserBook(@RequestParam Long uiSeq){
       return new ResponseEntity<>(uService.getUserBook(uiSeq),HttpStatus.OK);
     }  
 
