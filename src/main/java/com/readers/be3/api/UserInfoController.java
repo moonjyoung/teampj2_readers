@@ -23,6 +23,8 @@ import com.readers.be3.service.UserInfoService;
 import com.readers.be3.vo.mypage.ResponseFinishedBookVO;
 import com.readers.be3.vo.mypage.ResponseUserArticleVO;
 import com.readers.be3.vo.mypage.ResponseUserInfoVO;
+import com.readers.be3.vo.mypage.SnsLoginRequest;
+import com.readers.be3.vo.mypage.SnsLoginResponse;
 import com.readers.be3.vo.mypage.UserImageVO;
 import com.readers.be3.vo.mypage.UserInfoVO;
 import com.readers.be3.vo.mypage.UserLoginVO;
@@ -93,5 +95,11 @@ public class UserInfoController {
   //   public ResponseEntity<ResponseUserArticleVO> getUserArticle(@RequestParam Long uiSeq, @RequestParam Long biSeq){
   //     return new ResponseEntity<>(uService.getUserArticle(uiSeq, biSeq), HttpStatus.OK);
   //   }  
+
+  @Operation(summary = "sns 로그인", description = "sns로 로그인합니다. 쎄션에 저장할 유저번호를 반환합니다")
+  @GetMapping("/sns/login")
+  public ResponseEntity<SnsLoginResponse> snsLogin(@RequestBody SnsLoginRequest request){
+    return new ResponseEntity<>(SnsLoginResponse.toResponse(uService.snsloginUser(request.getSnsUid(), request.getType())),HttpStatus.OK);
+  }
 
 }

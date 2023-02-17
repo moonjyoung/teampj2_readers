@@ -15,4 +15,5 @@ public interface UserInfoRepository extends JpaRepository<UserInfoEntity, Long>{
   public UserInfoEntity findTop1ByUiEmailAndUiPwd(String uiEmail, String uiPwd);
   public UserInfoEntity findByUiSeq(Long uiSeq);
   public Page<UserInfoEntity> findAll(Pageable pageable);
+  public UserInfoEntity findByUiUidAndUiLoginType(String uid, String type);
 }

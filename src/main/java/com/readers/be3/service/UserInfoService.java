@@ -100,6 +100,15 @@ public class UserInfoService {
     return resultMap;
     }
 
+    public UserInfoEntity snsloginUser(String uid, String type) { //로그인
+      UserInfoEntity userInfoEntity = u_repo.findByUiUidAndUiLoginType(uid, type);
+      if (userInfoEntity == null){
+        UserInfoEntity snsUser = UserInfoEntity.ofSNS(uid, type);
+        return  u_repo.save(snsUser);
+      }
+      return userInfoEntity;
+  }
+    
     public Map<String, Object> loginUser(UserLoginVO data) { //로그인
         Map<String ,Object> resultMap = new LinkedHashMap<String, Object>();
         UserInfoEntity loginUser = null; 
