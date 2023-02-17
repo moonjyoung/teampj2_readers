@@ -15,15 +15,23 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.readers.be3.entity.ArticleView;
+import com.readers.be3.entity.FinishedBookView;
 import com.readers.be3.entity.MyPageView;
+import com.readers.be3.entity.OneCommentView;
 import com.readers.be3.entity.UserInfoEntity;
 import com.readers.be3.entity.image.UserImgEntity;
 import com.readers.be3.exception.ErrorResponse;
 import com.readers.be3.exception.ReadersProjectException;
+import com.readers.be3.repository.ArticleViewRepository;
+import com.readers.be3.repository.FinishedBookViewRepository;
 import com.readers.be3.repository.MyPageViewRepository;
+import com.readers.be3.repository.OneCommentViewRepository;
 import com.readers.be3.repository.UserInfoRepository;
 import com.readers.be3.repository.image.UserImgRepository;
 import com.readers.be3.utilities.AESAlgorithm;
+import com.readers.be3.vo.mypage.ResponseFinishedBookVO;
+import com.readers.be3.vo.mypage.ResponseUserArticleVO;
 import com.readers.be3.vo.mypage.ResponseUserInfoVO;
 import com.readers.be3.vo.mypage.UserImageVO;
 import com.readers.be3.vo.mypage.UserInfoVO;
@@ -35,7 +43,12 @@ public class UserInfoService {
     @Autowired UserImgRepository i_repo;
     @Autowired UserInfoRepository u_repo;
     @Autowired MyPageViewRepository v_repo;
+    @Autowired ArticleViewRepository a_repo;
+    @Autowired OneCommentViewRepository o_repo;
+    @Autowired FinishedBookViewRepository f_repo;
+    
     @Value("${file.image.user}") String user_img_path;
+
     public Map<String, Object> addUser(UserInfoVO data) { //회원가입
     Map<String ,Object> resultMap = new LinkedHashMap<String, Object>();
     // String name_pattern = "^[0-9|a-z|A-Z|ㄱ-ㅎ|ㅏ-ㅣ|가-힣]*$";
@@ -49,12 +62,6 @@ public class UserInfoService {
         resultMap.put("code", HttpStatus.BAD_REQUEST);
     }
 
-    // else if(u_repo.countByUiNickname(data.getUiNickname())>=1) { 
-    //     resultMap.put("status", false);
-    //     resultMap.put("message", data.getUiEmail()+"은/는 이미 등록된 닉네임 입니다");
-    //     resultMap.put("code", HttpStatus.BAD_REQUEST);
-    // }
-
     else if(data.getUiPwd().length()<8) {
       resultMap.put("status", false);
       resultMap.put("message", "비밀번호는 8자리 이상입니다");
@@ -66,11 +73,7 @@ public class UserInfoService {
       resultMap.put("message", "비밀번호에 공백문자를 사용 할 수 없습니다");
       resultMap.put("code", HttpStatus.BAD_REQUEST);
     } 
-    // else if(!Pattern.matches(name_pattern, data.getUiNickname())) { 
-    //   resultMap.put("status", false);
-    //   resultMap.put("message", "닉네임에 공백문자나 특수문자를 사용 할 수 없습니다");
-    //   resultMap.put("code", HttpStatus.BAD_REQUEST);
-    // } 
+
     else {
       try {
         String encPwd = AESAlgorithm.Encrypt(data.getUiPwd());
@@ -238,11 +241,29 @@ public class UserInfoService {
     }
     return resultMap;
   }
-  public ResponseUserInfoVO getUserInfo(Long uiSeq) {
+  public ResponseUserInfoVO getUserInfo(Long uiSeq) { //마이페이지 정보출력
     MyPageView mView= v_repo.findByUiSeq(uiSeq);
     if (mView == null)
       throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND, String.format("not found user %d ", uiSeq)));
     return ResponseUserInfoVO.toResponse(mView);
   }
+
+  public ResponseFinishedBookVO getUserBook(Long uiSeq) { //완독한 책 출력
+    FinishedBookView fView= f_repo.findByUiSeqAndSiStatus(uiSeq, 4);
+    if (fView == null)
+      throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND, String.format("not found user %d ", uiSeq)));
+    return ResponseFinishedBookVO.toResponse(fView);
+  }
+
+  // public ResponseUserArticleVO getUserArticle(Long uiSeq, Long biSeq) { //마이페이지 유저가 쓴 독후감과 평점 출력
+  //   ArticleView aView = a_repo.findByUiSeqAndBiSeq(uiSeq, biSeq);
+  //   OneCommentView oView = o_repo.findByUiSeqAndBiSeq(uiSeq, biSeq);
+  //   // if (aView == null)
+  //   //   throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND, String.format("not found user %d ", uiSeq)));
+  //   // else if (oView == null)
+  //   //   throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND, String.format("not found book %d ", biSeq)));
+  //   // else 
+  //     return ResponseUserArticleVO.toResponse(aView, oView);
+  // }
 }
 
