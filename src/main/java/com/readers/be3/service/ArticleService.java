@@ -3,7 +3,6 @@ package com.readers.be3.service;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -20,7 +19,6 @@ import com.readers.be3.entity.ArticleInfoEntity;
 import com.readers.be3.entity.image.ArticleImgEntity;
 import com.readers.be3.repository.ArticleInfoRepository;
 import com.readers.be3.repository.image.ArticleImgRepository;
-import com.readers.be3.vo.article.articleImgVO;
 import com.readers.be3.vo.article.writeArticleVO;
 
 @Service

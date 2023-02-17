@@ -2,14 +2,11 @@ package com.readers.be3.dto.response;
 
 import java.time.LocalDateTime;
 
-import org.springdoc.core.annotations.ParameterObject;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.readers.be3.entity.OneCommentEntity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 
 @Schema(description = "한줄평리스트 반환값")

@@ -4,6 +4,8 @@ import java.time.LocalDate;
 
 import org.hibernate.annotations.DynamicInsert;
 
+import com.readers.be3.vo.schedule.UpdateScheduleVO;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
