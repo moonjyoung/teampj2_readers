@@ -17,6 +17,6 @@ public interface UserInfoRepository extends JpaRepository<UserInfoEntity, Long>{
   public Page<UserInfoEntity> findAll(Pageable pageable);
   
   // 아이디로 유저 정보 찾기 (유저아이디로 게시글 검색을 위해서 만듦)
-  public UserInfoEntity findByUiEmail(String email);
+  public UserInfoEntity findByUiNickname(String nickName);
 
 }

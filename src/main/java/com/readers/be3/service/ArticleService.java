@@ -5,12 +5,14 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -24,17 +26,21 @@ import com.readers.be3.entity.image.ArticleImgEntity;
 import com.readers.be3.repository.ArticleInfoRepository;
 import com.readers.be3.repository.UserInfoRepository;
 import com.readers.be3.repository.image.ArticleImgRepository;
-import com.readers.be3.vo.article.articleImgVO;
-import com.readers.be3.vo.article.writeArticleVO;
+import com.readers.be3.vo.article.ArticleImgVO;
+import com.readers.be3.vo.article.ArticleModifyVO;
+import com.readers.be3.vo.article.WriteArticleVO;
+
+import lombok.val;
 
 @Service
 public class ArticleService {
     @Autowired ArticleImgRepository articleImgRepo;
     @Autowired ArticleInfoRepository articleInfoRepo;
     @Autowired UserInfoRepository userInfoRepo;
-    
+    @Value("${file.image.article}") String ArticleImgPath;
+
     // 독후감 작성 기능
-    public Map<String, Object> writeArticle(writeArticleVO data, List<MultipartFile> files){
+    public Map<String, Object> writeArticle(WriteArticleVO data, List<MultipartFile> files){
         // VO를 통해 게시글 제목과 내용, 파일(이미지)을 입력받음
         Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
         ArticleInfoEntity articleInfoEntity = null;
@@ -98,14 +104,7 @@ public class ArticleService {
 
 
         // 파일이 저장될 경로 지정
-        String path = "images/" + current_date;
-        // path 경로를 갖는 file 객체를 생성
-        File file = new File(path);
-        
-        // 저장할 위치의 디렉토리가 존재하지 않을 경우
-        if(!file.exists()){
-            file.mkdirs();
-        }
+        String path = ArticleImgPath;
 
         // 파일 hendler
         for(MultipartFile multipartFile : files){
@@ -132,7 +131,6 @@ public class ArticleService {
                         break;
                     }
                 }
-
                 // 파일 이름 설정(나노초단위로)
                 String newFileName = Long.toString(System.nanoTime()) + originalFileExtension;
 
@@ -144,6 +142,15 @@ public class ArticleService {
                                             .aimgUri(path)
                                             .build();
                 articleImgRepo.save(articleImgEntity);
+                
+                // path 경로를 갖는 file 객체를 생성
+                File file = new File(path);
+                // 저장할 위치의 디렉토리가 존재하지 않을 경우
+                if(!file.exists()){
+                    file.mkdirs();
+                }
+                // 실제 파일 저장
+                multipartFile.transferTo(file);; 
             }
         } // for문 끝
         System.out.println("이미지가 저장되었어요.");
@@ -156,51 +163,126 @@ public class ArticleService {
 
 // 게시글 조회
 // 검색(작성자, 제목, 내용)
-// pathvarible 로 검색타입(작성자, 제목, 내용 )
-// type => (writer, title, content)
+// pathvarible 로 검색타입(모든 게시글, 작성자, 제목, 내용 )
+// type => (all, writer, title, content)
 
 public Map<String, Object> getArticleList(String type, String keyword, Pageable pageable){
 Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
-if(type == null){
-    Page<ArticleInfoEntity> page = articleInfoRepo.findAll(pageable);
 
+if(type.equals("all")){
+    Page<ArticleInfoEntity> page = articleInfoRepo.findAll(pageable);
+    List<ArticleInfoEntity> status = articleInfoRepo.findAll();
+    
+    // ai_public 이 1일때만 보이게 (aiPublic를 어디서 가져오지?)
+    // 게시글 조회 api , 게시글 보기 api 따로 만들어야 하나?
+    // 
+    page.getContent();
     resultMap.put("data", page);
     resultMap.put("status", true);
     resultMap.put("message", "전체 게시글 리스트 조회.");
     resultMap.put("code", HttpStatus.OK);
 }
-else if(type == "writer"){
+else if(type.equals("writer")){
     // 유저 아이디 검색해서 해당하는 유저정보 가져오기
-    UserInfoEntity writerInfo = userInfoRepo.findByUiEmail(keyword);
+    UserInfoEntity writerInfo = userInfoRepo.findByUiNickname(keyword);
+    if(writerInfo == null){
+    resultMap.put("status", false);
+    resultMap.put("message", "해당하는 유저가 없습니다.");
+    resultMap.put("code", HttpStatus.BAD_REQUEST);
     // 검색한 유저정보에서 유저seq로 작성한 게시글 검색
+    }
+    else{
     Page<ArticleInfoEntity> page = articleInfoRepo.findByAiUiSeq(writerInfo.getUiSeq(), pageable);
-
     resultMap.put("data", page);
     resultMap.put("status", true);
-    resultMap.put("message", "작성자로 검색.");
+    resultMap.put("message", "닉네임으로 검색(검색어 :" + keyword +").");
     resultMap.put("code", HttpStatus.OK);
+    }
 }
-else if(type == "title"){
+else if(type.equals("title")){
     Page<ArticleInfoEntity> page = articleInfoRepo.findByAiTitleContains(keyword, pageable);
     
     resultMap.put("data", page);
     resultMap.put("status", true);
-    resultMap.put("message", "제목을 검색.");
+    resultMap.put("message", "제목으로 검색(검색어 :" + keyword +").");
     resultMap.put("code", HttpStatus.OK);
 }
-else if(type == "content"){
+else if(type.equals("content")){
     Page<ArticleInfoEntity> page = articleInfoRepo.findByAiContentContains(keyword, pageable);
 
     resultMap.put("data", page);
     resultMap.put("status", true);
-    resultMap.put("message", "내용으로 검색.");
+    resultMap.put("message", "내용으로 검색(검색어 :" + keyword +").");
     resultMap.put("code", HttpStatus.OK);
 }
 else{
     resultMap.put("status", false);
-    resultMap.put("message", "잘못된 검색 타입이에요 (type = (writer, title, content)).");
+    resultMap.put("message", "잘못된 검색 타입이에요 (type = (all, writer, title, content)).");
     resultMap.put("code", HttpStatus.BAD_REQUEST);
 }
 return resultMap;
 }
+
+// 게시글 수정
+// 회원이 작성한 게시글 목록 중에서 수정할 게시글 선택
+// 
+// uiSeq => 로그인 상태 확인을 위해서 받아옴
+// 
+public Map<String, Object> modifyArticle(Long uiSeq, Long aiSeq, ArticleModifyVO data){
+    Map<String, Object> resultMap = new HashMap<>();
+    ArticleInfoEntity modifyPost = null;
+    // 로그인한 회원이 작성한 게시글 목록을 modifyPost에 담음
+    // modifyPost = articleInfoRepo.findByAiUiSeq(uiSeq);
+    
+    // 본인이 작성한 게시글 만 수정할 수 있게 만들어야 함
+    // 수정할 게시글을 선택했을때 => aiSeq를 매개변수로 받음
+    // 그 게시글이 본인이 작성한 게시글인지 확인하고 =>
+    // 본인이 작성한 게시글이라면 수정가능하게 setter사용해서 entity에 값 주입
+
+    // 
+    // for(ArticleInfoEntity writerSeq : modifyPost){
+        // 
+    // }
+    
+    
+    
+    if(uiSeq == null){
+        resultMap.put("status", false);
+        resultMap.put("message", "로그인을 해주세요");
+        resultMap.put("code", HttpStatus.BAD_REQUEST);
+    }
+    // 로그인된 상태라면
+    else{
+    // 수정할 게시글을 선택
+    
+        if (data.getAiTitle() != null) {
+            modifyPost.setAiTitle(data.getAiTitle());
+        }
+        if (data.getAiContent() != null) {
+            modifyPost.setAiContent(data.getAiContent());
+        }
+        if (data.getAiModDt() != null) {
+            modifyPost.setAiModDt(data.getAiModDt());
+        }
+        if (data.getAiPublic() != null) {
+            modifyPost.setAiPublic(data.getAiPublic());
+        }
+        else if(data.getAiTitle() == null){
+            resultMap.put("status", false);
+            resultMap.put("message", "제목을 입력하세요");
+            resultMap.put("code", HttpStatus.BAD_REQUEST);
+        }
+        else if(data.getAiContent() == null){
+            resultMap.put("status", false);
+            resultMap.put("message", "내용을 입력하세요");
+            resultMap.put("code", HttpStatus.BAD_REQUEST);
+        }
+        articleInfoRepo.save(modifyPost);
+        resultMap.put("status", true);
+        resultMap.put("message", "수정되었습니다.");
+        resultMap.put("code", HttpStatus.OK);
+    }   
+    return resultMap;
+}
+
 }
