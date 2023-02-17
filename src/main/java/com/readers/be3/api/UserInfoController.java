@@ -84,17 +84,17 @@ public class UserInfoController {
       return new ResponseEntity<>(uService.getUserInfo(uiSeq),HttpStatus.OK);
     }  
 
-  @Operation(summary = "완독한 책 출력", description = "마이페이지에서 회원정보 번호(uiSeq)를 통해 회원이 완독한 책을 조회합니다.")
-    @GetMapping("/finish") //회원정보 조회
+  @Operation(summary = "완독서 관리", description = "마이페이지에서 회원정보 번호(uiSeq)를 통해 회원이 완독한 책을 조회합니다.")
+    @GetMapping("/finish") //완독책 조회
     public ResponseEntity< List<ResponseFinishedBookVO> > getUserBook(@RequestParam Long uiSeq){
       return new ResponseEntity<>(uService.getUserBook(uiSeq),HttpStatus.OK);
     }  
 
-  // @Operation(summary = "평점, 독후감 확인", description = "회원정보 번호(uiSeq)와 도서번호(biSeq)를 통해 해당 도서의 평점과 독후감을 조회합니다.")
-  //   @GetMapping("/article") //회원정보 조회
-  //   public ResponseEntity<ResponseUserArticleVO> getUserArticle(@RequestParam Long uiSeq, @RequestParam Long biSeq){
-  //     return new ResponseEntity<>(uService.getUserArticle(uiSeq, biSeq), HttpStatus.OK);
-  //   }  
+  @Operation(summary = "완독한 책의 평점, 독후감 확인", description = "회원정보 번호(uiSeq)와 도서번호(biSeq)를 통해 해당 도서의 평점과 독후감을 조회합니다.")
+    @GetMapping("/article") //회원정보 조회
+    public ResponseEntity<ResponseUserArticleVO> getUserArticle(@RequestParam Long uiSeq, @RequestParam Long biSeq){
+      return new ResponseEntity<>(uService.getUserArticle(uiSeq, biSeq), HttpStatus.OK);
+    }  
 
   @Operation(summary = "sns 로그인", description = "sns로 로그인합니다. 쎄션에 저장할 유저번호를 반환합니다")
   @GetMapping("/sns/login")

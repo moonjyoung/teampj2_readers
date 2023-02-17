@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.readers.be3.entity.ArticleView;
+import com.readers.be3.entity.BookInfoEntity;
 import com.readers.be3.entity.FinishedBookView;
 import com.readers.be3.entity.MyPageView;
 import com.readers.be3.entity.OneCommentView;
@@ -27,6 +28,7 @@ import com.readers.be3.entity.image.UserImgEntity;
 import com.readers.be3.exception.ErrorResponse;
 import com.readers.be3.exception.ReadersProjectException;
 import com.readers.be3.repository.ArticleViewRepository;
+import com.readers.be3.repository.BookInfoRepository;
 import com.readers.be3.repository.FinishedBookViewRepository;
 import com.readers.be3.repository.MyPageViewRepository;
 import com.readers.be3.repository.OneCommentViewRepository;
@@ -34,6 +36,7 @@ import com.readers.be3.repository.UserInfoRepository;
 import com.readers.be3.repository.ScheduleInfoRepository;
 import com.readers.be3.repository.image.UserImgRepository;
 import com.readers.be3.utilities.AESAlgorithm;
+import com.readers.be3.vo.mypage.ResponseBookInfoVO;
 import com.readers.be3.vo.mypage.ResponseFinishedBookVO;
 import com.readers.be3.vo.mypage.ResponseUserArticleVO;
 import com.readers.be3.vo.mypage.ResponseUserInfoVO;
@@ -51,6 +54,7 @@ public class UserInfoService {
     @Autowired ArticleViewRepository a_repo;
     @Autowired OneCommentViewRepository o_repo;
     @Autowired FinishedBookViewRepository f_repo;
+    @Autowired BookInfoRepository b_repo;
     
     @Value("${file.image.user}") String user_img_path;
 
@@ -273,15 +277,15 @@ public class UserInfoService {
     return list;
   }
 
-  // public ResponseUserArticleVO getUserArticle(Long uiSeq, Long biSeq) { //마이페이지 유저가 쓴 독후감과 평점 출력
-  //   ArticleView aView = a_repo.findByUiSeqAndBiSeq(uiSeq, biSeq);
-  //   OneCommentView oView = o_repo.findByUiSeqAndBiSeq(uiSeq, biSeq);
-  //   // if (aView == null)
-  //   //   throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND, String.format("not found user %d ", uiSeq)));
-  //   // else if (oView == null)
-  //   //   throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND, String.format("not found book %d ", biSeq)));
-  //   // else 
-  //     return ResponseUserArticleVO.toResponse(aView, oView);
-  // }
+  public ResponseUserArticleVO getUserArticle(Long uiSeq, Long biSeq) { //마이페이지 유저가 쓴 독후감과 평점 출력
+    ArticleView aView = a_repo.findByUiSeqAndBiSeq(uiSeq, biSeq);
+    OneCommentView oView = o_repo.findByUiSeqAndBiSeq(uiSeq, biSeq);
+    // if (aView == null)
+    //   throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND, String.format("not found user %d ", uiSeq)));
+    // else if (oView == null)
+    //   throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND, String.format("not found book %d ", biSeq)));
+    // else 
+      return ResponseUserArticleVO.toResponse(aView, oView);
+  }
 }
 
