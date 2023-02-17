@@ -12,10 +12,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Getter
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -32,5 +34,6 @@ public class ArticleInfoEntity {
     @Column(name = "ai_status") private Integer aiStatus;
     @Column(name = "ai_purpose") private Integer aiPurpose;
     @Column(name = "ai_public") private Integer aiPublic;
-    @Column(name = "ai_ui_seq") private Long aiUiSeq;
+    @Column(name = "ai_ui_seq") private Integer aiUiSeq;
+    @Column(name = "ai_bi_seq") private Integer aiBiSeq;
 }

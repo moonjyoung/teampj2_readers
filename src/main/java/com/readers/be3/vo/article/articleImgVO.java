@@ -5,7 +5,7 @@ import lombok.Data;
 // 게시글 이미지 받아올 VO
 @Data
 @Builder
-public class articleImgVO {
+public class ArticleImgVO {
 private String aimgFilename;
 private String aimgUri;
 }
