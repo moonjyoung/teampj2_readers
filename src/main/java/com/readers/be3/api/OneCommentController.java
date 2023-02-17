@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Sort;
 
 import com.readers.be3.dto.request.OneCommentDeleteRequest;
 import com.readers.be3.dto.request.OneCommentRequest;
+import com.readers.be3.dto.request.OneCommentUpdateRequest;
 import com.readers.be3.dto.response.OneCommentResponse;
 import com.readers.be3.service.OneCommentService;
 
@@ -42,6 +44,13 @@ public class OneCommentController {
   @DeleteMapping("/delete")
   public ResponseEntity<Object> OneCommentAdd(@Parameter(description = "삭제dto") @RequestBody OneCommentDeleteRequest request){
     return new ResponseEntity<>(OneCommentResponse.toResponse(oneCommentService.OneCommentDelete(request.getUserSeq(), request.getOneCommentSeq())),HttpStatus.OK);
+
+  }
+
+  @Operation(summary = "한줄평 수정", description = "등록된 한줄평update합니다 ")
+  @PutMapping("/update")
+  public ResponseEntity<Object> OneCommentUpdate(@Parameter(description = "updateDTO") @RequestBody OneCommentUpdateRequest request){
+    return new ResponseEntity<>(OneCommentResponse.toResponse(oneCommentService.OneCommentUpdate(request.getUiSeq(), request.getOnecommentSeq(), request.getContent())),HttpStatus.OK);
 
   }
 
