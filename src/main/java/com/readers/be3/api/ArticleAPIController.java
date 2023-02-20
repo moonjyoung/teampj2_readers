@@ -22,6 +22,7 @@ import org.springframework.http.MediaType;
 import com.readers.be3.service.ArticleService;
 import com.readers.be3.vo.article.ArticleModifyVO;
 import com.readers.be3.vo.article.PostArticleVO;
+import com.readers.be3.vo.article.PostWriterCommentVO;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -41,8 +42,8 @@ public class ArticleAPIController {
         return new ResponseEntity<Object>(resultMap, (HttpStatus)resultMap.get("code"));
     }
 
-    // 게시글 조회및 검색 api
-    @Operation(summary = "게시글 조회 api", description = "게시글 리스트와 페이지 정보를 보여줍니다. type으로 검색 타입을 지정하고 keyword로 검색할 수 있습니다. *type=all(전체게시글 조회)일 경우 keyword는 필요하지 않습니다.")
+    // 게시글 목록 조회및 검색 api
+    @Operation(summary = "게시글 목록 조회 api", description = "게시글 리스트와 페이지 정보를 보여줍니다. type으로 검색 타입을 지정하고 keyword로 검색할 수 있습니다. *type=all     (전체게시글 조회)일 경우 keyword는 필요하지 않습니다.")
     @GetMapping("/article/{type}")
     public ResponseEntity<Object> searchArticle(
     @Parameter(description = "검색타입 all(전체), writer(작성자), title(제목), content(내용)", example = "all") @PathVariable String type,
@@ -53,6 +54,15 @@ public class ArticleAPIController {
         return new ResponseEntity<Object>(resultMap, (HttpStatus)resultMap.get("code"));
     }
 
+    // 게시글 상세조회 api
+    @Operation(summary = "게시글 상세 조회", description = "게시글 번호(aiSeq)에 해당하는 게시글을 상세조회합니다.")
+    @GetMapping("/article/detail")
+    public ResponseEntity<Object> detailArticle(
+        @Parameter(description = "검색할 게시글 번호", example = "1") @RequestParam Long aiSeq){
+            Map<String, Object> resultMap = articleService.getArticleDetailInfo(aiSeq);
+            return new ResponseEntity<Object>(resultMap, (HttpStatus)resultMap.get("code"));
+    }
+    
     // 게시글 수정api (이미지 수정 작업중)
     @Operation(summary = "게시글 수정 api", description = "등록된 게시글의 제목과 내용, 이미지, 공개,비공개 여부를 수정합니다.")
     @PatchMapping("/article")
@@ -60,6 +70,7 @@ public class ArticleAPIController {
         Map<String, Object> resultMap = articleService.modifyArticle(uiSeq, aiSeq, data);
         return new ResponseEntity<Object>(resultMap, (HttpStatus)resultMap.get("code"));
     }
+
 
     // 게시글 삭제
     @Operation(summary = "게시글 삭제 api", description = "게시글을 삭제합니다(ai_public => 2로 변경).")
@@ -69,5 +80,15 @@ public class ArticleAPIController {
         @Parameter(description = "삭제할 게시글 번호") @RequestParam Long aiSeq){
         Map<String, Object> resultMap = articleService.deleteArticle(uiSeq, aiSeq);
         return new ResponseEntity<Object>(resultMap, (HttpStatus)resultMap.get("code"));
+    }
+
+    // 댓글 작성
+    @Operation(summary = "댓글 작성 api", description = "댓글작성")
+    @PostMapping("/article/comment")
+    public ResponseEntity<Object> writeComment(
+    @RequestBody PostWriterCommentVO data)
+    {
+    Map<String, Object> resultMap = articleService.postWriteComment(data);
+    return new ResponseEntity<Object>(resultMap, (HttpStatus)resultMap.get("code"));
     }
 }
