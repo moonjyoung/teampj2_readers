@@ -72,4 +72,18 @@ public class OneCommentService {
       return onecommentDto;
     return onecommentDto;
   }
+
+  public OneCommentEntity OneCommentUpdate(Long uiSeq, Long oneCommentSeq, String content) {
+    UserInfoEntity userInfoEntity = useInfoRepository.findByUiSeq(uiSeq);
+    if (userInfoEntity == null)
+      throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND,String.format("%s   not found userSeq", uiSeq)));
+    OneCommentEntity oneCommentEntity = oneCommentRepository.findByOcSeq(oneCommentSeq);
+    if (oneCommentEntity == null)
+      throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND,String.format("%s   not found commentSeq", oneCommentSeq)));
+    if (oneCommentEntity.getOcComment().equals(content) )
+      throw new ReadersProjectException(ErrorResponse.of(HttpStatus.CREATED,String.format("content is equals")));
+    if(oneCommentEntity.getUserInfoEntity().equals(oneCommentSeq))
+      throw new ReadersProjectException(ErrorResponse.of(HttpStatus.CREATED,String.format("not my comment")));
+    return oneCommentRepository.save(OneCommentEntity.update(oneCommentEntity, content));
+  }
 }

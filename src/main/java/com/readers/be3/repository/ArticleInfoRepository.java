@@ -22,8 +22,12 @@ public interface ArticleInfoRepository extends JpaRepository<ArticleInfoEntity, 
     public Page<ArticleInfoEntity> findByAiContentContains(String keyword, Pageable pageable);
     // 작성자로 게시글 검색
     public Page<ArticleInfoEntity> findByAiUiSeq(Long uiSeq, Pageable pageable);
-    // 회원번호로 회원이 작성한 게시글 끌고오기(작성한게시글 수정에 사용)
+    // 회원번호로 회원이 작성한 게시글 끌고오기
     public List<ArticleInfoEntity> findByAiUiSeq(Long uiSeq);
+    // aiSeq로 게시글 가져오기(게시글 수정에 사용)
+    public ArticleInfoEntity findByAiSeq(Long aiSeq); 
+    // aiUiSeq
+    // public ArticleInfoEntity fidBi
 
     
     // public Page<ArticleInfoEntity> findByiUiSeqContains(String keyword, Pageable pageable);

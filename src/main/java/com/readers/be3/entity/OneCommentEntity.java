@@ -47,4 +47,9 @@ public class OneCommentEntity {
         oneCommentEntity.setOcRegDt(LocalDateTime.now());
         return oneCommentEntity;
     }
+
+    public static OneCommentEntity update(OneCommentEntity oneCommentEntity, String comment){
+        oneCommentEntity.setOcComment(comment);
+        return oneCommentEntity;
+    }
 }
