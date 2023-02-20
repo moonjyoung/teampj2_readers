@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.readers.be3.service.UserInfoService;
+import com.readers.be3.vo.mypage.RequestUserVO;
 import com.readers.be3.vo.mypage.ResponseFinishedBookVO;
 import com.readers.be3.vo.mypage.ResponseUserArticleVO;
 import com.readers.be3.vo.mypage.ResponseUserInfoVO;
@@ -43,35 +44,31 @@ public class UserInfoController {
 
     @Operation(summary = "회원 가입", description = "회원정보를 추가합니다.")
     @PutMapping("/join") //회원가입
-    public ResponseEntity<Object> userJoin(@RequestBody UserInfoVO data) {
-      Map<String, Object> resultMap = uService.addUser(data);
-      return new ResponseEntity<Object>(resultMap, (HttpStatus)resultMap.get("code"));
+    public ResponseEntity<RequestUserVO> userJoin(@RequestBody UserInfoVO data) {
+      return new ResponseEntity<>(uService.addUser(data), HttpStatus.OK);
     }
 
-    @Operation(summary = "로그인", description = "로그인")
+    @Operation(summary = "일반 로그인", description = "로그인")
     @PostMapping("/login") //로그인
-    public ResponseEntity<Object> userLogin(@RequestBody UserLoginVO data) {
-      Map<String, Object> resultMap = uService.loginUser(data);
-      return new ResponseEntity<Object>(resultMap, (HttpStatus)resultMap.get("code"));
+    public ResponseEntity<RequestUserVO> userLogin(@RequestBody UserLoginVO data) {
+      return new ResponseEntity<>(uService.loginUser(data), HttpStatus.OK);
     }
 
-    @Operation(summary = "회원 탈퇴", description = "회원정보 번호(uiSeq)를 통해 회원정보를 삭제합니다")
+    @Operation(summary = "회원 탈퇴", description = "회원정보 번호(uiSeq)를 통해 회원의 상태를 탈퇴처리로 변경합니다")
     @DeleteMapping("/delete") //회원탈퇴
-    public ResponseEntity<Object> userDelete(@RequestParam Long uiSeq) throws Exception{
-    Map <String ,Object> resultMap = uService.deleteUser(uiSeq);
-    return new ResponseEntity<Object>(resultMap, (HttpStatus)resultMap.get("code"));
+    public ResponseEntity<RequestUserVO> userDelete(@RequestParam Long uiSeq) throws Exception{
+    return new ResponseEntity<>(uService.deleteUser(uiSeq), HttpStatus.OK);
   }
 
   @Operation(summary = "회원 정보 수정", description = "회원정보 번호(uiSeq)를 통해 회원정보(닉네임)를 수정합니다.")
     @PatchMapping("/update/name") //회원정보수정
-    public ResponseEntity<Object> userNameUpdate(@RequestParam Long uiSeq, @RequestBody UserNameVO data) throws Exception{
-    Map <String ,Object> resultMap = uService.updateUserName(uiSeq, data);
-    return new ResponseEntity<Object>(resultMap, (HttpStatus)resultMap.get("code"));
+    public ResponseEntity<RequestUserVO> userNameUpdate(@RequestParam Long uiSeq, @RequestBody UserNameVO data) throws Exception{
+    return new ResponseEntity<>(uService.updateUserName(uiSeq, data), HttpStatus.OK);
   }
   
   @Operation(summary = "회원 사진추가", description = "회원정보 번호(uiSeq)를 통해 회원사진을 수정(추가)합니다. filename과 uri은 입력 안해도 됩니다")
     @PutMapping(value = "/update/photo", consumes= MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> updateUserPhoto(
+    public ResponseEntity<RequestUserVO> updateUserPhoto(
         @Parameter(description = "formdata로 사진 데이터를 입력합니다")
         @ModelAttribute UserImageVO data
     ) {
