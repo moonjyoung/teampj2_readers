@@ -1,6 +1,7 @@
 package com.readers.be3.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.Sort;
 import com.readers.be3.dto.request.OneCommentDeleteRequest;
 import com.readers.be3.dto.request.OneCommentRequest;
 import com.readers.be3.dto.request.OneCommentUpdateRequest;
+import com.readers.be3.dto.response.OneCommentListDTO;
 import com.readers.be3.dto.response.OneCommentResponse;
 import com.readers.be3.service.OneCommentService;
 
@@ -56,10 +58,16 @@ public class OneCommentController {
 
   @Operation(summary = "한줄평 리스트", description = "등록된 한줄평을 10개단위로 책번호를통해 조회합니다")
   @GetMapping("/{bookseq}/list")
-  public ResponseEntity<Object> OneCommentList(@Parameter(description = "책번호", example = "1") @PathVariable("bookseq") Long bookseq,
+  public ResponseEntity<Page<OneCommentListDTO>> OneCommentList(@Parameter(description = "책번호", example = "1") @PathVariable("bookseq") Long bookseq,
   @Parameter(description = "페이지", example = "0") @RequestParam Integer page){
     Sort sort2 = Sort.by("ocSeq").ascending();
     Pageable pageable = PageRequest.of(page, 10, sort2);
     return new ResponseEntity<>(oneCommentService.oneCommentList(bookseq, pageable),HttpStatus.OK);
+
+  }
+
+  @GetMapping("/{onecommentseq}")
+    public ResponseEntity<Object> getOneComment(@Parameter(description = "한줄평 번호", example = "1") @PathVariable("onecommentseq") Long onecommentseq){
+      return new ResponseEntity<>(oneCommentService.getOneComment(onecommentseq),HttpStatus.OK);
   }
 }

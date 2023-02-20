@@ -86,4 +86,15 @@ public class OneCommentService {
       throw new ReadersProjectException(ErrorResponse.of(HttpStatus.CREATED,String.format("not my comment")));
     return oneCommentRepository.save(OneCommentEntity.update(oneCommentEntity, content));
   }
+
+  public Object getOneComment(Long oneCommentSeq) {
+    // Find a  onecomment and check if it exists or not
+    OneCommentEntity oneCommentEntity = oneCommentRepository.findByOcSeq(oneCommentSeq); 
+    if (oneCommentEntity == null)
+      throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND,String.format("%s   not found commentSeq", oneCommentSeq)));
+    
+    oneCommentEntity.increaseViews();
+    oneCommentRepository.save(oneCommentEntity);
+    return null;
+  }
 }

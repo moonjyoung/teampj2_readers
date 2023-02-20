@@ -34,8 +34,13 @@ public class OneCommentEntity {
     @Column(name = "oc_score") private Integer ocScore;
     @Column(name = "oc_status")  private Integer ocStatus;
     @Column(name = "oc_reg_dt") private LocalDateTime ocRegDt;
+    @Column(name ="oc_views") private Long ocViews;
     @JoinColumn(name = "oc_ui_seq") @OneToOne(fetch = FetchType.EAGER)  private UserInfoEntity userInfoEntity;
     @JoinColumn(name = "oc_bi_seq") @OneToOne(fetch = FetchType.LAZY) @JsonIgnore private BookInfoEntity bookInfoEntity;
+
+    public void increaseViews(){
+        this.ocViews += 1;
+    }
 
     public static OneCommentEntity of(String comment, Integer score, UserInfoEntity userInfoEntity,BookInfoEntity bookInfoEntity){
         OneCommentEntity oneCommentEntity = new OneCommentEntity();
