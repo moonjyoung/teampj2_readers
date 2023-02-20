@@ -55,9 +55,9 @@ public class UserInfoController {
     }
 
     @Operation(summary = "회원 탈퇴", description = "회원정보 번호(uiSeq)를 통해 회원의 상태를 탈퇴처리로 변경합니다")
-    @DeleteMapping("/delete") //회원탈퇴
+    @PatchMapping("/leave") //회원탈퇴
     public ResponseEntity<RequestUserVO> userDelete(@RequestParam Long uiSeq) throws Exception{
-    return new ResponseEntity<>(uService.deleteUser(uiSeq), HttpStatus.OK);
+    return new ResponseEntity<>(uService.leaveUser(uiSeq), HttpStatus.OK);
   }
 
   @Operation(summary = "회원 정보 수정", description = "회원정보 번호(uiSeq)를 통해 회원정보(닉네임)를 수정합니다.")
@@ -88,7 +88,7 @@ public class UserInfoController {
     }  
 
   @Operation(summary = "완독한 책의 평점, 독후감 확인", description = "회원정보 번호(uiSeq)와 도서번호(biSeq)를 통해 해당 도서의 평점과 독후감을 조회합니다.")
-    @GetMapping("/article") //회원정보 조회
+    @GetMapping("/article") //평점, 독후감 확인
     public ResponseEntity<ResponseUserArticleVO> getUserArticle(@RequestParam Long uiSeq, @RequestParam Long biSeq){
       return new ResponseEntity<>(uService.getUserArticle(uiSeq, biSeq), HttpStatus.OK);
     }  

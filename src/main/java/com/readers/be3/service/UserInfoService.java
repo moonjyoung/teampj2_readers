@@ -143,7 +143,7 @@ public class UserInfoService {
         return response;
     }
 
-    public RequestUserVO deleteUser(Long uiSeq) { //회원탈퇴
+    public RequestUserVO leaveUser(Long uiSeq) { //회원탈퇴
         RequestUserVO response = new RequestUserVO();
         UserInfoEntity login = u_repo.findByUiSeq(uiSeq);
         if(login == null) {
@@ -302,6 +302,8 @@ public class UserInfoService {
   public ResponseUserArticleVO getUserArticle(Long uiSeq, Long biSeq) { //마이페이지 유저가 쓴 독후감과 평점 출력
     ArticleView aView = a_repo.findByUiSeqAndBiSeq(uiSeq, biSeq);
     OneCommentView oView = o_repo.findByUiSeqAndBiSeq(uiSeq, biSeq);
+    if (aView == null && oView ==null)
+    throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND, String.format("not found  uiSeq : %d , biSeq : %d ", uiSeq, biSeq)));
       return ResponseUserArticleVO.toResponse(aView, oView);
   }
 }
