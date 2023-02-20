@@ -1,13 +1,18 @@
 package com.readers.be3.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.yaml.snakeyaml.comments.CommentType;
 
+import com.readers.be3.dto.request.OneCommentViewsDTO;
 import com.readers.be3.dto.response.OneCommentListDTO;
 import com.readers.be3.entity.BookInfoEntity;
 import com.readers.be3.entity.OneCommentEntity;
@@ -19,6 +24,8 @@ import com.readers.be3.repository.OneCommentRepository;
 import com.readers.be3.repository.ScheduleInfoRepository;
 import com.readers.be3.repository.UserInfoRepository;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -28,6 +35,9 @@ public class OneCommentService {
   @Autowired OneCommentRepository oneCommentRepository;
   @Autowired UserInfoRepository useInfoRepository;
   @Autowired BookInfoRepository bookRepository;
+
+  @Autowired RedisTemplate<String,String> redisTemplate;
+
 
   @Transactional
   public OneCommentEntity OneCommentAdd(Long uiSeq, Long bookSeq, String comment, Integer score){
@@ -66,7 +76,9 @@ public class OneCommentService {
     if (bookInfoEntity == null)
       throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND, String.format("%s not found book", bookSeq)));
     Page<OneCommentEntity> commentList = oneCommentRepository.findByBookInfoEntityAndOcStatus(bookInfoEntity,pageable, 1);
+    System.out.println(commentList.getContent());
     Page<OneCommentListDTO> onecommentDto = commentList.map(e-> OneCommentListDTO.toDto(e));
+
     
     if (onecommentDto.isEmpty())
       return onecommentDto;
@@ -87,14 +99,48 @@ public class OneCommentService {
     return oneCommentRepository.save(OneCommentEntity.update(oneCommentEntity, content));
   }
 
-  public Object getOneComment(Long oneCommentSeq) {
+  public OneCommentViewsDTO getOneComment(Long oneCommentSeq) {
     // Find a  onecomment and check if it exists or not
     OneCommentEntity oneCommentEntity = oneCommentRepository.findByOcSeq(oneCommentSeq); 
     if (oneCommentEntity == null)
       throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND,String.format("%s   not found commentSeq", oneCommentSeq)));
-    
+    OneCommentViewsDTO commentDTO = OneCommentViewsDTO.toDto(oneCommentEntity);
+    if (commentDTO.getCommentViews() > 100 || commentDTO.getRegDt().plusDays(1).isAfter(LocalDateTime.now())){
+      setViewsByRedis(oneCommentSeq);
+      return commentDTO;
+    }
     oneCommentEntity.increaseViews();
-    oneCommentRepository.save(oneCommentEntity);
-    return null;
+    return OneCommentViewsDTO.toDto(oneCommentRepository.save(oneCommentEntity));
   }
+
+  private void setViewsByRedis(Long oneCommentSeq) {
+    final ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+    String viewValue = valueOperations.get("OneCommentSeq :/" + oneCommentSeq);
+    if (viewValue == null || viewValue.equals("0")){
+      valueOperations.set("OneCommentSeq :/" + oneCommentSeq, "1");
+      return;
+    }
+    String tmpview = valueOperations.get("OneCommentSeq :/" + oneCommentSeq);
+    Integer view = Integer.valueOf(tmpview);
+    view += 1;
+    valueOperations.set("OneCommentSeq :/" + oneCommentSeq, view.toString());
+    System.out.println(valueOperations.get("OneCommentSeq :/" + oneCommentSeq));
+  }
+
+  // private boolean viewDuplicateCheck(Cookie[] cookies, Long oneCommentSeq) {
+  //   Cookie viewCookie = null;
+  //   if (cookies != null && cookies.length > 0){
+  //     for(int i = 0; i < cookies.length; i++){
+  //       if (cookies[i].getName().equals("cookie" + oneCommentSeq)){
+  //         return true;
+  //       }
+  //     }
+  //   }
+  //   for(Cookie data: cookies){
+  //     data.get
+  //   }
+  // }
 }
+
+
+
