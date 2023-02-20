@@ -40,9 +40,10 @@ public class UserInfoEntity {
     @Column(name = "ui_total_book") private Integer uiTotalBook;
     @Column(name = "ui_uid") private String uiUid;
     @Column(name = "ui_login_type") private String uiLoginType;
-    // @OneToOne(mappedBy = "userInfoEntity") private UserImgEntity userImgEntity;
+    @Column(name = "ui_status") private Integer uiStatus;
+    @OneToOne(mappedBy = "userInfoEntity") private UserImgEntity userImgEntity;
 
     public static UserInfoEntity ofSNS(String uiUid, String uiLoginType){
-        return new UserInfoEntity(null, null, null, "user#"+Calendar.getInstance().getTimeInMillis(), null, null, null, null, uiUid, uiLoginType);
+        return new UserInfoEntity(null, null, null, "user#"+Calendar.getInstance().getTimeInMillis(), null, null, null, null, uiUid, uiLoginType, null, null);
     }
 }
