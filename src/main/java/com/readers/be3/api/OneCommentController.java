@@ -37,21 +37,21 @@ public class OneCommentController {
 
   @Operation(summary = "한줄평 추가", description = "한줄평을 추가합니다")
   @PostMapping("/add")
-  public ResponseEntity<Object> OneCommentAdd(@Parameter(description = "한줄평추가 request") @RequestBody OneCommentRequest request){
+  public ResponseEntity<OneCommentResponse> OneCommentAdd(@Parameter(description = "한줄평추가 request") @RequestBody OneCommentRequest request){
     OneCommentResponse result = OneCommentResponse.toResponse(oneCommentService.OneCommentAdd(request.getUserSeq(),request.getBookSeq(),request.getComment(),request.getScore()));
     return new ResponseEntity<>(result,HttpStatus.OK);
   }
 
   @Operation(summary = "한줄평 삭제", description = "등록된 한줄평 delete를 삭제처리합니다")
   @DeleteMapping("/delete")
-  public ResponseEntity<Object> OneCommentAdd(@Parameter(description = "삭제dto") @RequestBody OneCommentDeleteRequest request){
+  public ResponseEntity<OneCommentResponse> OneCommentAdd(@Parameter(description = "삭제dto") @RequestBody OneCommentDeleteRequest request){
     return new ResponseEntity<>(OneCommentResponse.toResponse(oneCommentService.OneCommentDelete(request.getUserSeq(), request.getOneCommentSeq())),HttpStatus.OK);
 
   }
 
   @Operation(summary = "한줄평 수정", description = "등록된 한줄평update합니다 ")
   @PutMapping("/update")
-  public ResponseEntity<Object> OneCommentUpdate(@Parameter(description = "updateDTO") @RequestBody OneCommentUpdateRequest request){
+  public ResponseEntity<OneCommentResponse> OneCommentUpdate(@Parameter(description = "updateDTO") @RequestBody OneCommentUpdateRequest request){
     return new ResponseEntity<>(OneCommentResponse.toResponse(oneCommentService.OneCommentUpdate(request.getUiSeq(), request.getOnecommentSeq(), request.getContent())),HttpStatus.OK);
 
   }
