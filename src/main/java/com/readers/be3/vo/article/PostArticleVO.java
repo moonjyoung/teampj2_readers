@@ -11,7 +11,7 @@ import lombok.Data;
 // 게시글 작성할때 받을 데이터( 제목과 내용 )
 @Builder
 @Data
-public class WriteArticleVO {
+public class PostArticleVO {
     @Schema(description = "게시글 제목", example = "testTitle01", required = true)
     private String aiTitle;
     @Schema(description = "게시글 내용", example = "testContent01", required = true)

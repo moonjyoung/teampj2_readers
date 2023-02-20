@@ -21,7 +21,7 @@ import org.springframework.http.MediaType;
 
 import com.readers.be3.service.ArticleService;
 import com.readers.be3.vo.article.ArticleModifyVO;
-import com.readers.be3.vo.article.WriteArticleVO;
+import com.readers.be3.vo.article.PostArticleVO;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -36,7 +36,7 @@ public class ArticleAPIController {
     // 게시글 등록 api
     @Operation(summary = "게시글 등록 api", description = "등록할 게시글 내용을 form-data로 받습니다.")
     @PostMapping(value = "/article", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> writeArticle(@ModelAttribute WriteArticleVO data){
+    public ResponseEntity<Object> writeArticle(@ModelAttribute PostArticleVO data){
         Map <String, Object> resultMap = articleService.writeArticle(data);
         return new ResponseEntity<Object>(resultMap, (HttpStatus)resultMap.get("code"));
     }

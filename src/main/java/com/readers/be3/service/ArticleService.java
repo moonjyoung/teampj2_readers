@@ -30,8 +30,7 @@ import com.readers.be3.repository.ArticleInfoRepository;
 import com.readers.be3.repository.UserInfoRepository;
 import com.readers.be3.repository.image.ArticleImgRepository;
 import com.readers.be3.vo.article.ArticleModifyVO;
-import com.readers.be3.vo.article.WriteArticleVO;
-import com.readers.be3.vo.article.WriteArticleVO;
+import com.readers.be3.vo.article.PostArticleVO;
 
 @Service
 public class ArticleService {
@@ -41,7 +40,7 @@ public class ArticleService {
     @Value("${file.image.article}") String ArticleImgPath;
 
     // 게시글 작성 
-    public Map<String, Object> writeArticle(WriteArticleVO data){
+    public Map<String, Object> writeArticle(PostArticleVO data){
         // VO를 통해 게시글 제목과 내용, 파일(이미지)을 입력받음
         Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
         ArticleInfoEntity articleInfoEntity = null;
