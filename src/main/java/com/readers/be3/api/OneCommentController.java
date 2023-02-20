@@ -20,6 +20,7 @@ import org.springframework.data.domain.Sort;
 import com.readers.be3.dto.request.OneCommentDeleteRequest;
 import com.readers.be3.dto.request.OneCommentRequest;
 import com.readers.be3.dto.request.OneCommentUpdateRequest;
+import com.readers.be3.dto.request.OneCommentViewsDTO;
 import com.readers.be3.dto.response.OneCommentListDTO;
 import com.readers.be3.dto.response.OneCommentResponse;
 import com.readers.be3.service.OneCommentService;
@@ -27,6 +28,7 @@ import com.readers.be3.service.OneCommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Tag(name = "한줄평", description = "한줄평 crd api")
 @RestController
@@ -66,8 +68,9 @@ public class OneCommentController {
 
   }
 
+  @Operation(summary = "한줄평 조회", description = "한줄평 상세보기(조회)")
   @GetMapping("/{onecommentseq}")
-    public ResponseEntity<Object> getOneComment(@Parameter(description = "한줄평 번호", example = "1") @PathVariable("onecommentseq") Long onecommentseq){
+    public ResponseEntity<OneCommentViewsDTO> getOneComment(@Parameter(description = "한줄평 번호", example = "1") @PathVariable("onecommentseq") Long onecommentseq){
       return new ResponseEntity<>(oneCommentService.getOneComment(onecommentseq),HttpStatus.OK);
   }
 }
