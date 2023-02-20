@@ -14,7 +14,7 @@ public class BasicResponse {
 
     public BasicResponse() {
         this.status = ResponseMessageUtils.TRUE;
-        this.message = "";
+        this.message = "데이터 없음";
     }
     public BasicResponse(String message) {
         this.status = ResponseMessageUtils.FALSE;

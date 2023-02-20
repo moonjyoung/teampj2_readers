@@ -24,7 +24,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
-@Tag(name = "독서 일정 관리")
+@Tag(name = "독서 일정 관리", description = "일정 추가, 조회, 수정, 삭제 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/schedule")
@@ -59,7 +59,7 @@ public class ScheduleAPIController {
     @Operation(summary = "일정 조회", description = "해당 회원이 등록한 일정을 조회합니다.")
     @GetMapping("/my")
     public ResponseEntity< List<ViewScheduleVO> > getSchedule(
-        @Parameter(description = "회원 번호", example = "2") @RequestParam Long uiSeq
+        @Parameter(description = "회원 번호", example = "87") @RequestParam Long uiSeq
     ) {
         return new ResponseEntity<>(scheduleService.getSchedule(uiSeq), HttpStatus.OK);
     }

@@ -81,7 +81,7 @@ public class BookService {
             ResponseBookInfoVO vo = new ResponseBookInfoVO(data);
             // nullpointexception 회피코드. 나중에 check해서 수정
             if (bookImgRepository.findByBimgBiSeq(data.getBiSeq())==null) {
-                vo.setBimgUri("default"); // img null인 경우의 default값 설정 시도... 잘 안 되는듯...
+                vo.setBimgUri("");
             }
             else {
                 vo.setBimgUri(bookImgRepository.findByBimgBiSeq(data.getBiSeq()).getBimgUri());
@@ -90,8 +90,6 @@ public class BookService {
         }
         return list;
     }
-
-
 
     public Map<String, Object> addBookImg(MultipartFile file) {
         Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
@@ -132,10 +130,13 @@ public class BookService {
 
     public String getFilenameByUri(String uri) {
         BookImgEntity img = bookImgRepository.findTopByBimgUri(uri);
+        if (img==null) {
+            throw new InvalidInputException("존재하지 않는 파일입니다.");
+        }
         return img.getBimgFilename();
     }
 
-    // 책 이미지도 따로 업로드 하지 않을 경우
+    // 이미지 파일 업로드가 필요없고 알라딘에 있는 이미지 주소를 땡겨오면 되는 경우
     // public Map<String, Object> addBookInfoTest(BookInfoImgUrlVO data) {
     //     Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
 

@@ -40,6 +40,7 @@ import com.readers.be3.vo.mypage.ResponseBookInfoVO;
 import com.readers.be3.vo.mypage.ResponseFinishedBookVO;
 import com.readers.be3.vo.mypage.ResponseUserArticleVO;
 import com.readers.be3.vo.mypage.ResponseUserInfoVO;
+import com.readers.be3.vo.mypage.SnsLoginRequest;
 import com.readers.be3.vo.mypage.UserImageVO;
 import com.readers.be3.vo.mypage.UserInfoVO;
 import com.readers.be3.vo.mypage.UserLoginVO;

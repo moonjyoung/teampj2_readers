@@ -1,5 +1,7 @@
 package com.readers.be3.config;
 
+import java.util.NoSuchElementException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,6 +17,11 @@ public class ResponseExceptionHandler {
     @ExceptionHandler(InvalidInputException.class)
     protected ResponseEntity<BasicResponse> invalidInputException(InvalidInputException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BasicResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    protected ResponseEntity<BasicResponse> noSuchElementException(NoSuchElementException e) {
+        return ResponseEntity.status(HttpStatus.OK).body(new BasicResponse());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

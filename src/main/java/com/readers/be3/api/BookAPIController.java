@@ -37,7 +37,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
-@Tag(name = "도서 정보 관리")
+@Tag(name = "도서 정보 관리", description = "도서 정보 추가/검색 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/book")
@@ -65,8 +65,6 @@ public class BookAPIController {
         responses = {
             @ApiResponse(responseCode = "200", description = ResponseMessageUtils.TRUE),
             @ApiResponse(responseCode = "400", description = ResponseMessageUtils.FALSE,
-                content = @Content(schema = @Schema(implementation = BasicResponse.class))),
-            @ApiResponse(responseCode = "500", description = ResponseMessageUtils.FALSE,
                 content = @Content(schema = @Schema(implementation = BasicResponse.class)))
         })
     @GetMapping("/search")
