@@ -2,12 +2,16 @@ package com.readers.be3.service;
 
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +31,7 @@ import com.readers.be3.repository.UserInfoRepository;
 import com.readers.be3.repository.image.ArticleImgRepository;
 import com.readers.be3.vo.article.ArticleModifyVO;
 import com.readers.be3.vo.article.WriteArticleVO;
+import com.readers.be3.vo.article.WriteArticleVO;
 
 @Service
 public class ArticleService {
@@ -35,8 +40,8 @@ public class ArticleService {
     @Autowired UserInfoRepository userInfoRepo;
     @Value("${file.image.article}") String ArticleImgPath;
 
-    // 독후감 작성 기능
-    public Map<String, Object> writeArticle(WriteArticleVO data, List<MultipartFile> files){
+    // 게시글 작성 
+    public Map<String, Object> writeArticle(WriteArticleVO data){
         // VO를 통해 게시글 제목과 내용, 파일(이미지)을 입력받음
         Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
         ArticleInfoEntity articleInfoEntity = null;
@@ -70,10 +75,12 @@ public class ArticleService {
             articleInfoRepo.save(articleInfoEntity);
             // 이미지 저장
             try{
-                // imgfileHandler(files, articleInfoEntity);
-                imgfileHandler(files, articleInfoEntity.getAiSeq());
+                imgfileHandler(data.getFiles(), articleInfoEntity.getAiSeq());
+                resultMap.put("messageFile", "업로드 성공");
             }
             catch(Exception e){
+                resultMap.put("messageFile", "업로드 실패");
+
             e.printStackTrace();
             }
 
@@ -84,78 +91,49 @@ public class ArticleService {
         return resultMap;
     }
 
-    // 사용자로부터 이미지파일을 받아서 articleImgeEntity 에 저장 
-    // public void imgfileHandler(List<MultipartFile> files, ArticleInfoEntity article)throws Exception {
-    public void imgfileHandler(List<MultipartFile> files, Long aiSeq)throws Exception {
-        // 반환할 파일 리스트
-        // List<ArticleImgEntity> fileList = new ArrayList<>();
-        
-        // 비어있는 파일이 들어오면 빈 것을 반환
-        // * collectionUtils.isEmpty(xxxList) => list타입 데이터가 비어있는지 확인하기 위해 사용(Apache Commons 라이브러리로서 null체크를 자동으로 해줌(NPE 방지))
-        if(!(CollectionUtils.isEmpty(files))){
-        // 파일 이름을 업로드한 날짜로 바꾸어서 저장(why? 파일명이 중복되면 나중에 업로드하는 파일이 덮어쓰게 됨 => UUID적용하거나 파일이름뒤 날짜나 숫자를 붙임)
-        // 여기서는 파일 이름을 업로드한 날짜로 적용
-        SimpleDateFormat SimpleDateFormat = new SimpleDateFormat("yyyyMMdd");
-        String current_date = SimpleDateFormat.format(new Date());
-
-
-        // 파일이 저장될 경로 지정
-        String path = ArticleImgPath;
-
-        // 파일 hendler
-        for(MultipartFile multipartFile : files){
-            // 파일이 비어있지 않다면
-            if(!CollectionUtils.isEmpty(files)){
+    // 이미지 파일 저장 메소드
+   public void imgfileHandler(List<MultipartFile> files, Long aiSeq) throws Exception {
+    if (!CollectionUtils.isEmpty(files)) {
+        for (MultipartFile multipartFile : files) {
+            if (!multipartFile.isEmpty()) { // 파일이 비어있지 않다면
                 String contentType = multipartFile.getContentType();
-                String originalFileExtension;
-                // 확장자명이 없다면(잘못된 파일)
-                if(ObjectUtils.isEmpty(contentType)){
+                String originalFileExtension = "";
+
+                if (ObjectUtils.isEmpty(contentType)) { // 확장자명이 없다면(잘못된 파일)
                     break;
-                }
-                else{
-                    if(contentType.contains("image/jpeg")){
+                } else {
+                    if (contentType.contains("image/jpeg")) {
                         originalFileExtension = ".jpg";
-                    }
-                    else if(contentType.contains("image/png")){
+                    } else if (contentType.contains("image/png")) {
                         originalFileExtension = ".png";
-                    }
-                    else if(contentType.contains("image/gif")){
+                    } else if (contentType.contains("image/gif")) {
                         originalFileExtension = ".gif";
-                    }
-                    // 다른 파일 명이면 아무일 없음
-                    else{
+                    } else {
                         break;
                     }
                 }
-                // 파일 이름 설정(나노초단위로)
+
                 String newFileName = Long.toString(System.nanoTime()) + originalFileExtension;
-
-                // img파일 entity에 저장
-                ArticleImgEntity articleImgEntity = ArticleImgEntity.builder() 
-                                            .aimgFilename(newFileName)
-                                            // .article(article)
-                                            .aimgAiSeq(aiSeq)
-                                            .aimgUri(path)
-                                            .build();
+                ArticleImgEntity articleImgEntity = ArticleImgEntity.builder()
+                        .aimgFilename(newFileName)
+                        .aimgAiSeq(aiSeq)
+                        .aimgUri(ArticleImgPath)
+                        .build();
                 articleImgRepo.save(articleImgEntity);
-                
-                // path 경로를 갖는 file 객체를 생성
-                File file = new File(path);
-                // 저장할 위치의 디렉토리가 존재하지 않을 경우
-                if(!file.exists()){
-                    file.mkdirs();
-                }
-                // 실제 파일 저장
-                multipartFile.transferTo(file);; 
-            }
-        } // for문 끝
-        System.out.println("이미지가 저장되었어요.");
-    }
-    else{
-        System.out.println("등록한 이미지가 없어요.");
-    }
 
+                File file = new File(ArticleImgPath);
+                if (!file.exists()) { // 저장할 위치의 디렉토리가 존재하지 않을 경우
+                    file.mkdirs(); // 디렉토리를 생성
+                }
+               Path savePath = Paths.get(ArticleImgPath+File.separator+newFileName);
+                multipartFile.transferTo(savePath);
+            }
+        }
+        System.out.println("이미지가 저장되었습니다.");
+    } else {
+        System.out.println("등록한 이미지가 없습니다.");
     }
+}
 
 // 게시글 조회
 // 검색(작성자, 제목, 내용)
@@ -165,13 +143,13 @@ public class ArticleService {
 public Map<String, Object> getArticleList(String type, String keyword, Pageable pageable){
 Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
 
+
 if(type.equals("all")){
     Page<ArticleInfoEntity> page = articleInfoRepo.findAll(pageable);
     List<ArticleInfoEntity> status = articleInfoRepo.findAll();
     
     // ai_public 이 1일때만 보이게 (aiPublic를 어디서 가져오지?)
     // 게시글 조회 api , 게시글 보기 api 따로 만들어야 하나?
-    // 
     page.getContent();
     resultMap.put("data", page);
     resultMap.put("status", true);
@@ -182,6 +160,7 @@ else if(type.equals("writer")){
     // 유저 아이디 검색해서 해당하는 유저정보 가져오기
     UserInfoEntity writerInfo = userInfoRepo.findByUiNickname(keyword);
     if(writerInfo == null){
+
     resultMap.put("status", false);
     resultMap.put("message", "해당하는 유저가 없습니다.");
     resultMap.put("code", HttpStatus.BAD_REQUEST);
@@ -220,64 +199,82 @@ return resultMap;
 }
 
 // 게시글 수정
-// 회원이 작성한 게시글 목록 중에서 수정할 게시글 선택
-// 
-// uiSeq => 로그인 상태 확인을 위해서 받아옴
-// 
 public Map<String, Object> modifyArticle(Long uiSeq, Long aiSeq, ArticleModifyVO data){
     Map<String, Object> resultMap = new HashMap<>();
     ArticleInfoEntity modifyPost = null;
-    // 로그인한 회원이 작성한 게시글 목록을 modifyPost에 담음
-    // modifyPost = articleInfoRepo.findByAiUiSeq(uiSeq);
     
-    // 본인이 작성한 게시글 만 수정할 수 있게 만들어야 함
-    // 수정할 게시글을 선택했을때 => aiSeq를 매개변수로 받음
-    // 그 게시글이 본인이 작성한 게시글인지 확인하고 =>
-    // 본인이 작성한 게시글이라면 수정가능하게 setter사용해서 entity에 값 주입
-
-    // 
-    // for(ArticleInfoEntity writerSeq : modifyPost){
-        // 
-    // }
-    
-    
-    
-    if(uiSeq == null){
+    // 수정할 게시글을 선택
+    modifyPost = articleInfoRepo.findByAiSeq(aiSeq);
+    // 수정일
+    LocalDateTime modifyDate = LocalDateTime.now();
+    if(modifyPost == null){
         resultMap.put("status", false);
-        resultMap.put("message", "로그인을 해주세요");
+        resultMap.put("message", "게시글이 존재하지 않습니다.");
         resultMap.put("code", HttpStatus.BAD_REQUEST);
     }
-    // 로그인된 상태라면
+    else if(modifyPost.getAiUiSeq() != uiSeq.intValue()){
+        resultMap.put("status", false);
+        resultMap.put("message", "다른사람의 게시글은 수정할 수 없어요.");
+        resultMap.put("code", HttpStatus.BAD_REQUEST);
+    }
+    else if(modifyPost.getAiStatus() == 2){
+        resultMap.put("status", false);
+        resultMap.put("message", "삭제된 게시글 입니다.");
+        resultMap.put("code", HttpStatus.BAD_REQUEST);
+    }
+    // 유효성 검사를 통과했다면
     else{
-    // 수정할 게시글을 선택
-    
         if (data.getAiTitle() != null) {
             modifyPost.setAiTitle(data.getAiTitle());
         }
         if (data.getAiContent() != null) {
             modifyPost.setAiContent(data.getAiContent());
         }
-        if (data.getAiModDt() != null) {
-            modifyPost.setAiModDt(data.getAiModDt());
-        }
         if (data.getAiPublic() != null) {
             modifyPost.setAiPublic(data.getAiPublic());
         }
-        else if(data.getAiTitle() == null){
-            resultMap.put("status", false);
-            resultMap.put("message", "제목을 입력하세요");
-            resultMap.put("code", HttpStatus.BAD_REQUEST);
+        if (!data.getFiles().isEmpty()){
+        // 
+        try{
+            imgfileHandler(data.getFiles(), aiSeq);
+            resultMap.put("messageFile", "업로드 성공");
         }
-        else if(data.getAiContent() == null){
-            resultMap.put("status", false);
-            resultMap.put("message", "내용을 입력하세요");
-            resultMap.put("code", HttpStatus.BAD_REQUEST);
+        catch(Exception e){
+            resultMap.put("messageFile", "업로드 실패");
+            e.printStackTrace();
         }
+        }
+        modifyPost.setAiModDt(modifyDate);
         articleInfoRepo.save(modifyPost);
         resultMap.put("status", true);
         resultMap.put("message", "수정되었습니다.");
         resultMap.put("code", HttpStatus.OK);
-    }   
+    }
+    return resultMap;
+}
+
+// 게시글 삭제
+public Map<String, Object> deleteArticle(Long uiSeq, Long aiSeq){
+    Map<String, Object> resultMap = new HashMap<>();
+    ArticleInfoEntity deletePost = null;
+    deletePost = articleInfoRepo.findByAiSeq(aiSeq);
+    if(Objects.isNull(deletePost)){
+        resultMap.put("status", false);
+        resultMap.put("message", "선택한 게시글이 존재하지 않아요.");
+        resultMap.put("code", HttpStatus.BAD_REQUEST);
+    }
+    else if(deletePost.getAiUiSeq() != uiSeq.intValue()){
+        resultMap.put("status", false);
+        resultMap.put("message", "다른사람의 게시글은 삭제할 수 없어요.");
+        resultMap.put("code", HttpStatus.BAD_REQUEST);
+    }
+    else{
+        deletePost.setAiStatus(2);
+        articleInfoRepo.save(deletePost);
+        resultMap.put("status", true);
+        resultMap.put("message", "삭제되었어요.");
+        resultMap.put("code", HttpStatus.OK);
+    }
     return resultMap;
 }
 
