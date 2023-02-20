@@ -94,7 +94,7 @@ public class UserInfoController {
     }  
 
   @Operation(summary = "sns 로그인", description = "sns로 로그인합니다. 쎄션에 저장할 유저번호를 반환합니다")
-  @GetMapping("/sns/login")
+  @PostMapping("/sns/login")
   public ResponseEntity<SnsLoginResponse> snsLogin(@RequestBody SnsLoginRequest request){
     return new ResponseEntity<>(SnsLoginResponse.toResponse(uService.snsloginUser(request.getSnsUid(), request.getType())),HttpStatus.OK);
   }
