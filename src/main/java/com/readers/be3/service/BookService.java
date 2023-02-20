@@ -81,7 +81,7 @@ public class BookService {
             ResponseBookInfoVO vo = new ResponseBookInfoVO(data);
             // nullpointexception 회피코드. 나중에 check해서 수정
             if (bookImgRepository.findByBimgBiSeq(data.getBiSeq())==null) {
-                vo.setBimgUri("");
+                vo.setBimgUri("default"); // img null인 경우의 default값 설정 시도... 잘 안 되는듯...
             }
             else {
                 vo.setBimgUri(bookImgRepository.findByBimgBiSeq(data.getBiSeq()).getBimgUri());
