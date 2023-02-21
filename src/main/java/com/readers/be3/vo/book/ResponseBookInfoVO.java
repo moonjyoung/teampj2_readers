@@ -1,5 +1,6 @@
 package com.readers.be3.vo.book;
 
+import com.readers.be3.entity.BookInfoAladinEntity;
 import com.readers.be3.entity.BookInfoEntity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -33,9 +34,26 @@ public class ResponseBookInfoVO {
         this.biSeq = data.getBiSeq();
         this.biName = data.getBiName();
         this.biAuthor = data.getBiAuthor();
-        this.biPublisher = data.getBiPublisher();System.out.println();
+        this.biPublisher = data.getBiPublisher();
         this.biPage = data.getBiPage();
         this.biIsbn = data.getBiIsbn();
+    }
+    public ResponseBookInfoVO(BookInfoAladinEntity data) {
+        this.biSeq = data.getBiSeq();
+        this.biName = data.getBiName();
+        this.biAuthor = data.getBiAuthor();
+        this.biPublisher = data.getBiPublisher();
+        this.biPage = data.getBiPage();
+        this.biIsbn = data.getBiIsbn();
+        this.bimgUri = data.getBiUri();
+    }
+    public ResponseBookInfoVO(BookInfoAladinVO data) {
+        this.biName = data.getBiName();
+        this.biAuthor = data.getBiAuthor();
+        this.biPublisher = data.getBiPublisher();
+        this.biPage = data.getBiPage();
+        this.biIsbn = data.getBiIsbn();
+        this.bimgUri = data.getBimgUri();
     }
     public ResponseBookInfoVO() {}
 }

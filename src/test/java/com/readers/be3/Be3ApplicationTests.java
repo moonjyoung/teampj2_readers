@@ -33,9 +33,14 @@ class Be3ApplicationTests {
 
 	@Test
 	void testLocalDate() {
-		LocalDate date1 = LocalDate.of(2023, 02, 20);
+		LocalDate date1 = LocalDate.of(2023, 03, 20);
 		LocalDate date2 = LocalDate.of(2020, 01, 01);
 		LocalDate date3 = LocalDate.of(2020, 01, 01);
+		LocalDate date4 = LocalDate.of(2010, 01, 01);
+
+		System.out.println("isAfter : " + date1.isAfter(LocalDate.now()));
+		System.out.println("isAfter : " + date4.isAfter(date2));
+		System.out.println("isAfter : " + date3.isAfter(date2));
 		System.out.println("isAfter : " + date1.isAfter(date2));
 		System.out.println("isBefore : " + date1.isBefore(date2));
 		System.out.println("isBefore : " + date3.isBefore(date2));

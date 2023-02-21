@@ -40,8 +40,14 @@ public class ScheduleService {
 
     public ViewScheduleVO addSchedule(AddScheduleVO data) {
         ViewScheduleVO vo = new ViewScheduleVO();
-        LocalDate sDate = data.getStartDate();
-        LocalDate eDate = data.getEndDate();
+        LocalDate sDate = null;
+        LocalDate eDate = null;
+        if (data.getStartDate()!=null) {
+            sDate = data.getStartDate().toLocalDate();
+        }
+        if (data.getEndDate()!=null) {
+            eDate = data.getEndDate().toLocalDate();
+        }
         Integer status = 1;
         if (bookInfoRepository.findById(data.getBiSeq()).isEmpty()) {
             throw new InvalidInputException("존재하지 않는 책 번호 입니다.");
@@ -50,10 +56,13 @@ public class ScheduleService {
             status = 2;
             if (eDate!=null) {
                 status = 4;
+                // if (eDate.isAfter(LocalDate.now())) {
+                //     status = 3;
+                // }
+                if (status!=1 && sDate.isAfter(eDate)) {
+                    throw new InvalidInputException("종료일은 시작일보다 빠를 수 없습니다.");
+                }
             }
-        }
-        if (status!=1 && !sDate.isAfter(eDate)) {
-            throw new InvalidInputException("종료일은 시작일보다 빠를 수 없습니다.");
         }
         vo.setBookTitle(bookInfoRepository.findById(data.getBiSeq()).get().getBiName());
         vo.setDescription(data.getDescription());
@@ -86,19 +95,29 @@ public class ScheduleService {
         
         Long uiSeq = entity.getSiUiSeq();
         Long biSeq = entity.getSiBiSeq();
+        LocalDate sDate = null;
+        LocalDate eDate = null;
+        if (data.getSiStartDate()!=null) {
+            sDate = data.getSiStartDate().toLocalDate();
+        }
+        if (data.getSiEndDate()!=null) {
+            eDate = data.getSiEndDate().toLocalDate();
+        }
         Integer status = 1;
         if (data.getSiStartDate()!=null) {
             status = 2;
             if (data.getSiEndDate()!=null) {
+                if (status!=1 && sDate.isAfter(eDate)) {
+                    throw new InvalidInputException("종료일은 시작일보다 빠를 수 없습니다.");
+                }
                 status = 4;
             }
         }
-
         ScheduleInfoEntity newEntity = ScheduleInfoEntity.builder()
                 .siSeq(data.getSiSeq())
                 .siContent(data.getSiContent())
-                .siStartDate(data.getSiStartDate())
-                .siEndDate(data.getSiEndDate())
+                .siStartDate(sDate)
+                .siEndDate(eDate)
                 .siUiSeq(uiSeq).siBiSeq(biSeq)
                 .siStatus(status).build();
         scheduleInfoRepository.save(newEntity);

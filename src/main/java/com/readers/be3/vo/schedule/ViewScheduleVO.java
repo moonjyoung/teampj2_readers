@@ -24,7 +24,7 @@ public class ViewScheduleVO {
     private LocalDate endDate;
     @Schema(description = "개인 작성", example = "감동적이었습니다.")
     private String description;
-    @Schema(description = "완독 여부(1.읽기전, 2.읽는중, 3.중단, 4.완독)", example = "4")
+    @Schema(description = "완독 여부(1.읽기전, 2.읽는중, 3.독서계획, 4.완독)", example = "4")
     private Integer status;
 
     public ViewScheduleVO(ScheduleInfoEntity entity) {
