@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class RequestUserVO {
-    @Schema(description = "상태", example = "실패")  
+    @Schema(description = "상태", example = "true")  
     private boolean status;
-    @Schema(description = "메세지", example = "잘못된 접근입니다")  
+    @Schema(description = "메세지", example = "인증에 성공했습니다")  
     private String message;
 }
 

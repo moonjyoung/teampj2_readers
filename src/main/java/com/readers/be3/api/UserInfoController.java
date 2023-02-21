@@ -56,13 +56,15 @@ public class UserInfoController {
 
     @Operation(summary = "회원 탈퇴", description = "회원정보 번호(uiSeq)를 통해 회원의 상태를 탈퇴처리로 변경합니다")
     @PatchMapping("/leave") //회원탈퇴
-    public ResponseEntity<RequestUserVO> userDelete(@RequestParam Long uiSeq) throws Exception{
+    public ResponseEntity<RequestUserVO> userDelete(
+      @Parameter(description = "회원번호", example = "130") @RequestParam Long uiSeq) throws Exception{
     return new ResponseEntity<>(uService.leaveUser(uiSeq), HttpStatus.OK);
   }
 
   @Operation(summary = "회원 정보 수정", description = "회원정보 번호(uiSeq)를 통해 회원정보(닉네임)를 수정합니다.")
     @PatchMapping("/update/name") //회원정보수정
-    public ResponseEntity<RequestUserVO> userNameUpdate(@RequestParam Long uiSeq, @RequestBody UserNameVO data) throws Exception{
+    public ResponseEntity<RequestUserVO> userNameUpdate(
+      @Parameter(description = "회원번호", example = "87") @RequestParam Long uiSeq, @RequestBody UserNameVO data) throws Exception{
     return new ResponseEntity<>(uService.updateUserName(uiSeq, data), HttpStatus.OK);
   }
   
@@ -77,19 +79,23 @@ public class UserInfoController {
 
   @Operation(summary = "회원 정보", description = "회원정보 번호(uiSeq)를 통해 회원의 정보를 조회합니다. 마이페이지 화면 중앙의 데이터 입니다")
     @GetMapping("/info") //회원정보 조회
-    public ResponseEntity<ResponseUserInfoVO> getUserInfo(@RequestParam Long uiSeq){
+    public ResponseEntity<ResponseUserInfoVO> getUserInfo(
+      @Parameter(description = "회원번호", example = "87") @RequestParam Long uiSeq){
       return new ResponseEntity<>(uService.getUserInfo(uiSeq),HttpStatus.OK);
     }  
 
   @Operation(summary = "완독서 관리", description = "마이페이지에서 회원정보 번호(uiSeq)를 통해 회원이 완독한 책을 조회합니다.")
     @GetMapping("/finish") //완독책 조회
-    public ResponseEntity< List<ResponseFinishedBookVO> > getUserBook(@RequestParam Long uiSeq){
+    public ResponseEntity< List<ResponseFinishedBookVO> > getUserBook(
+      @Parameter(description = "회원번호", example = "87") @RequestParam Long uiSeq){
       return new ResponseEntity<>(uService.getUserBook(uiSeq),HttpStatus.OK);
     }  
 
   @Operation(summary = "완독한 책의 평점, 독후감 확인", description = "회원정보 번호(uiSeq)와 도서번호(biSeq)를 통해 해당 도서의 평점과 독후감을 조회합니다.")
     @GetMapping("/article") //평점, 독후감 확인
-    public ResponseEntity<ResponseUserArticleVO> getUserArticle(@RequestParam Long uiSeq, @RequestParam Long biSeq){
+    public ResponseEntity<ResponseUserArticleVO> getUserArticle(
+      @Parameter(description = "회원번호", example = "37") @RequestParam Long uiSeq, 
+      @Parameter(description = "책번호", example = "1") @RequestParam Long biSeq){
       return new ResponseEntity<>(uService.getUserArticle(uiSeq, biSeq), HttpStatus.OK);
     }  
 

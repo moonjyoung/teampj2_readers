@@ -16,7 +16,7 @@ import java.util.*;
 public class DeleteMemberInfo {
     @Autowired UserInfoRepository u_repo;
     
-    @Scheduled(cron = "0 0 12 * * *") //매일 12시 0분 00초 실행
+    @Scheduled(cron = "0 0 12 1 * *") //매월 1일 12시 0분 00초 실행
     public void autoDelete() {
         
         Integer leaveMember = u_repo.countByUiStatus(2);
