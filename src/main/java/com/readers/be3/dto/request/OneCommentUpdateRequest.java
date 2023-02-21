@@ -8,7 +8,7 @@ import lombok.Data;
 @Schema(description = "수정 Request dto")
 public class OneCommentUpdateRequest {
     @Schema(description = "유저 번호")
-    private Long uiSeq; 
+    private Long userSeq; 
     @Schema(description = "한줄평 번호")
     private Long onecommentSeq;
     @Schema(description = "수정한줄평 내용")

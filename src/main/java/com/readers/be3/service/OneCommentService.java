@@ -109,6 +109,7 @@ public class OneCommentService {
       commentDTO.setCommentViews(setViewsByRedis(oneCommentSeq));
       return commentDTO;
     }
+    System.out.println("들어갑니까?");
     oneCommentEntity.increaseViews();
     return OneCommentViewsDTO.toDto(oneCommentRepository.save(oneCommentEntity));
   }
@@ -117,7 +118,7 @@ public class OneCommentService {
     final ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
     String viewValue = valueOperations.get("OneCommentSeq :/" + oneCommentSeq);
     if (viewValue == null || viewValue.equals("0")){
-      valueOperations.set("OneCommentSeq :/" + oneCommentSeq, "1");
+      valueOperations.set("OneCommentSeq :/" + oneCommentSeq, "101");
       return 1;
     }
     String tmpview = valueOperations.get("OneCommentSeq :/" + oneCommentSeq);

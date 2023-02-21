@@ -54,7 +54,7 @@ public class OneCommentController {
   @Operation(summary = "한줄평 수정", description = "등록된 한줄평update합니다 ")
   @PutMapping("/update")
   public ResponseEntity<OneCommentResponse> OneCommentUpdate(@Parameter(description = "updateDTO") @RequestBody OneCommentUpdateRequest request){
-    return new ResponseEntity<>(OneCommentResponse.toResponse(oneCommentService.OneCommentUpdate(request.getUiSeq(), request.getOnecommentSeq(), request.getContent())),HttpStatus.OK);
+    return new ResponseEntity<>(OneCommentResponse.toResponse(oneCommentService.OneCommentUpdate(request.getUserSeq(), request.getOnecommentSeq(), request.getContent())),HttpStatus.OK);
 
   }
 

@@ -31,8 +31,8 @@ public class AppScheduleService {
       if (value == null)
         continue;
       else {
-        data.setOcViews(data.getOcViews() + Integer.parseInt(value));
-        valueOperations.set("OneCommentSeq :/" + data.getOcSeq(), "0");
+        data.setOcViews(Integer.parseInt(value));
+        // valueOperations.set("OneCommentSeq :/" + data.getOcSeq(), "0");
         oneCommentRepository.save(data);
       }
     }
