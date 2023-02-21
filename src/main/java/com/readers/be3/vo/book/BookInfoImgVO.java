@@ -5,6 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+// formdata로 입력받을 때 쓴 requestVO. 삭제해도 상관 없을듯
 @Data
 public class BookInfoImgVO {
     @Schema(description = "책 고유번호(입력시엔 null로 입력)")

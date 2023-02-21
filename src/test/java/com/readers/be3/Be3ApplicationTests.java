@@ -28,7 +28,7 @@ class Be3ApplicationTests {
 
 	@Test
 	void testSearchBooks() {
-		System.out.println(bookInfoRepository.findByBiNameContains("생에").get(0).getBiName());
+		// System.out.println(bookInfoRepository.findByBiNameContains("생에").get(0).getBiName());
 	}
 
 	@Test
