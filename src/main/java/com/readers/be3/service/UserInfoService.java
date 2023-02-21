@@ -138,6 +138,7 @@ public class UserInfoService {
     }
     else {
       response = RequestUserVO.builder()
+      .userSeq(loginUser.getUiSeq())
       .status(true)
       .message("로그인 되었습니다")
       .build();

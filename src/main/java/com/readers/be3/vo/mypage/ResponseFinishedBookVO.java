@@ -5,7 +5,6 @@ import java.util.List;
 import com.readers.be3.entity.FinishedBookView;
 import com.readers.be3.entity.MyPageView;
 import com.readers.be3.entity.ScheduleInfoEntity;
-import com.readers.be3.entity.image.BookImgEntity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -34,6 +33,6 @@ public class ResponseFinishedBookVO {
         this.bookTitle = data.getBookInfoEntity().getBiName();
         this.author = data.getBookInfoEntity().getBiAuthor();
         this.publisher = data.getBookInfoEntity().getBiPublisher();
-        this.uri = data.getBookInfoEntity().getBookImgEntity().getBimgUri();
+        this.uri = data.getBookInfoEntity().getBiUri();
     }
 }
