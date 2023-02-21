@@ -15,7 +15,7 @@ public class Scheculer {
   @Autowired  AppScheduleService scheduleService;
 
   
-  @Scheduled(fixedDelay = 9000)
+  @Scheduled(fixedDelay = 12000)
   public  void scheduleSetView(){
     scheduleService.oneCommentViewsSchedule();
   }

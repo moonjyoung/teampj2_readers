@@ -105,26 +105,26 @@ public class OneCommentService {
     if (oneCommentEntity == null)
       throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND,String.format("%s   not found commentSeq", oneCommentSeq)));
     OneCommentViewsDTO commentDTO = OneCommentViewsDTO.toDto(oneCommentEntity);
-    if (commentDTO.getCommentViews() > 100 || commentDTO.getRegDt().plusDays(1).isAfter(LocalDateTime.now())){
-      setViewsByRedis(oneCommentSeq);
+    if (commentDTO.getCommentViews() > 100 && commentDTO.getRegDt().plusDays(1).isAfter(LocalDateTime.now())){
+      commentDTO.setCommentViews(setViewsByRedis(oneCommentSeq));
       return commentDTO;
     }
     oneCommentEntity.increaseViews();
     return OneCommentViewsDTO.toDto(oneCommentRepository.save(oneCommentEntity));
   }
 
-  private void setViewsByRedis(Long oneCommentSeq) {
+  private Integer setViewsByRedis(Long oneCommentSeq) {
     final ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
     String viewValue = valueOperations.get("OneCommentSeq :/" + oneCommentSeq);
     if (viewValue == null || viewValue.equals("0")){
       valueOperations.set("OneCommentSeq :/" + oneCommentSeq, "1");
-      return;
+      return 1;
     }
     String tmpview = valueOperations.get("OneCommentSeq :/" + oneCommentSeq);
     Integer view = Integer.valueOf(tmpview);
     view += 1;
     valueOperations.set("OneCommentSeq :/" + oneCommentSeq, view.toString());
-    System.out.println(valueOperations.get("OneCommentSeq :/" + oneCommentSeq));
+    return view;
   }
 
   // private boolean viewDuplicateCheck(Cookie[] cookies, Long oneCommentSeq) {

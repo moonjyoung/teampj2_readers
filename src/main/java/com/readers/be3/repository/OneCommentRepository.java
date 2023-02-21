@@ -1,5 +1,6 @@
 package com.readers.be3.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -21,4 +22,8 @@ public interface OneCommentRepository extends JpaRepository<OneCommentEntity, Lo
   OneCommentEntity findByOcSeqAndUserInfoEntity(Long oneCommentSeq, UserInfoEntity userInfoEntity);
 
   List<OneCommentEntity> findByOcViewsGreaterThan(Long ocViews);
+
+  List<OneCommentEntity> findByOcViewsGreaterThanAndOcRegDtAfter(long l, LocalDateTime onedayago);
+
+  List<OneCommentEntity> findByOcViewsGreaterThanAndOcRegDtAfterAndOcStatus(long l, LocalDateTime oneDayBefore, Integer status);
 }

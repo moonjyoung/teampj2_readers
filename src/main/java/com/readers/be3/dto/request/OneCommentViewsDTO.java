@@ -35,7 +35,7 @@ public class OneCommentViewsDTO {
   private Integer userPoint;
   @Schema(description = "한줄평 조회수")
   @JsonProperty
-  private Long commentViews;
+  private Integer commentViews;
 
   public static OneCommentViewsDTO toDto(OneCommentEntity entity){
     return new OneCommentViewsDTO(entity.getOcSeq(), 
