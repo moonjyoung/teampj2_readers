@@ -10,7 +10,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class SnsLoginResponse {
     @Schema(description = "유저번호", example = "12")    
-    private Long userSeq;
+    private Long uiSeq;
     @Schema(description = "sns타입", example = "kakao")    
     private String snsType;
 
