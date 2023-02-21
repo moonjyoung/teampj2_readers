@@ -8,6 +8,7 @@ import com.readers.be3.vo.schedule.UpdateScheduleVO;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -37,6 +38,8 @@ public class ScheduleInfoEntity {
     @Column(name = "si_status") private Integer siStatus;
     @Column(name = "si_ui_seq") private Long siUiSeq;
     @Column(name = "si_bi_seq") private Long siBiSeq;
-    @ManyToOne @JoinColumn(name = "si_ui_seq", insertable = false, updatable = false) private UserInfoEntity userInfoEntity;
-    @ManyToOne @JoinColumn(name = "si_bi_seq", insertable = false, updatable = false) private BookInfoEntity bookInfoEntity;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "si_ui_seq", insertable = false, updatable = false) private UserInfoEntity userInfoEntity;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "si_bi_seq", insertable = false, updatable = false) private BookInfoEntity bookInfoEntity;
 }
