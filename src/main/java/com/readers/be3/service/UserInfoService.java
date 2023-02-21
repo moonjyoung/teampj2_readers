@@ -7,6 +7,7 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -159,7 +160,9 @@ public class UserInfoService {
           .build();
         }
         else {
+          Date now = new Date();
         login.setUiStatus(2); //상태값 변경
+        login.setUiLeaveDt(now);
         u_repo.save(login); //변경한 값 저장
         response = RequestUserVO.builder()
           .status(true)
