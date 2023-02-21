@@ -6,6 +6,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableScheduling
 @SpringBootApplication
+@EnableScheduling //스케쥴러 실행
 public class Be3Application {
 
 	public static void main(String[] args) {
