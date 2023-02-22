@@ -20,5 +20,6 @@ public interface UserInfoRepository extends JpaRepository<UserInfoEntity, Long>{
   public UserInfoEntity findByUiUidAndUiLoginType(String uid, String type);
   // 아이디로 유저 정보 찾기 (유저아이디로 게시글 검색을 위해서 만듦)
   public UserInfoEntity findByUiNickname(String nickName);
-  public UserInfoEntity findTop1ByUiStatus(Integer uiStatus);
+  public List<UserInfoEntity> findTop1ByUiStatus(Integer uiStatus);
+  public List<UserInfoEntity> findByUiStatus(Integer uiStatus);
 }

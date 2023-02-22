@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class RequestUserVO {
-    @Schema(description = "유저번호")
+    @Schema(description = "유저번호(로그인할때만 값이 반환됩니다)")
     private Long uiSeq;
     @Schema(description = "상태", example = "true")  
     private boolean status;
