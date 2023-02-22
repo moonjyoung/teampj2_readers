@@ -1,6 +1,7 @@
 package com.readers.be3.vo.schedule;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.readers.be3.entity.ScheduleInfoEntity;
 
@@ -18,10 +19,10 @@ public class ViewScheduleVO {
     private Long siSeq;
     @Schema(description = "일정 이름(책 제목)", example = "생에 감사해")
     private String bookTitle;
-    @Schema(description = "시작 일, 값이 null 일 시 status 값은 1, 값이 들어오면 2~4", example = "2023-02-07")
-    private LocalDate startDate;
-    @Schema(description = "종료 일(완독 일), 시작 일은 있으나 종료 일이 null 일 시 status 값은 2, 값이 들어오면 4", example = "2023-02-14")
-    private LocalDate endDate;
+    @Schema(description = "시작 일, 값이 null 일 시 status 값은 1, 값이 들어오면 2~4", example = "2023-02-07 01:23:45")
+    private LocalDateTime startDate;
+    @Schema(description = "종료 일(완독 일), 시작 일은 있으나 종료 일이 null 일 시 status 값은 2, 값이 들어오면 4", example = "2023-02-14 01:23:45")
+    private LocalDateTime endDate;
     @Schema(description = "개인 작성", example = "감동적이었습니다.")
     private String description;
     @Schema(description = "완독 여부(1.읽기전, 2.읽는중, 3.독서계획, 4.완독)", example = "4")

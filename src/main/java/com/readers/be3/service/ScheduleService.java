@@ -1,6 +1,7 @@
 package com.readers.be3.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -40,13 +41,13 @@ public class ScheduleService {
 
     public ViewScheduleVO addSchedule(AddScheduleVO data) {
         ViewScheduleVO vo = new ViewScheduleVO();
-        LocalDate sDate = null;
-        LocalDate eDate = null;
+        LocalDateTime sDate = null;
+        LocalDateTime eDate = null;
         if (data.getStartDate()!=null) {
-            sDate = data.getStartDate().toLocalDate();
+            sDate = data.getStartDate();
         }
         if (data.getEndDate()!=null) {
-            eDate = data.getEndDate().toLocalDate();
+            eDate = data.getEndDate();
         }
         Integer status = 1;
         if (bookInfoRepository.findById(data.getBiSeq()).isEmpty()) {
@@ -95,18 +96,18 @@ public class ScheduleService {
         
         Long uiSeq = entity.getSiUiSeq();
         Long biSeq = entity.getSiBiSeq();
-        LocalDate sDate = null;
-        LocalDate eDate = null;
-        if (data.getSiStartDate()!=null) {
-            sDate = data.getSiStartDate().toLocalDate();
+        LocalDateTime sDate = null;
+        LocalDateTime eDate = null;
+        if (data.getStartDate()!=null) {
+            sDate = data.getStartDate();
         }
-        if (data.getSiEndDate()!=null) {
-            eDate = data.getSiEndDate().toLocalDate();
+        if (data.getEndDate()!=null) {
+            eDate = data.getEndDate();
         }
         Integer status = 1;
-        if (data.getSiStartDate()!=null) {
+        if (data.getStartDate()!=null) {
             status = 2;
-            if (data.getSiEndDate()!=null) {
+            if (data.getEndDate()!=null) {
                 if (status!=1 && sDate.isAfter(eDate)) {
                     throw new InvalidInputException("종료일은 시작일보다 빠를 수 없습니다.");
                 }
