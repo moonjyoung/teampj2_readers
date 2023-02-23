@@ -1,27 +1,24 @@
 package com.readers.be3.service;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.LinkedHashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.readers.be3.entity.BookInfoEntity;
+import com.readers.be3.entity.ScheduleInfoEntity;
 import com.readers.be3.repository.BookInfoRepository;
+import com.readers.be3.repository.ScheduleInfoRepository;
 import com.readers.be3.vo.book.InvalidInputException;
+import com.readers.be3.vo.book.PatchBookStatusVO;
 import com.readers.be3.vo.book.BookInfoAladinVO;
+import com.readers.be3.vo.book.GetBookListVO;
+import com.readers.be3.vo.book.GetMyBookVO;
 import com.readers.be3.vo.book.ResponseBookInfoVO;
+import com.readers.be3.vo.response.BasicResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BookService {
     private final BookInfoRepository bookInfoAladinRepository;
+    private final ScheduleInfoRepository scheduleInfoRepository;
     // @Value("${file.image.book}") String book_img_path;
 
     public ResponseBookInfoVO addBookInfo(BookInfoAladinVO data) {
@@ -51,6 +49,54 @@ public class BookService {
         }
     }
 
+    public GetMyBookVO getMyBookList(Long uiSeq, Integer status) {
+        List<GetBookListVO> list = new ArrayList<GetBookListVO>();
+        if (status==0) {
+            for (ScheduleInfoEntity entity : scheduleInfoRepository.findBySiUiSeqOrderBySiSeqDesc(uiSeq)) {
+                GetBookListVO vo = new GetBookListVO(entity);
+                list.add(vo);
+            }
+        }
+        else if (status==4) {
+            for (ScheduleInfoEntity entity : scheduleInfoRepository.findBySiUiSeqAndSiStatus(uiSeq, status)) {
+                GetBookListVO vo = new GetBookListVO(entity);
+                list.add(vo);
+            }
+        }
+        else if (status==9) {
+            List<Integer> statusList = Arrays.asList(1, 3);
+            for (ScheduleInfoEntity entity : scheduleInfoRepository.findBySiUiSeqAndSiStatusInOrderBySiSeqDesc(uiSeq, statusList)) {
+                GetBookListVO vo = new GetBookListVO(entity);
+                list.add(vo);
+            }
+        }
+        return new GetMyBookVO(uiSeq, list);
+    }
+
+    public BasicResponse patchBookStatus(PatchBookStatusVO data) {
+        if (scheduleInfoRepository.findById(data.getId()).isEmpty()) {
+            throw new InvalidInputException("이 회원이 등록하지 않은 책입니다.");
+        }
+        else if (scheduleInfoRepository.findById(data.getId()).get().getSiStatus()==data.getStatus()) {
+            throw new InvalidInputException("이미 설정된 상태값입니다.");
+        }
+        else {
+            ScheduleInfoEntity entity = scheduleInfoRepository.findById(data.getId()).get();
+            ScheduleInfoEntity newEntity = ScheduleInfoEntity.builder()
+                    .siSeq(entity.getSiSeq())
+                    .siContent(entity.getSiContent())
+                    .siStartDate(entity.getSiStartDate())
+                    .siEndDate(entity.getSiEndDate())
+                    .siUiSeq(entity.getSiUiSeq())
+                    .siBiSeq(entity.getSiBiSeq())
+                    .siStatus(data.getStatus()).build();
+            scheduleInfoRepository.save(newEntity);
+        }
+        return new BasicResponse("true", "상태값이 변경됐습니다.");
+    }
+
+
+    
     public List<ResponseBookInfoVO> searchBookInfo(String keyword, Integer sortNo) {
         List<ResponseBookInfoVO> list = new ArrayList<ResponseBookInfoVO>();
         Sort sort = sortBySortNo(sortNo);

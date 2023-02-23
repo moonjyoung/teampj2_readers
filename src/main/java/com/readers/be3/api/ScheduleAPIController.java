@@ -50,9 +50,9 @@ public class ScheduleAPIController {
     @Operation(summary = "일정 삭제", description = "일정을 삭제합니다.")
     @DeleteMapping("/delete")
     public ResponseEntity<BasicResponse> deleteSchedule(
-        @Parameter(description = "삭제할 일정 번호") @RequestParam Long siSeq
+        @Parameter(description = "삭제할 일정 번호") @RequestParam Long id
     ) {
-        scheduleService.deleteSchedule(siSeq);
+        scheduleService.deleteSchedule(id);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
