@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import com.readers.be3.entity.ArticleView;
 import com.readers.be3.entity.BookInfoEntity;
-import com.readers.be3.entity.FinishedBookView;
 import com.readers.be3.entity.MyPageView;
 import com.readers.be3.entity.OneCommentView;
 import com.readers.be3.entity.ScheduleInfoEntity;
@@ -30,7 +29,6 @@ import com.readers.be3.exception.ErrorResponse;
 import com.readers.be3.exception.ReadersProjectException;
 import com.readers.be3.repository.ArticleViewRepository;
 import com.readers.be3.repository.BookInfoRepository;
-import com.readers.be3.repository.FinishedBookViewRepository;
 import com.readers.be3.repository.MyPageViewRepository;
 import com.readers.be3.repository.OneCommentViewRepository;
 import com.readers.be3.repository.UserInfoRepository;
@@ -56,7 +54,6 @@ public class UserInfoService {
     @Autowired MyPageViewRepository v_repo;
     @Autowired ArticleViewRepository a_repo;
     @Autowired OneCommentViewRepository o_repo;
-    @Autowired FinishedBookViewRepository f_repo;
     @Autowired BookInfoRepository b_repo;
     
     @Value("${file.image.user}") String user_img_path;
@@ -196,6 +193,12 @@ public class UserInfoService {
           .message(data.getUiNickname()+"닉네임에 공백문자나 특수문자를 사용 할 수 없습니다")
           .build();
         } 
+        else if(data.getUiNickname()=="") {
+          response = RequestUserVO.builder()
+          .status(false)
+          .message(data.getUiNickname()+"잘못된 요청입니다")
+          .build();
+        }
         else {
         login.setUiNickname(data.getUiNickname());
         u_repo.save(login);
