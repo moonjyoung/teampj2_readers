@@ -35,6 +35,7 @@ import com.readers.be3.repository.UserInfoRepository;
 import com.readers.be3.repository.ScheduleInfoRepository;
 import com.readers.be3.repository.image.UserImgRepository;
 import com.readers.be3.utilities.AESAlgorithm;
+import com.readers.be3.utilities.RandomNameUtils;
 import com.readers.be3.vo.mypage.RequestUserVO;
 import com.readers.be3.vo.mypage.ResponseBookInfoVO;
 import com.readers.be3.vo.mypage.ResponseFinishedBookVO;
@@ -225,7 +226,7 @@ public class UserInfoService {
       for (int i=0; i<split.length-1; i++) {
         filename += split[i];
       }
-      String saveFilename = "user_" + LocalDateTime.now().getNano() + "."+ext;
+      String saveFilename = "user_" + Calendar.getInstance().getTimeInMillis() + "."+ext;
       
       Path forderLocation = Paths.get(user_img_path);
       Path targetFile = forderLocation.resolve(saveFilename);
@@ -242,7 +243,7 @@ public class UserInfoService {
 
       UserImgEntity imgEntity = UserImgEntity.builder()
       .uimgFilename(saveFilename)
-      .uimgUri(filename)
+      .uimgUri(RandomNameUtils.MakeRandomUri("first", data.getUiSeq()))
       .uimgUiSeq(login.getUiSeq()).build();
 
       i_repo.save(imgEntity);
@@ -260,7 +261,7 @@ public class UserInfoService {
       for (int i=0; i<split.length-1; i++) {
         filename += split[i];
       }
-      String saveFilename = "user_" + LocalDateTime.now().getNano() + "."+ext;
+      String saveFilename = "user_" + Calendar.getInstance().getTimeInMillis() + "."+ext;
       
       Path forderLocation = Paths.get(user_img_path);
       Path targetFile = forderLocation.resolve(saveFilename);
@@ -277,7 +278,7 @@ public class UserInfoService {
 
       UserImgEntity imgEntity = UserImgEntity.builder()
       .uimgFilename(saveFilename)
-      .uimgUri(filename)
+      .uimgUri(RandomNameUtils.MakeRandomUri("new", data.getUiSeq()))
       .uimgUiSeq(login.getUiSeq()).build();
 
       i_repo.save(imgEntity);
