@@ -1,6 +1,5 @@
 package com.readers.be3.service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,32 +42,23 @@ public class ScheduleService {
         ViewScheduleVO vo = new ViewScheduleVO();
         LocalDateTime sDate = null;
         LocalDateTime eDate = null;
-        if (data.getStartDate()!=null) {
-            sDate = data.getStartDate();
+        if (data.getStart()!=null) {
+            sDate = data.getStart();
         }
-        if (data.getEndDate()!=null) {
-            eDate = data.getEndDate();
+        if (data.getEnd()!=null) {
+            eDate = data.getEnd();
         }
         Integer status = 1;
         if (bookInfoRepository.findById(data.getBiSeq()).isEmpty()) {
             throw new InvalidInputException("존재하지 않는 책 번호 입니다.");
         }
-        if (sDate!=null) {
-            status = 2;
-            if (eDate!=null) {
-                status = 4;
-                // if (eDate.isAfter(LocalDate.now())) {
-                //     status = 3;
-                // }
-                if (status!=1 && sDate.isAfter(eDate)) {
-                    throw new InvalidInputException("종료일은 시작일보다 빠를 수 없습니다.");
-                }
-            }
+        if ((sDate!=null && eDate!=null) && sDate.isAfter(eDate)) {
+            throw new InvalidInputException("종료일은 시작일보다 빠를 수 없습니다.");
         }
-        vo.setBookTitle(bookInfoRepository.findById(data.getBiSeq()).get().getBiName());
+        vo.setTitle(bookInfoRepository.findById(data.getBiSeq()).get().getBiName());
         vo.setDescription(data.getDescription());
-        vo.setStartDate(sDate);
-        vo.setEndDate(eDate);
+        vo.setStart(sDate);
+        vo.setEnd(eDate);
         vo.setStatus(status);
 
         ScheduleInfoEntity entity = ScheduleInfoEntity.builder()
@@ -80,42 +70,37 @@ public class ScheduleService {
                 .siBiSeq(data.getBiSeq()).build();
 
         scheduleInfoRepository.save(entity);
-        vo.setSiSeq(entity.getSiSeq());
+        vo.setId(entity.getSiSeq());
         return vo;
     }
 
-    public void deleteSchedule(Long siSeq) {
-        ScheduleInfoEntity entity = scheduleInfoRepository.findById(siSeq)
+    public void deleteSchedule(Long id) {
+        ScheduleInfoEntity entity = scheduleInfoRepository.findById(id)
                 .orElseThrow(() -> new InvalidInputException("존재하지 않는 스케쥴입니다."));
         scheduleInfoRepository.delete(entity);
     }
 
     public ViewScheduleVO updateSchedule(UpdateScheduleVO data) {
-        ScheduleInfoEntity entity = scheduleInfoRepository.findById(data.getSiSeq())
+        ScheduleInfoEntity entity = scheduleInfoRepository.findById(data.getId())
                 .orElseThrow(() -> new InvalidInputException("존재하지 않는 스케쥴입니다."));
         
         Long uiSeq = entity.getSiUiSeq();
         Long biSeq = entity.getSiBiSeq();
+        Integer status = entity.getSiStatus();
         LocalDateTime sDate = null;
         LocalDateTime eDate = null;
-        if (data.getStartDate()!=null) {
-            sDate = data.getStartDate();
+        if (data.getStart()!=null) {
+            sDate = data.getStart();
         }
-        if (data.getEndDate()!=null) {
-            eDate = data.getEndDate();
+        if (data.getEnd()!=null) {
+            eDate = data.getEnd();
         }
-        Integer status = 1;
-        if (data.getStartDate()!=null) {
-            status = 2;
-            if (data.getEndDate()!=null) {
-                if (status!=1 && sDate.isAfter(eDate)) {
-                    throw new InvalidInputException("종료일은 시작일보다 빠를 수 없습니다.");
-                }
-                status = 4;
-            }
+        if ((data.getStart()!=null && data.getEnd()!=null) && sDate.isAfter(eDate)) {
+            throw new InvalidInputException("종료일은 시작일보다 빠를 수 없습니다.");
         }
+
         ScheduleInfoEntity newEntity = ScheduleInfoEntity.builder()
-                .siSeq(data.getSiSeq())
+                .siSeq(data.getId())
                 .siContent(data.getSiContent())
                 .siStartDate(sDate)
                 .siEndDate(eDate)
@@ -124,11 +109,11 @@ public class ScheduleService {
         scheduleInfoRepository.save(newEntity);
 
         ViewScheduleVO responseVO = new ViewScheduleVO();
-        responseVO.setSiSeq(newEntity.getSiSeq());
-        responseVO.setBookTitle(bookInfoRepository.findByBiSeq(newEntity.getSiBiSeq()).getBiName());
+        responseVO.setId(newEntity.getSiSeq());
+        responseVO.setTitle(bookInfoRepository.findByBiSeq(newEntity.getSiBiSeq()).getBiName());
         responseVO.setDescription(newEntity.getSiContent());
-        responseVO.setStartDate(newEntity.getSiStartDate());
-        responseVO.setEndDate(newEntity.getSiEndDate());
+        responseVO.setStart(newEntity.getSiStartDate());
+        responseVO.setEnd(newEntity.getSiEndDate());
         responseVO.setStatus(status);
         return responseVO;
     }
