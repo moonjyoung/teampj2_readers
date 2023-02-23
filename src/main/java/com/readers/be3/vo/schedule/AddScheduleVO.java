@@ -1,6 +1,5 @@
 package com.readers.be3.vo.schedule;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.readers.be3.vo.book.ResponseBookInfoVO;
@@ -29,4 +28,5 @@ public class AddScheduleVO {
         this.status = data.getStatus();
         this.biSeq = data.getBiSeq();
     }
+    public AddScheduleVO() {}
 }

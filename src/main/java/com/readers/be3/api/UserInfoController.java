@@ -84,12 +84,12 @@ public class UserInfoController {
       return new ResponseEntity<>(uService.getUserInfo(uiSeq),HttpStatus.OK);
     }  
 
-  @Operation(summary = "완독서 관리", description = "마이페이지에서 회원정보 번호(uiSeq)를 통해 회원이 완독한 책을 조회합니다.")
-    @GetMapping("/finish") //완독책 조회
-    public ResponseEntity< List<ResponseFinishedBookVO> > getUserBook(
-      @Parameter(description = "회원번호", example = "87") @RequestParam Long uiSeq){
-      return new ResponseEntity<>(uService.getUserBook(uiSeq),HttpStatus.OK);
-    }  
+  // @Operation(summary = "완독서 관리", description = "마이페이지에서 회원정보 번호(uiSeq)를 통해 회원이 완독한 책을 조회합니다.")
+  //   @GetMapping("/finish") //완독책 조회
+  //   public ResponseEntity< List<ResponseFinishedBookVO> > getUserBook(
+  //     @Parameter(description = "회원번호", example = "87") @RequestParam Long uiSeq){
+  //     return new ResponseEntity<>(uService.getUserBook(uiSeq),HttpStatus.OK);
+  //   }  
 
   @Operation(summary = "완독한 책의 평점, 독후감 확인", description = "회원정보 번호(uiSeq)와 도서번호(biSeq)를 통해 해당 도서의 평점과 독후감을 조회합니다.")
     @GetMapping("/article") //평점, 독후감 확인

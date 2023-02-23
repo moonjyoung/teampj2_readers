@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -33,6 +34,7 @@ import com.readers.be3.repository.ArticleInfoRepository;
 import com.readers.be3.repository.SearchArticleViewRepository;
 import com.readers.be3.repository.UserInfoRepository;
 import com.readers.be3.repository.image.ArticleImgRepository;
+import com.readers.be3.utilities.RandomNameUtils;
 import com.readers.be3.vo.article.ArticleModifyVO;
 import com.readers.be3.vo.article.GetSearchArticleVO;
 import com.readers.be3.vo.article.PostArticleVO;
@@ -111,21 +113,21 @@ public class ArticleService {
                     break;
                 } else {
                     if (contentType.contains("image/jpeg")) {
-                        originalFileExtension = ".jpg";
+                        originalFileExtension = "jpg";
                     } else if (contentType.contains("image/png")) {
-                        originalFileExtension = ".png";
+                        originalFileExtension = "png";
                     } else if (contentType.contains("image/gif")) {
-                        originalFileExtension = ".gif";
+                        originalFileExtension = "gif";
                     } else {
                         break;
                     }
                 }
 
-                String newFileName = Long.toString(System.nanoTime()) + originalFileExtension;
+                String newFileName = "article_" + Calendar.getInstance().getTimeInMillis() + "." + originalFileExtension;
                 ArticleImgEntity articleImgEntity = ArticleImgEntity.builder()
                         .aimgFilename(newFileName)
                         .aimgAiSeq(aiSeq)
-                        .aimgUri(ArticleImgPath)
+                        .aimgUri(RandomNameUtils.MakeRandomUri(contentType, aiSeq))
                         .build();
                 articleImgRepo.save(articleImgEntity);
 

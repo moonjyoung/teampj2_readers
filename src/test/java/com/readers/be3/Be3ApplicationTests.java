@@ -6,15 +6,10 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
-import com.readers.be3.entity.ArticleInfoEntity;
-import com.readers.be3.repository.ArticleInfoRepository;
 
 import com.readers.be3.repository.BookInfoRepository;
 import com.readers.be3.service.UserInfoService;
-import com.readers.be3.vo.mypage.SnsLoginRequest;
+import com.readers.be3.utilities.RandomNameUtils;
 
 @SpringBootTest
 class Be3ApplicationTests {
@@ -50,5 +45,13 @@ class Be3ApplicationTests {
 	void testSNSLogin() {
 		// SnsLoginRequest request = new SnsLoginRequest("test123", "kakao");
 		// userInfoService.snsloginUser(request);
+	}
+
+	@Test
+	void testRandomName() {
+		// String type = "read";
+		// System.out.println(Integer.parseInt(type, 32));
+		String randName = RandomNameUtils.MakeRandomUri("first", 110L);
+		System.out.println(randName);
 	}
 }
