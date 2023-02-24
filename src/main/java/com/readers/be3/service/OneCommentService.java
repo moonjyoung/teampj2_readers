@@ -76,12 +76,7 @@ public class OneCommentService {
     if (bookInfoEntity == null)
       throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND, String.format("%s not found book", bookSeq)));
     Page<OneCommentEntity> commentList = oneCommentRepository.findByBookInfoEntityAndOcStatus(bookInfoEntity,pageable, 1);
-    System.out.println(commentList.getContent());
     Page<OneCommentListDTO> onecommentDto = commentList.map(e-> OneCommentListDTO.toDto(e));
-
-    
-    if (onecommentDto.isEmpty())
-      return onecommentDto;
     return onecommentDto;
   }
 

@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class OneCommentDeleteRequest {
     @Schema(description = "유저 번호" , example = "30")
-    private Long userSeq;
+    private Long uiSeq;
     @Schema(description = "한줄평번호", example = "20")
     private Long oneCommentSeq;
   

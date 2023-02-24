@@ -15,7 +15,7 @@ import lombok.Setter;
 @Schema(description = "한줄평VO")
 public class OneCommentResponse {
   @Schema(description = "한줄평 내용")
-  private String comment;
+  private String content;
   @Schema(description = "한줄평 점수")
   private Integer score;
   @Schema(description = "한줄평 등록일")

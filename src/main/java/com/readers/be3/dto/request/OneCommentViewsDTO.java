@@ -20,7 +20,7 @@ public class OneCommentViewsDTO {
   private Long ocSeq;
   @Schema(description = "한줄평 내용")
   @JsonProperty
-  private String comment;
+  private String content;
   @Schema(description = "한줄평 점수")
   @JsonProperty
   private Integer score;
