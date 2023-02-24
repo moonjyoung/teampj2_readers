@@ -10,7 +10,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.yaml.snakeyaml.comments.CommentType;
 
 import com.readers.be3.dto.request.OneCommentViewsDTO;
 import com.readers.be3.dto.response.OneCommentListDTO;
@@ -24,8 +23,6 @@ import com.readers.be3.repository.OneCommentRepository;
 import com.readers.be3.repository.ScheduleInfoRepository;
 import com.readers.be3.repository.UserInfoRepository;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 
 @Service

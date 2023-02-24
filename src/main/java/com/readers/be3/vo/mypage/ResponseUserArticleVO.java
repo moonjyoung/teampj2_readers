@@ -2,13 +2,8 @@ package com.readers.be3.vo.mypage;
 
 import java.time.LocalDateTime;
 
-import org.springframework.http.HttpStatus;
-
 import com.readers.be3.entity.ArticleView;
-import com.readers.be3.entity.MyPageView;
 import com.readers.be3.entity.OneCommentView;
-import com.readers.be3.exception.ErrorResponse;
-import com.readers.be3.exception.ReadersProjectException;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PatchBookStatusVO {
+public class PatchBookStatusVO { // 안 쓰이게 됨
     // @Schema(description = "유저 번호", example = "110")
     // private Long uiSeq;
     // @Schema(description = "책 고유번호", example = "1")

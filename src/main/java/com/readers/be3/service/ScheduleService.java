@@ -12,6 +12,7 @@ import com.readers.be3.repository.BookInfoRepository;
 import com.readers.be3.repository.ScheduleInfoRepository;
 import com.readers.be3.repository.UserInfoRepository;
 import com.readers.be3.vo.book.InvalidInputException;
+import com.readers.be3.vo.response.BasicResponse;
 import com.readers.be3.vo.schedule.AddScheduleVO;
 import com.readers.be3.vo.schedule.UpdateScheduleVO;
 import com.readers.be3.vo.schedule.ViewScheduleVO;
@@ -38,6 +39,32 @@ public class ScheduleService {
         return list;
     }
 
+    public ViewScheduleVO addInitSchedule(AddScheduleVO data) {
+        ViewScheduleVO vo = new ViewScheduleVO();
+        LocalDateTime sDate = null;
+        LocalDateTime eDate = null;
+        Integer status = 1;
+        if (bookInfoRepository.findById(data.getBiSeq()).isEmpty()) {
+            throw new InvalidInputException("존재하지 않는 책 번호 입니다.");
+        }
+        vo.setTitle(bookInfoRepository.findById(data.getBiSeq()).get().getBiName());
+        vo.setDescription(data.getDescription());
+        vo.setStart(sDate);
+        vo.setEnd(eDate);
+        vo.setStatus(status);
+
+        ScheduleInfoEntity entity = ScheduleInfoEntity.builder()
+                .siContent(data.getDescription())
+                .siStartDate(sDate)
+                .siEndDate(eDate)
+                .siStatus(status)
+                .siUiSeq(data.getUiSeq())
+                .siBiSeq(data.getBiSeq()).build();
+
+        scheduleInfoRepository.save(entity);
+        vo.setId(entity.getSiSeq());
+        return vo;
+    }
     public ViewScheduleVO addSchedule(AddScheduleVO data) {
         ViewScheduleVO vo = new ViewScheduleVO();
         LocalDateTime sDate = null;
@@ -48,7 +75,7 @@ public class ScheduleService {
         if (data.getEnd()!=null) {
             eDate = data.getEnd();
         }
-        Integer status = 1;
+        Integer status = 3;
         if (bookInfoRepository.findById(data.getBiSeq()).isEmpty()) {
             throw new InvalidInputException("존재하지 않는 책 번호 입니다.");
         }
@@ -74,19 +101,23 @@ public class ScheduleService {
         return vo;
     }
 
-    public void deleteSchedule(Long id) {
+    public BasicResponse deleteSchedule(Long id) {
         ScheduleInfoEntity entity = scheduleInfoRepository.findById(id)
-                .orElseThrow(() -> new InvalidInputException("존재하지 않는 스케쥴입니다."));
+                .orElseThrow(() -> new InvalidInputException("존재하지 않는 계획입니다."));
         scheduleInfoRepository.delete(entity);
+        return new BasicResponse("true", "계획을 삭제했습니다.");
     }
 
     public ViewScheduleVO updateSchedule(UpdateScheduleVO data) {
         ScheduleInfoEntity entity = scheduleInfoRepository.findById(data.getId())
-                .orElseThrow(() -> new InvalidInputException("존재하지 않는 스케쥴입니다."));
+                .orElseThrow(() -> new InvalidInputException("존재하지 않는 계획입니다."));
         
+        Integer status = entity.getSiStatus();
+        if (status!=3) {
+            throw new InvalidInputException("계획 상태의 책이 아닙니다.");
+        }
         Long uiSeq = entity.getSiUiSeq();
         Long biSeq = entity.getSiBiSeq();
-        Integer status = entity.getSiStatus();
         LocalDateTime sDate = null;
         LocalDateTime eDate = null;
         if (data.getStart()!=null) {
@@ -116,5 +147,27 @@ public class ScheduleService {
         responseVO.setEnd(newEntity.getSiEndDate());
         responseVO.setStatus(status);
         return responseVO;
+    }
+
+    public BasicResponse patchScheduleStatus(Long id) {
+        if (scheduleInfoRepository.findById(id).isEmpty()) {
+            throw new InvalidInputException("존재하지 않는 정보입니다.");
+        }
+        else if (scheduleInfoRepository.findById(id).get().getSiStatus()==4) {
+            throw new InvalidInputException("유효하지 않은 접근입니다.(이미 완독한 책)");
+        }
+        else {
+            ScheduleInfoEntity entity = scheduleInfoRepository.findById(id).get();
+            ScheduleInfoEntity newEntity = ScheduleInfoEntity.builder()
+                    .siSeq(entity.getSiSeq())
+                    .siContent(entity.getSiContent())
+                    .siStartDate(entity.getSiStartDate())
+                    .siEndDate(entity.getSiEndDate())
+                    .siUiSeq(entity.getSiUiSeq())
+                    .siBiSeq(entity.getSiBiSeq())
+                    .siStatus(4).build();
+            scheduleInfoRepository.save(newEntity);
+        }
+        return new BasicResponse("true", "상태값이 완독으로 변경됐습니다.");
     }
 }

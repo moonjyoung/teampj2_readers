@@ -12,8 +12,8 @@ import lombok.Data;
 public class AddScheduleVO {
     @Schema(description = "회원 번호", example = "2")
     private Long uiSeq;
-    @Schema(description = "상태(1:읽기전 2:계획 3:완독)", example = "1")
-    private Integer status;
+    // @Schema(description = "상태(1:읽기전 3:계획 4:완독)", example = "1")
+    // private Integer status;
     @Schema(description = "책 번호", example = "1")
     private Long biSeq;
     @Schema(description = "시작 일(nullable)", example = "2023-02-07 01:23:45")
@@ -25,7 +25,7 @@ public class AddScheduleVO {
 
     public AddScheduleVO(ResponseBookInfoVO data) {
         this.uiSeq = data.getUiSeq();
-        this.status = data.getStatus();
+        // this.status = data.getStatus();
         this.biSeq = data.getBiSeq();
     }
     public AddScheduleVO() {}

@@ -1,7 +1,5 @@
 package com.readers.be3.entity;
 
-import java.time.LocalDateTime;
-
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.Immutable;
 

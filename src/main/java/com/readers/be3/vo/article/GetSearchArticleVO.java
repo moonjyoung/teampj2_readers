@@ -2,8 +2,6 @@ package com.readers.be3.vo.article;
 
 import java.time.LocalDateTime;
 
-import lombok.Data;
-
 // 게시글 목록 조회
 public interface GetSearchArticleVO {
     public Long getAiSeq();

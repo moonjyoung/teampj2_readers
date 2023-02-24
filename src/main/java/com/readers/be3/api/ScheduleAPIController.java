@@ -24,14 +24,14 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
-@Tag(name = "독서 일정 관리", description = "일정 추가, 조회, 수정, 삭제 API")
+@Tag(name = "독서 계획 관리", description = "계획 추가, 조회, 수정, 삭제 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/schedule")
 public class ScheduleAPIController {
     private final ScheduleService scheduleService;
 
-    @Operation(summary = "새 일정 추가", description = "새 일정을 추가합니다.")
+    @Operation(summary = "새 계획 추가", description = "내 서재에 있는 책을 계획으로 추가합니다.")
     @PostMapping("/add")
     public ResponseEntity<ViewScheduleVO> addSchedule(
         @Parameter(description = "스케쥴 입력 양식") @RequestBody AddScheduleVO data
@@ -47,16 +47,15 @@ public class ScheduleAPIController {
         }
     }
 
-    @Operation(summary = "일정 삭제", description = "일정을 삭제합니다.")
+    @Operation(summary = "계획 삭제", description = "이 책을 내 서재에서 삭제합니다.")
     @DeleteMapping("/delete")
     public ResponseEntity<BasicResponse> deleteSchedule(
         @Parameter(description = "삭제할 일정 번호") @RequestParam Long id
     ) {
-        scheduleService.deleteSchedule(id);
-        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(scheduleService.deleteSchedule(id), HttpStatus.OK);
     }
 
-    @Operation(summary = "일정 조회", description = "해당 회원이 등록한 일정을 조회합니다.")
+    @Operation(summary = "계획 조회", description = "해당 회원이 등록한 모든 계획을 조회합니다.(status가 3인것만 조회)")
     @GetMapping("/my")
     public ResponseEntity< List<ViewScheduleVO> > getSchedule(
         @Parameter(description = "회원 번호", example = "110") @RequestParam Long uiSeq
@@ -64,11 +63,19 @@ public class ScheduleAPIController {
         return new ResponseEntity<>(scheduleService.getSchedule(uiSeq), HttpStatus.OK);
     }
 
-    @Operation(summary = "일정 수정", description = "일정을 수정합니다.")
+    @Operation(summary = "계획 수정", description = "계획을 수정합니다.")
     @PostMapping("/update")
     public ResponseEntity<ViewScheduleVO> updateSchedule(
-        @Parameter(description = "회원정보 수정 양식") @RequestBody UpdateScheduleVO data
+        @Parameter(description = "계획 수정 양식") @RequestBody UpdateScheduleVO data
     ){
         return new ResponseEntity<>(scheduleService.updateSchedule(data), HttpStatus.CREATED);
+    }
+
+    @Operation(summary = "완독 상태 변경", description = "이 책을 완독으로 수정합니다.")
+    @PostMapping("/status")
+    public ResponseEntity<BasicResponse> patchScheduleStatus(
+        @Parameter(description = "계획 번호") @RequestParam Long id
+    ){
+        return new ResponseEntity<>(scheduleService.patchScheduleStatus(id), HttpStatus.OK);
     }
 }
