@@ -127,7 +127,7 @@ public class ArticleService {
                 ArticleImgEntity articleImgEntity = ArticleImgEntity.builder()
                         .aimgFilename(newFileName)
                         .aimgAiSeq(aiSeq)
-                        .aimgUri(RandomNameUtils.MakeRandomUri(contentType, aiSeq))
+                        .aimgUri(RandomNameUtils.MakeRandomUri(originalFileExtension, aiSeq))
                         .build();
                 articleImgRepo.save(articleImgEntity);
 

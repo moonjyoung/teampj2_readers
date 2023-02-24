@@ -51,7 +51,10 @@ class Be3ApplicationTests {
 	void testRandomName() {
 		// String type = "read";
 		// System.out.println(Integer.parseInt(type, 32));
-		String randName = RandomNameUtils.MakeRandomUri("first", 110L);
-		System.out.println(randName);
+		// String randName = RandomNameUtils.MakeRandomUri("update", 146L);
+		System.out.println(RandomNameUtils.MakeRandomUri("update", 146L));
+		System.out.println(RandomNameUtils.MakeRandomUri("jpg", 146L));
+		System.out.println(RandomNameUtils.MakeRandomUri("png", 146L));
+		System.out.println(RandomNameUtils.MakeRandomUri("gif", 146L));
 	}
 }
