@@ -1,6 +1,5 @@
 package com.readers.be3.vo.schedule;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.readers.be3.entity.ScheduleInfoEntity;
@@ -25,7 +24,7 @@ public class ViewScheduleVO {
     private LocalDateTime end;
     @Schema(description = "개인 작성", example = "감동적이었습니다.")
     private String description;
-    @Schema(description = "완독 여부(1.읽기전, 2.읽는중(2/22 기능 삭제), 3.독서계획, 4.완독)", example = "4")
+    @Schema(description = "완독 여부(1.읽기전, 3.독서계획, 4.완독)", example = "3")
     private Integer status;
 
     public ViewScheduleVO(ScheduleInfoEntity entity) {

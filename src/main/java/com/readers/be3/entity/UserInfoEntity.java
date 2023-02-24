@@ -1,6 +1,5 @@
 package com.readers.be3.entity;
 
-import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 

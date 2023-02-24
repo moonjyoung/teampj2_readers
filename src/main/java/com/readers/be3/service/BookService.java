@@ -1,7 +1,6 @@
 package com.readers.be3.service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -13,7 +12,6 @@ import com.readers.be3.entity.ScheduleInfoEntity;
 import com.readers.be3.repository.BookInfoRepository;
 import com.readers.be3.repository.ScheduleInfoRepository;
 import com.readers.be3.vo.book.InvalidInputException;
-import com.readers.be3.vo.book.PatchBookStatusVO;
 import com.readers.be3.vo.book.BookInfoAladinVO;
 import com.readers.be3.vo.book.GetBookListVO;
 import com.readers.be3.vo.book.GetMyBookVO;
@@ -58,14 +56,19 @@ public class BookService {
             }
         }
         else if (status==4) {
-            for (ScheduleInfoEntity entity : scheduleInfoRepository.findBySiUiSeqAndSiStatus(uiSeq, status)) {
+            for (ScheduleInfoEntity entity : scheduleInfoRepository.findBySiUiSeqAndSiStatusOrderBySiSeqDesc(uiSeq, status)) {
                 GetBookListVO vo = new GetBookListVO(entity);
                 list.add(vo);
             }
         }
-        else if (status==9) {
-            List<Integer> statusList = Arrays.asList(1, 3);
-            for (ScheduleInfoEntity entity : scheduleInfoRepository.findBySiUiSeqAndSiStatusInOrderBySiSeqDesc(uiSeq, statusList)) {
+        else if (status==3) {
+            for (ScheduleInfoEntity entity : scheduleInfoRepository.findBySiUiSeqAndSiStatusOrderBySiSeqDesc(uiSeq, status)) {
+                GetBookListVO vo = new GetBookListVO(entity);
+                list.add(vo);
+            }
+        }
+        else if (status==1) {
+            for (ScheduleInfoEntity entity : scheduleInfoRepository.findBySiUiSeqAndSiStatusOrderBySiSeqDesc(uiSeq, status)) {
                 GetBookListVO vo = new GetBookListVO(entity);
                 list.add(vo);
             }
@@ -73,15 +76,15 @@ public class BookService {
         return new GetMyBookVO(uiSeq, list);
     }
 
-    public BasicResponse patchBookStatus(PatchBookStatusVO data) {
-        if (scheduleInfoRepository.findById(data.getId()).isEmpty()) {
-            throw new InvalidInputException("이 회원이 등록하지 않은 책입니다.");
+    public BasicResponse patchBookStatus(Long id) {
+        if (scheduleInfoRepository.findById(id).isEmpty()) {
+            throw new InvalidInputException("존재하지 않는 정보입니다.");
         }
-        else if (scheduleInfoRepository.findById(data.getId()).get().getSiStatus()==data.getStatus()) {
-            throw new InvalidInputException("이미 설정된 상태값입니다.");
+        else if (scheduleInfoRepository.findById(id).get().getSiStatus()==4) {
+            throw new InvalidInputException("유효하지 않은 접근입니다.(이미 완독한 책)");
         }
         else {
-            ScheduleInfoEntity entity = scheduleInfoRepository.findById(data.getId()).get();
+            ScheduleInfoEntity entity = scheduleInfoRepository.findById(id).get();
             ScheduleInfoEntity newEntity = ScheduleInfoEntity.builder()
                     .siSeq(entity.getSiSeq())
                     .siContent(entity.getSiContent())
@@ -89,10 +92,16 @@ public class BookService {
                     .siEndDate(entity.getSiEndDate())
                     .siUiSeq(entity.getSiUiSeq())
                     .siBiSeq(entity.getSiBiSeq())
-                    .siStatus(data.getStatus()).build();
+                    .siStatus(4).build();
             scheduleInfoRepository.save(newEntity);
         }
         return new BasicResponse("true", "상태값이 변경됐습니다.");
+    }
+
+    public BasicResponse deleteBook(Long id) {
+        ScheduleInfoEntity entity = scheduleInfoRepository.findById(id).orElseThrow(() -> new InvalidInputException("존재하지 않는 정보입니다."));
+        scheduleInfoRepository.delete(entity);
+        return new BasicResponse("true", "삭제되었습니다.");
     }
 
 

@@ -2,8 +2,8 @@ package com.readers.be3.api;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,7 +17,6 @@ import com.readers.be3.utilities.ResponseMessageUtils;
 import com.readers.be3.vo.book.BookInfoAladinVO;
 import com.readers.be3.vo.book.GetMyBookVO;
 import com.readers.be3.vo.book.InvalidInputException;
-import com.readers.be3.vo.book.PatchBookStatusVO;
 import com.readers.be3.vo.book.ResponseBookInfoVO;
 import com.readers.be3.vo.response.BasicResponse;
 import com.readers.be3.vo.schedule.AddScheduleVO;
@@ -30,7 +29,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
-@Tag(name = "도서 정보 관리", description = "회원별 도서 정보 추가/조회/관리 API")
+@Tag(name = "도서 정보 관리", description = "회원별 도서 정보(내 서재) 추가/조회/변경/삭제 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/mybook")
@@ -58,7 +57,7 @@ public class BookAPIController {
         vo.setUiSeq(uiSeq);
 
         AddScheduleVO sVO = new AddScheduleVO(vo);
-        scheduleService.addSchedule(sVO);
+        scheduleService.addInitSchedule(sVO);
         return new ResponseEntity<>(vo, HttpStatus.CREATED);
     }
 
@@ -70,27 +69,37 @@ public class BookAPIController {
         })
     @GetMapping(value = "/list/{type}")
     public ResponseEntity<GetMyBookVO> getBookList(
-        @Parameter(description = "완독여부 정보를 받습니다.(all : 전체, plan : 읽을예정&계획, read : 완독)", example = "all") @PathVariable String type,
+        @Parameter(description = "완독여부 정보를 받습니다.(all : 전체, plan : 읽을예정, ing : 계획(달력에 추가), read : 완독)", example = "all") @PathVariable String type,
         @Parameter(description = "회원 번호", example = "110") @RequestParam Long uiSeq
     ) {
         Integer status = -1;
         if (type.equals("all")) status = 0;
         else if (type.equals("read")) status = 4;
-        else if (type.equals("plan")) status = 9;
+        else if (type.equals("ing")) status = 3;
+        else if (type.equals("plan")) status = 1;
         else throw new InvalidInputException("유효하지 않은 type입니다.");
         return new ResponseEntity<>(bookService.getMyBookList(uiSeq, status), HttpStatus.OK);
     }
 
-    @Operation(summary = "책 상태 변경", description = "책 상태(완독여부)를 변경합니다.",
+    @Operation(summary = "완독 상태 변경", description = "내 서재에 있는 책을 완독으로 변경합니다.",
         responses = {
             @ApiResponse(responseCode = "201", description = ResponseMessageUtils.TRUE),
             @ApiResponse(responseCode = "400", description = ResponseMessageUtils.FALSE,
                 content = @Content(schema = @Schema(implementation = BasicResponse.class)))
         })
     @PostMapping(value = "/status")
-    public ResponseEntity<BasicResponse> patchBookStatus(@RequestBody PatchBookStatusVO data) {
-        if (data.getId()==null || data.getStatus()==null) throw new InvalidInputException("데이터에 null값이 있습니다.");
-        return new ResponseEntity<>(bookService.patchBookStatus(data), HttpStatus.CREATED);
+    public ResponseEntity<BasicResponse> patchBookStatus(@RequestParam Long id) {
+        return new ResponseEntity<>(bookService.patchBookStatus(id), HttpStatus.CREATED);
+    }
+    @Operation(summary = "등록된 책 삭제", description = "내 서재에 등록된 책을 삭제합니다.",
+        responses = {
+            @ApiResponse(responseCode = "200", description = ResponseMessageUtils.TRUE),
+            @ApiResponse(responseCode = "400", description = ResponseMessageUtils.FALSE,
+                content = @Content(schema = @Schema(implementation = BasicResponse.class)))
+        })
+    @DeleteMapping(value = "/delete")
+    public ResponseEntity<BasicResponse> deleteBook(@RequestParam Long id) {
+        return new ResponseEntity<>(bookService.deleteBook(id), HttpStatus.OK);
     }
 
     // @Operation(summary = "책 정보 추가", description = "책을 추가합니다.",
