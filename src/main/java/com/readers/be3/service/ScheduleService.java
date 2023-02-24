@@ -47,6 +47,9 @@ public class ScheduleService {
         if (bookInfoRepository.findById(data.getBiSeq()).isEmpty()) {
             throw new InvalidInputException("존재하지 않는 책 번호 입니다.");
         }
+        if (scheduleInfoRepository.findBySiUiSeqAndSiBiSeq(data.getUiSeq(), data.getBiSeq())!=null) {
+            throw new InvalidInputException("이미 내 서재에 등록된 책입니다.");
+        }
         vo.setTitle(bookInfoRepository.findById(data.getBiSeq()).get().getBiName());
         vo.setDescription(data.getDescription());
         vo.setStart(sDate);
