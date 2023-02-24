@@ -278,7 +278,7 @@ public class UserInfoService {
 
       UserImgEntity imgEntity = UserImgEntity.builder()
       .uimgFilename(saveFilename)
-      .uimgUri(RandomNameUtils.MakeRandomUri("new", data.getUiSeq()))
+      .uimgUri(RandomNameUtils.MakeRandomUri("update", data.getUiSeq()))
       .uimgUiSeq(login.getUiSeq()).build();
 
       i_repo.save(imgEntity);
