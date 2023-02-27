@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.readers.be3.service.RankService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 
+@Tag(name = "Ranking")
 @RestController
 @RequestMapping("/api/rank")
 public class RankAPIController {
