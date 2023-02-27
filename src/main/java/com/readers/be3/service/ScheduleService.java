@@ -86,7 +86,10 @@ public class ScheduleService {
             throw new InvalidInputException("종료일은 시작일보다 빠를 수 없습니다.");
         }
         vo.setTitle(bookInfoRepository.findById(data.getBiSeq()).get().getBiName());
+        vo.setTitle(bookInfoRepository.findById(data.getBiSeq()).get().getBiName());
         vo.setDescription(data.getDescription());
+        vo.setStart(sDate);
+        vo.setEnd(eDate);
         vo.setStart(sDate);
         vo.setEnd(eDate);
         vo.setStatus(status);
@@ -100,6 +103,7 @@ public class ScheduleService {
                 .siBiSeq(data.getBiSeq()).build();
 
         scheduleInfoRepository.save(entity);
+        vo.setId(entity.getSiSeq());
         vo.setId(entity.getSiSeq());
         return vo;
     }

@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public interface GetCommentVO {
 
-    @Schema(description = "댓글 내용", example = "댓글 내용입니다.")
+    @Schema(name = "content", description = "댓글 내용", example = "댓글 내용입니다.")
     public String getAcContent();
     @Schema(description = "댓글 등록일")
     public LocalDateTime getAcRegDt();
@@ -17,4 +17,7 @@ public interface GetCommentVO {
     public Integer getAcStatus();
     @Schema(description = "게시글 번호", example = "1")
     public Long getAcAiSeq();
+    @Schema(description = "댓글 작성자 회원번호", example = "1")
+    public Long getAcUiSeq();
+    
 }

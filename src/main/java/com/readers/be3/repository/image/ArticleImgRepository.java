@@ -10,4 +10,5 @@ import com.readers.be3.vo.article.GetImgInfoVO;
 public interface ArticleImgRepository extends JpaRepository<ArticleImgEntity, Long> {
     public List<GetImgInfoVO> findByAimgAiSeq(Long aimgAiSeq);
     public ArticleImgEntity findByAimgUriEquals(String aimgUri);
+    
 }

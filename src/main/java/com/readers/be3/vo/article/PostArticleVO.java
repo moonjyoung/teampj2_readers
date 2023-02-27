@@ -26,6 +26,6 @@ public class PostArticleVO {
     private Integer uiSeq;
     @Schema(description = "책 번호", example = "1", required = true)
     private Integer biSeq;
-    @Schema(description = "첨부파일(이미지만 가능)")
+    @Schema(description = "첨부파일(이미지만 가능)", required = false)
     private List<MultipartFile> files;
 }

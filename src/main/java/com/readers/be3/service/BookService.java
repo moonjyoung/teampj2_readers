@@ -1,6 +1,7 @@
 package com.readers.be3.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -103,8 +104,6 @@ public class BookService {
         scheduleInfoRepository.delete(entity);
         return new BasicResponse("true", "삭제되었습니다.");
     }
-
-
     
     public List<ResponseBookInfoVO> searchBookInfo(String keyword, Integer sortNo) {
         List<ResponseBookInfoVO> list = new ArrayList<ResponseBookInfoVO>();
@@ -132,7 +131,6 @@ public class BookService {
             throw new InvalidInputException("유효하지 않은 검색조건 입니다.");
         }
     }
-
     // public Map<String, Object> addBookImg(MultipartFile file) {
     //     Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
 

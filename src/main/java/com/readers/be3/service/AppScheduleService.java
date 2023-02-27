@@ -8,6 +8,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
+import com.readers.be3.dto.response.OneCommentListDTO;
 import com.readers.be3.entity.OneCommentEntity;
 import com.readers.be3.repository.OneCommentRepository;
 

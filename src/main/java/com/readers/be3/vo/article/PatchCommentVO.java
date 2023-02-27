@@ -1,8 +1,9 @@
 package com.readers.be3.vo.article;
 
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,5 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PatchCommentVO {
-private String acContent;
+
+@Schema(description = "수정할 댓글 내용", example = "댓글을 수정할게요.", required = true)
+private String content;
 }
