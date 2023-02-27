@@ -24,7 +24,7 @@ private String content;
 @Schema(description = "상태(1.공개 2.비공개)", example = "1")
 private Integer aiPublic;
 @Schema(description = "회원 번호", example = "1")
-private Integer uiSeq;
+private Long uiSeq;
 @Schema(description = "게시글 번호", example = "1")
 private Long aiSeq;
 @Schema(description = "첨부 파일 목록")

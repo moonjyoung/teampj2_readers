@@ -26,11 +26,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.readers.be3.entity.ArticleCommentEntity;
 import com.readers.be3.entity.ArticleInfoEntity;
+import com.readers.be3.entity.ArticleRecommendEntity;
 import com.readers.be3.entity.UserInfoEntity;
 import com.readers.be3.entity.image.ArticleImgEntity;
 import com.readers.be3.exception.ReadersProjectException;
 import com.readers.be3.repository.ArticleCommentRepository;
 import com.readers.be3.repository.ArticleInfoRepository;
+import com.readers.be3.repository.ArticleRecommendRepository;
 import com.readers.be3.repository.SearchArticleViewRepository;
 import com.readers.be3.repository.UserInfoRepository;
 import com.readers.be3.repository.image.ArticleImgRepository;
@@ -54,7 +56,8 @@ public class ArticleService {
     @Autowired ArticleInfoRepository articleInfoRepo;
     @Autowired UserInfoRepository userInfoRepo;
     @Autowired SearchArticleViewRepository searchArticleRepo;
-    @Autowired ArticleCommentRepository ArticleCommentRepo;
+    @Autowired ArticleCommentRepository articleCommentRepo;
+    @Autowired ArticleRecommendRepository articleRecommendRepo;
     
 
     @Value("${file.image.article}") String ArticleImgPath;
@@ -157,33 +160,33 @@ public class ArticleService {
 // 게시글 조회
 // 검색(작성자, 제목, 내용)
 // pathvarible 로 검색타입(모든 게시글, 작성자, 제목, 내용 )
-// type => (all, writer, title, content)
-
-public List<ArticleSearchResponseVO> getArticleList(String type, String keyword, Integer page ,Integer size ){
+// type => (all, writer, title, content, book)
+public List<ArticleSearchResponseVO> getArticleList(String type, String keyword, Integer page ,Integer size){
     List<ArticleSearchResponseVO> response = null;
+    // 정렬기준 : 등록일순, 추천순
+    // 추천수로 정렬 arStatus
+    // if(sort == null) sort = "aiRegDt";
     if(page == null) page = 0;
     if(size == null) size = 10;
     PageRequest pageRequest = PageRequest.of(page,size,Sort.by("aiRegDt").descending());
 
     // 게시글 전체 검색
-if(type.equals("all")){
+if(type.equals("all"))
      response = searchArticleRepo.findAll(pageRequest);
-}
     // 작성자로 검색(닉네임)
-else if(type.equals("writer")){
+else if(type.equals("writer"))
      response = searchArticleRepo.searchNickname(keyword, pageRequest);
-}
  // 제목으로 검색
-else if(type.equals("title")){
+else if(type.equals("title"))
      response = searchArticleRepo.searchTitle(keyword, pageRequest);
-
-}
  // 내용으로 검색
-else if(type.equals("content")){
+else if(type.equals("content"))
      response = searchArticleRepo.searchContent(keyword, pageRequest);
-    }
+// ISBN으로 검색
+else if(type.equals("book"))
+    response = searchArticleRepo.searchIsbn(keyword, pageRequest);
 else{
-    throw new ReadersProjectException(ErrorResponse.of(HttpStatus.BAD_REQUEST, String.format("%s 잘못된 검색타입 입니다.")));
+    throw new ReadersProjectException(ErrorResponse.of(HttpStatus.BAD_REQUEST, String.format("잘못된 검색타입 입니다.")));
 }
 return response;
 }
@@ -191,7 +194,7 @@ return response;
 // 게시글 상세조회
 public ArticleDetailVO getArticleDetailInfo(Long aiSeq){
     ArticleInfoEntity detailInfo = articleInfoRepo.findByAiSeq(aiSeq);
-    List <GetCommentVO> showComment = ArticleCommentRepo.findByAcAiSeqAndAcStatus(aiSeq, 1);
+    List <GetCommentVO> showComment = articleCommentRepo.findByAcAiSeqAndAcStatus(aiSeq, 1);
     List <GetImgInfoVO> showImgInfo = articleImgRepo.findByAimgAiSeq(aiSeq);
     ArticleDetailVO response = null;
     if(detailInfo == null)
@@ -308,12 +311,12 @@ public CommentResponse postComment(Long acAiSeq, Long acUiSeq,PostWriterCommentV
     else if(user == null)
         throw new ReadersProjectException(ErrorResponse.of(HttpStatus.BAD_REQUEST, String.format("로그인을 해주세요.")));
     else{
-         comment = ArticleCommentEntity.builder()
+        comment = ArticleCommentEntity.builder()
                                         .acContent(data.getContent())
                                         .acAiSeq(acAiSeq)
                                         .acUiSeq(acUiSeq)
                                         .build();
-                                        ArticleCommentRepo.save(comment);
+                                        articleCommentRepo.save(comment);
 
         LocalDateTime regDt = LocalDateTime.now();
         response = CommentResponse.builder()
@@ -337,7 +340,7 @@ public CommentResponse patchComment(Long uiSeq, Long acSeq, PatchCommentVO data 
         throw new ReadersProjectException(ErrorResponse.of(HttpStatus.BAD_REQUEST, String.format("로그인을 해주세요.")));
     
     else {
-        ArticleCommentEntity commentInfo = ArticleCommentRepo.findByAcSeq(acSeq);
+        ArticleCommentEntity commentInfo = articleCommentRepo.findByAcSeq(acSeq);
         
         if(ObjectUtils.isEmpty(commentInfo))
             throw new ReadersProjectException(ErrorResponse.of(HttpStatus.BAD_REQUEST, String.format(" 존재하지 않는 댓글이에요.")));
@@ -358,7 +361,7 @@ public CommentResponse patchComment(Long uiSeq, Long acSeq, PatchCommentVO data 
             commentInfo.setAcModDt(modDt);
             commentInfo.setAcAiSeq(commentInfo.getAcAiSeq());
             commentInfo.setAcUiSeq(commentInfo.getAcUiSeq());
-            ArticleCommentRepo.save(commentInfo);
+            articleCommentRepo.save(commentInfo);
 
             response = CommentResponse.builder()
                 .acSeq(commentInfo.getAcSeq())
@@ -384,7 +387,7 @@ public ResponseMessageVO deleteComment(Long uiSeq, Long acSeq){
         throw new ReadersProjectException(ErrorResponse.of(HttpStatus.BAD_REQUEST, String.format("로그인을 해주세요.")));
     
     else {
-        ArticleCommentEntity commentInfo = ArticleCommentRepo.findByAcSeq(acSeq);
+        ArticleCommentEntity commentInfo = articleCommentRepo.findByAcSeq(acSeq);
         
         if(ObjectUtils.isEmpty(commentInfo))
             throw new ReadersProjectException(ErrorResponse.of(HttpStatus.BAD_REQUEST, String.format(" 존재하지 않는 댓글이에요.")));
@@ -397,7 +400,7 @@ public ResponseMessageVO deleteComment(Long uiSeq, Long acSeq){
         
         else {
             commentInfo.setAcStatus(2);
-            ArticleCommentRepo.save(commentInfo);
+            articleCommentRepo.save(commentInfo);
             response = ResponseMessageVO.builder()
             .message("댓글을 삭제했어요.")
             .status(true)
@@ -406,6 +409,36 @@ public ResponseMessageVO deleteComment(Long uiSeq, Long acSeq){
         }
     return response;
     }
+
+    // 게시글 추천/비추천
+    public ResponseMessageVO recommendAriticle(Long arUiSeq, Long arAiSeq, Integer arStatus){
+        ResponseMessageVO response = null;
+        ArticleRecommendEntity count = null;
+        // 게시글이 존재하는지 검사
+        ArticleInfoEntity article = articleInfoRepo.findByAiSeq(arAiSeq);
+        // 로그인 되어있는지 검사
+        UserInfoEntity user = userInfoRepo.findByUiSeq(arUiSeq);
+        if(user == null)            throw new ReadersProjectException(ErrorResponse.of(HttpStatus.BAD_REQUEST, String.format(" 로그인을 해주세요.")));
+        else if(article == null)    throw new ReadersProjectException(ErrorResponse.of(HttpStatus.BAD_REQUEST, String.format(" 존재하지 않는 게시글이에요.")));
+        else if(article.getAiStatus() == 2)  throw new ReadersProjectException(ErrorResponse.of(HttpStatus.BAD_REQUEST, String.format(" 삭제된 게시글이에요.")));
+        else{
+            count = ArticleRecommendEntity.builder()
+            .arStatus(arStatus)
+            .arAiSeq(arAiSeq)
+            .arUiSeq(arUiSeq)
+            .build();
+            articleRecommendRepo.save(count);
+            
+            response = ResponseMessageVO.builder()
+            .message("추천/비추천이 등록되었습니다.")
+            .status(true)
+            .build();
+        }
+        return response;
+    }
+
+    
+    
 }
     
 

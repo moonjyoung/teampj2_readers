@@ -22,4 +22,8 @@ public interface ArticleSearchResponseVO {
     public Integer getAiBiSeq();
     @Schema(name = "uiNickname", description = "작성자명(닉네임)", example="testNickname")
     public String getUiNickname();
+    @Schema(name = "uiNickname", description = "ISBN", example="9788979592566")
+    public String getBiIsbn();
+    @Schema(name = "uiNickname", description = "좋아요/싫어요 수", example="1")
+    public String getArStatus();
 }

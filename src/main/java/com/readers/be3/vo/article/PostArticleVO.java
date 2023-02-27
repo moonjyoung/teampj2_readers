@@ -23,9 +23,9 @@ public class PostArticleVO {
     @Schema(description = "공개여부(1. 공개, 2. 비공개)", example = "1", required = true)
     private Integer aiPublic;
     @Schema(description = "현재 로그인한 유저 번호", example = "1", required = true)
-    private Integer uiSeq;
+    private Long uiSeq;
     @Schema(description = "책 번호", example = "1", required = true)
-    private Integer biSeq;
+    private Long biSeq;
     @Schema(description = "첨부파일(이미지만 가능)", required = false)
     private List<MultipartFile> files;
 }

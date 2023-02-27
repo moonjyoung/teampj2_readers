@@ -24,4 +24,7 @@ public List<ArticleSearchResponseVO> searchContent(@Param("keyword") String keyw
 // 제목으로 게시글 검색
 @Query("SELECT a FROM SearchArticleView a WHERE a.aiStatus = 1 AND a.aiPurpose = 1 AND a.aiPublic = 1 AND a.aiTitle  like %:keyword% ")
 public List<ArticleSearchResponseVO> searchTitle(@Param("keyword") String keyword, PageRequest pageRequest);
+// isbn으로 게시글 검색
+@Query("SELECT a FROM SearchArticleView a WHERE a.aiStatus = 1 AND a.aiPurpose = 1 AND a.aiPublic = 1 AND a.biIsbn like %:keyword% ")
+public List<ArticleSearchResponseVO> searchIsbn(@Param("keyword") String keyword, PageRequest pageRequest);
 }

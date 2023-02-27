@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 
 public class ResponseMessageVO {
-    @Schema(description = "메시지", example = "삭제되었습니다.")
+    @Schema(description = "메시지", example = "성공적으로 처리했습니다.")
     private String message;
     @Schema(description = "성공여부(T/F", example = "true")
     private boolean status;

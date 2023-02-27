@@ -34,9 +34,9 @@ public class WriteArticleResponseVO {
     @Schema(description = "상태(1.공개 2.비공개)", example = "1")  
     private Integer aiPublic;
     @Schema(description = "책번호", example = "1")  
-    private Integer aiBiSeq;
+    private Long aiBiSeq;
     @Schema(description = "회원 번호", example = "1")  
-    private Integer aiUiSeq;
+    private Long aiUiSeq;
     @Schema(description = "업로드한 파일 목록")
     private List<GetImgInfoVO> imgFiles;
 

@@ -45,9 +45,9 @@ public class ArticleInfoEntity {
     @Schema(description = "상태(1.공개 2.비공개)", example = "1")  
     @Column(name = "ai_public") private Integer aiPublic;
     @Schema(description = "책번호", example = "1")  
-    @Column(name = "ai_bi_seq") private Integer aiBiSeq;
+    @Column(name = "ai_bi_seq") private Long aiBiSeq;
     @Schema(description = "회원 번호", example = "1")  
-    @Column(name = "ai_ui_seq") private Integer aiUiSeq;
+    @Column(name = "ai_ui_seq") private Long aiUiSeq;
 
    
     

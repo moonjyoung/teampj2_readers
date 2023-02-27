@@ -32,9 +32,9 @@ public class ArticleDetailVO {
     @Schema(description = "상태(1.공개 2.비공개)", example = "1")  
     private Integer aiPublic;
     @Schema(description = "책번호", example = "1")  
-    private Integer biSeq;
+    private Long biSeq;
     @Schema(description = "회원 번호", example = "1")  
-    private Integer uiSeq;
+    private Long uiSeq;
     @Schema(description = "이미지 목록")  
     List<GetImgInfoVO> showImgInfo;
     @Schema(description = "댓글목록")  
