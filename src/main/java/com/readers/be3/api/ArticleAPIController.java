@@ -5,17 +5,15 @@ import java.util.Map;
 
 import com.readers.be3.entity.ArticleCommentEntity;
 import com.readers.be3.entity.ArticleInfoEntity;
-<<<<<<< HEAD
+
+import com.readers.be3.entity.ArticleCommentEntity;
+import com.readers.be3.entity.ArticleInfoEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-=======
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.Param;
->>>>>>> rsj6
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,20 +29,20 @@ import org.springframework.http.MediaType;
 
 import com.readers.be3.service.ArticleService;
 import com.readers.be3.vo.article.ArticleDetailVO;
+import com.readers.be3.vo.article.ArticleDetailVO;
 import com.readers.be3.vo.article.ArticleModifyVO;
+import com.readers.be3.vo.article.GetSearchArticleVO;
+import com.readers.be3.vo.article.PatchCommentVO;
 import com.readers.be3.vo.article.GetSearchArticleVO;
 import com.readers.be3.vo.article.PatchCommentVO;
 import com.readers.be3.vo.article.PostArticleVO;
 import com.readers.be3.vo.article.PostWriterCommentVO;
-<<<<<<< HEAD
-import com.readers.be3.vo.article.responseVO.ArticleResponseVO;
-=======
 import com.readers.be3.vo.article.response.ArticleModifyResponse;
 import com.readers.be3.vo.article.response.ArticleSearchResponseVO;
 import com.readers.be3.vo.article.response.CommentResponse;
 import com.readers.be3.vo.article.response.ResponseMessageVO;
 import com.readers.be3.vo.article.response.WriteArticleResponseVO;
->>>>>>> rsj6
+import com.readers.be3.vo.article.responseVO.ArticleResponseVO;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -60,27 +58,14 @@ public class ArticleAPIController {
     // 게시글 등록 api
     @Operation(summary = "게시글 등록 api", description = "등록할 게시글 내용을 form-data로 받습니다.")
     @PostMapping(value = "/article", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-<<<<<<< HEAD
-    public ResponseEntity<ArticleInfoEntity> writeArticle(@ModelAttribute PostArticleVO data){
-        ArticleInfoEntity response = articleService.writeArticle(data);
-=======
     public ResponseEntity<WriteArticleResponseVO> writeArticle(@ModelAttribute PostArticleVO data){
         WriteArticleResponseVO response = articleService.writeArticle(data);
->>>>>>> rsj6
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     // 게시글 목록 조회및 검색 api
     @Operation(summary = "게시글 목록 조회 api", description = "게시글 리스트와 페이지 정보를 보여줍니다. type으로 검색 타입을 지정하고 keyword로 검색할 수 있습니다. *등록일 기준 내림차순으로 정렬합니다")
     @GetMapping("/article/{type}")
-<<<<<<< HEAD
-    public ResponseEntity<List<GetSearchArticleVO>> searchArticle(
-    @Parameter(description = "검색타입 all(전체), writer(작성자), title(제목), content(내용)", example = "all") @PathVariable String type,
-    @Parameter(description = "검색어(type=all일 경우 사용하지 않습니다.)") @RequestParam(required = false, value = "keyword") String keyword,
-    @Parameter(description = "페이지 정보 page(현재 페이지), size(한 페이지에 노출할 데이터 수), sort(정렬 조건(컬럼명,desc|asc)) *설정하지 않으면 기본값으로 설정됨") 
-    Pageable pageable){
-        List<GetSearchArticleVO> response = articleService.getArticleList(type, keyword, pageable);
-=======
     public ResponseEntity<List<ArticleSearchResponseVO>> searchArticle(
             @Parameter(description = "검색타입 all(전체), writer(작성자), title(제목), content(내용)", example = "all") @PathVariable String type,
             @Parameter(description = "검색어(type=all일 경우 사용하지 않습니다.)") @RequestParam(required = false, value = "keyword") String keyword,
@@ -89,7 +74,6 @@ public class ArticleAPIController {
             )
     {
         List<ArticleSearchResponseVO> response = articleService.getArticleList(type, keyword, page, size);
->>>>>>> rsj6
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -105,13 +89,8 @@ public class ArticleAPIController {
     // 게시글 수정api
     @Operation(summary = "게시글 수정 api", description = "등록된 게시글의 제목과 내용, 이미지, 공개,비공개 여부를 수정합니다.")
     @PatchMapping(value = "/article", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-<<<<<<< HEAD
-    public ResponseEntity<ArticleInfoEntity> modifyArticle(@ModelAttribute ArticleModifyVO data){
-        ArticleInfoEntity response = articleService.modifyArticle(data);
-=======
     public ResponseEntity<ArticleModifyResponse> modifyArticle(@ModelAttribute ArticleModifyVO data){
         ArticleModifyResponse response = articleService.modifyArticle(data);
->>>>>>> rsj6
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -129,18 +108,6 @@ public class ArticleAPIController {
     // 댓글 작성
     @Operation(summary = "댓글 작성 api", description = "댓글작성")
     @PostMapping("/article/comment")
-<<<<<<< HEAD
-    public ResponseEntity<ArticleCommentEntity> writeComment(
-    @RequestBody PostWriterCommentVO data)
-    {
-        ArticleCommentEntity response = articleService.postComment(data);
-    return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @Operation(summary = "댓글 수정 api", description = "댓글 수정")
-    @PatchMapping("/article/comment")
-    public ResponseEntity<Object> modifyComment(
-=======
     public ResponseEntity<CommentResponse> writeComment(
     @Parameter(description = "댓글을 달 게시글의 번호", example = "1", required = true) @RequestParam Long acAiSeq,    
     @Parameter(description = "현재 로그인된 사용자의 번호 ", example = "1", required = true) @RequestParam Long acUiSeq,
@@ -154,15 +121,10 @@ public class ArticleAPIController {
     @Operation(summary = "댓글 수정 api", description = "댓글 수정")
     @PatchMapping("/article/comment")
     public ResponseEntity<CommentResponse> modifyComment(
->>>>>>> rsj6
         @Parameter(description = "현재 로그인한 사용자 번호") @RequestParam Long uiSeq,
         @Parameter(description = "수정할 댓글 번호") @RequestParam Long acSeq,
         @RequestBody PatchCommentVO data
     ){
-<<<<<<< HEAD
-    Map<String, Object> resultMap = articleService.patchComment(uiSeq, acSeq, data);
-    return new ResponseEntity<Object>(resultMap, (HttpStatus)resultMap.get("code"));
-=======
         CommentResponse response = articleService.patchComment(uiSeq, acSeq, data);
     return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -177,6 +139,5 @@ public class ArticleAPIController {
         ResponseMessageVO response = articleService.deleteComment(uiSeq, acSeq);
         return new ResponseEntity<>(response, HttpStatus.OK);
         
->>>>>>> rsj6
     }
 }
