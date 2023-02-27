@@ -304,11 +304,14 @@ public class UserInfoService {
     return list;
   }
 
-  public ResponseUserArticleVO getUserArticle(Long uiSeq, Long biSeq) { //마이페이지 유저가 쓴 독후감과 평점 출력
+  public ResponseUserArticleVO getUserArticle(Long uiSeq, String isbn) { //마이페이지 유저가 쓴 독후감과 평점 출력
+    Long biSeq = b_repo.findByBiIsbnEquals(isbn).getBiSeq();
+    if (biSeq==null) biSeq = -1L;
     ArticleView aView = a_repo.findByUiSeqAndBiSeq(uiSeq, biSeq);
     OneCommentView oView = o_repo.findByUiSeqAndBiSeq(uiSeq, biSeq);
-    if (aView == null && oView ==null)
-    throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND, String.format("not found  uiSeq : %d , biSeq : %d ", uiSeq, biSeq)));
+    // if (aView == null && oView ==null) {
+      // throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND, String.format("not found  uiSeq : %d , biSeq : %d ", uiSeq, biSeq)));
+    // }
       return ResponseUserArticleVO.toResponse(aView, oView);
   }
 }

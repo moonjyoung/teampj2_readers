@@ -16,8 +16,10 @@ public class ViewScheduleVO {
     // private Long biSeq;
     @Schema(description = "일정 고유 번호")
     private Long id;
-    @Schema(description = "일정 이름(책 제목)", example = "생에 감사해")
+    @Schema(description = "일정 이름(책 제목)", example = "총 균 쇠 (무선 제작) - 무기.병균.금속은 인류의 운명을 어떻게 바꿨는가, 개정증보판")
     private String title;
+    @Schema(description = "책 표지 URI", example = "https://image.aladin.co.kr/product/61/50/cover/8970127240_2.jpg")
+    private String biUri;
     @Schema(description = "시작 일", example = "2023-02-07 01:23:45")
     private LocalDateTime start;
     @Schema(description = "종료 일(완독 일)", example = "2023-02-14 01:23:45")
@@ -30,6 +32,7 @@ public class ViewScheduleVO {
     public ViewScheduleVO(ScheduleInfoEntity entity) {
         this.id = entity.getSiSeq();
         this.title = entity.getBookInfoEntity().getBiName();
+        this.biUri = entity.getBookInfoEntity().getBiUri();
         this.start = entity.getSiStartDate();
         this.end = entity.getSiEndDate();
         this.description = entity.getSiContent();
