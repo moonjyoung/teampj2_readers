@@ -38,6 +38,8 @@ class Be3ApplicationTests {
 		System.out.println("isAfter : " + date1.isAfter(date2));
 		System.out.println("isBefore : " + date1.isBefore(date2));
 		System.out.println("isBefore : " + date3.isBefore(date2));
+
+		System.out.println("plusDays : " + date1.plusDays(1));
 	}
 
 	@Test

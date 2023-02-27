@@ -86,12 +86,12 @@ public class UserInfoController {
   //     return new ResponseEntity<>(uService.getUserBook(uiSeq),HttpStatus.OK);
   //   }  
 
-  @Operation(summary = "완독한 책의 평점, 독후감 확인", description = "회원정보 번호(uiSeq)와 도서번호(biSeq)를 통해 해당 도서의 평점과 독후감을 조회합니다.")
+  @Operation(summary = "완독한 책의 평점, 독후감 확인", description = "회원정보 번호(uiSeq)와 도서 ISBN(isbn)을 통해 해당 도서의 평점과 독후감을 조회합니다.")
     @GetMapping("/article") //평점, 독후감 확인
     public ResponseEntity<ResponseUserArticleVO> getUserArticle(
       @Parameter(description = "회원번호", example = "37") @RequestParam Long uiSeq, 
-      @Parameter(description = "책번호", example = "1") @RequestParam Long biSeq){
-      return new ResponseEntity<>(uService.getUserArticle(uiSeq, biSeq), HttpStatus.OK);
+      @Parameter(description = "책 ISBN", example = "9788979592566") @RequestParam String isbn){
+      return new ResponseEntity<>(uService.getUserArticle(uiSeq, isbn), HttpStatus.OK);
     }  
 
   @Operation(summary = "sns 로그인", description = "sns로 로그인합니다. 쎄션에 저장할 유저번호를 반환합니다")

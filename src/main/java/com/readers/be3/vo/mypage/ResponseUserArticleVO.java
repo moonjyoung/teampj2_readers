@@ -19,7 +19,7 @@ public class ResponseUserArticleVO {
     @Schema(description = "독후감 제목" , example = "어린왕자를 읽고")
     private String title;
     @Schema(description = "독후감 내용" , example = "번역이 너무 잘되있고 , 재밌는 책이었습니다")
-    private String contant;
+    private String content;
     @Schema(description = "독후감 날짜" , example = "2023-02-16 17:00:00")
     private LocalDateTime articleTime;
     
@@ -40,6 +40,9 @@ public class ResponseUserArticleVO {
 
     public static ResponseUserArticleVO toResponse(ArticleView articleView, OneCommentView oneCommentView) {
         // return ResponseUserArticleVO.builder().
+        if (articleView==null && oneCommentView==null) {
+            return new ResponseUserArticleVO();
+        }
         if(articleView == null)
         return new ResponseUserArticleVO(
             // articleView.getAiTitle(), 

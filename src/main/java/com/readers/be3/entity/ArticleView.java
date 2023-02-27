@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Table(name="article_view")
 public class ArticleView {
   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column (name="bi_seq") private Long biSeq;
+  @Column(name="bi_seq") private Long biSeq;
   @Column(name="ui_seq") private Long uiSeq;
   @Column(name="ai_title") private String aiTitle;
   @Column(name="ai_content") private String aiContent;

@@ -59,12 +59,12 @@ public class OneCommentController {
   }
 
   @Operation(summary = "한줄평 리스트", description = "등록된 한줄평을 10개단위로 책번호를통해 조회합니다")
-  @GetMapping("/{biSeq}/list")
-  public ResponseEntity<Page<OneCommentListDTO>> OneCommentList(@Parameter(description = "책번호", example = "1") @PathVariable("biSeq") Long biSeq,
+  @GetMapping("/{isbn}/list")
+  public ResponseEntity<Page<OneCommentListDTO>> OneCommentList(@Parameter(description = "책 ISBN", example = "9788979592566") @PathVariable("isbn") String isbn,
   @Parameter(description = "페이지", example = "0") @RequestParam Integer page){
     Sort sort2 = Sort.by("ocSeq").ascending();
     Pageable pageable = PageRequest.of(page, 10, sort2);
-    return new ResponseEntity<>(oneCommentService.oneCommentList(biSeq, pageable),HttpStatus.OK);
+    return new ResponseEntity<>(oneCommentService.oneCommentList(isbn, pageable),HttpStatus.OK);
 
   }
 
