@@ -14,10 +14,10 @@ import lombok.AllArgsConstructor;
 public class OneCommentListDTO {
   @Schema(description = "한줄평번호")
   @JsonProperty
-  private Long ocSeq;
+  private Long onecommentSeq;
   @Schema(description = "한줄평 내용")
   @JsonProperty
-  private String comment;
+  private String content;
   @Schema(description = "한줄평 점수")
   @JsonProperty
   private Integer score;
@@ -26,10 +26,10 @@ public class OneCommentListDTO {
   private LocalDateTime regDt;
   @Schema(description = "유저 닉네임")
   @JsonProperty
-  private String userNickName;
+  private String nickName;
   @Schema(description = "유저 경험치")
   @JsonProperty
-  private Integer userPoint;
+  private Integer totalPoint;
 
   public static OneCommentListDTO toDto(OneCommentEntity entity){
     return new OneCommentListDTO(entity.getOcSeq(), 

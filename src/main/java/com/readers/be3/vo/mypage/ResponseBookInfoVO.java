@@ -15,6 +15,6 @@ public class ResponseBookInfoVO {
 
     public ResponseBookInfoVO(BookInfoEntity bInfoEntity) {
         this.bookTitle = bInfoEntity.getBiName();
-        this.uri = bInfoEntity.getBookImgEntity().getBimgUri();
+        this.uri = bInfoEntity.getBiUri();
     }
 }

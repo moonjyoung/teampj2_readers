@@ -25,14 +25,16 @@ import lombok.NoArgsConstructor;
 @Immutable
 @Table (name = "search_article_view")
 public class SearchArticleView {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ai_seq") private Long aiSeq;
-    @Column(name = "ai_title") private String aiTitle;
-    @Column(name = "ai_status") private Integer aiStatus;
-    @Column(name = "ai_purpose") private Integer aiPurpose;
-    @Column(name = "ai_public") private Integer aiPublic;
-    @Column(name = "ai_bi_seq") private Integer aiBiSeq;
-    @Column(name = "ai_ui_seq") private Integer aiUiSeq;
-    @Column(name = "ui_nickname") private String uiNickname;
-    
+@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+@Column(name = "ai_seq") private Integer aiSeq;
+@Column(name = "ai_title") private String aiTitle;
+@Column(name = "ai_content") private String aiContent;
+@Column(name = "ai_reg_dt") private LocalDateTime aiRegDt;
+@Column(name = "ai_mod_dt") private LocalDateTime aiModDt;
+@Column(name = "ai_status") private Integer aiStatus;
+@Column(name = "ai_purpose") private Integer aiPurpose;
+@Column(name = "ai_public") private Integer aiPublic;
+@Column(name = "ai_ui_seq") private Integer aiUiSeq;
+@Column(name = "ai_bi_seq") private Integer aiBiSeq;
+@Column(name = "ui_nickname") private String uiNickname;
 }

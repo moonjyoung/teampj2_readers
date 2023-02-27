@@ -3,8 +3,12 @@ package com.readers.be3.api;
 import java.util.List;
 import java.util.Map;
 
+import com.readers.be3.entity.ArticleCommentEntity;
+import com.readers.be3.entity.ArticleInfoEntity;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,15 +24,24 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.MediaType;
 
 import com.readers.be3.service.ArticleService;
+import com.readers.be3.vo.article.ArticleDetailVO;
 import com.readers.be3.vo.article.ArticleModifyVO;
+import com.readers.be3.vo.article.GetSearchArticleVO;
+import com.readers.be3.vo.article.PatchCommentVO;
 import com.readers.be3.vo.article.PostArticleVO;
 import com.readers.be3.vo.article.PostWriterCommentVO;
+import com.readers.be3.vo.article.response.ArticleModifyResponse;
+import com.readers.be3.vo.article.response.ArticleSearchResponseVO;
+import com.readers.be3.vo.article.response.CommentResponse;
+import com.readers.be3.vo.article.response.ResponseMessageVO;
+import com.readers.be3.vo.article.response.WriteArticleResponseVO;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Nullable;
 
-@Tag(name = "게시글 및 댓글")
+@Tag(name = "게시글 및 댓글" , description ="게시글 등록/수정/조회/검색/삭제, 댓글 등록/수정/삭제 API")
 @RestController
 @RequestMapping("/api")
 public class ArticleAPIController {
@@ -37,58 +50,86 @@ public class ArticleAPIController {
     // 게시글 등록 api
     @Operation(summary = "게시글 등록 api", description = "등록할 게시글 내용을 form-data로 받습니다.")
     @PostMapping(value = "/article", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> writeArticle(@ModelAttribute PostArticleVO data){
-        Map <String, Object> resultMap = articleService.writeArticle(data);
-        return new ResponseEntity<Object>(resultMap, (HttpStatus)resultMap.get("code"));
+    public ResponseEntity<WriteArticleResponseVO> writeArticle(@ModelAttribute PostArticleVO data){
+        WriteArticleResponseVO response = articleService.writeArticle(data);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     // 게시글 목록 조회및 검색 api
-    @Operation(summary = "게시글 목록 조회 api", description = "게시글 리스트와 페이지 정보를 보여줍니다. type으로 검색 타입을 지정하고 keyword로 검색할 수 있습니다. *type=all     (전체게시글 조회)일 경우 keyword는 필요하지 않습니다.")
+    @Operation(summary = "게시글 목록 조회 api", description = "게시글 리스트와 페이지 정보를 보여줍니다. type으로 검색 타입을 지정하고 keyword로 검색할 수 있습니다. *등록일 기준 내림차순으로 정렬합니다")
     @GetMapping("/article/{type}")
-    public ResponseEntity<Object> searchArticle(
-    @Parameter(description = "검색타입 all(전체), writer(작성자), title(제목), content(내용)", example = "all") @PathVariable String type,
-    @Parameter(description = "검색어(type=all일 경우 사용하지 않습니다.)") @RequestParam(required = false, value = "keyword") String keyword,
-    @Parameter(description = "페이지 정보 page(현재 페이지), size(한 페이지에 노출할 데이터 수), sort(정렬 조건(컬럼명,desc|asc)) *설정하지 않으면 기본값으로 설정됨") 
-    Pageable pageable ){
-        Map<String, Object> resultMap = articleService.getArticleList(type, keyword, pageable);
-        return new ResponseEntity<Object>(resultMap, (HttpStatus)resultMap.get("code"));
+    public ResponseEntity<List<ArticleSearchResponseVO>> searchArticle(
+            @Parameter(description = "검색타입 all(전체), writer(작성자), title(제목), content(내용)", example = "all") @PathVariable String type,
+            @Parameter(description = "검색어(type=all일 경우 사용하지 않습니다.)") @RequestParam(required = false, value = "keyword") String keyword,
+            @Parameter(description = "page default=0", example = "0") @RequestParam @Nullable Integer page,
+            @Parameter(description = "size defult=10", example = "10") @RequestParam @Nullable Integer size
+            )
+    {
+        List<ArticleSearchResponseVO> response = articleService.getArticleList(type, keyword, page, size);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     // 게시글 상세조회 api
     @Operation(summary = "게시글 상세 조회", description = "게시글 번호(aiSeq)에 해당하는 게시글을 상세조회합니다.")
     @GetMapping("/article/detail")
-    public ResponseEntity<Object> detailArticle(
+    public ResponseEntity<ArticleDetailVO> detailArticle(
         @Parameter(description = "검색할 게시글 번호", example = "1") @RequestParam Long aiSeq){
-            Map<String, Object> resultMap = articleService.getArticleDetailInfo(aiSeq);
-            return new ResponseEntity<Object>(resultMap, (HttpStatus)resultMap.get("code"));
+            ArticleDetailVO response = articleService.getArticleDetailInfo(aiSeq);
+            return new ResponseEntity<>(response, HttpStatus.OK);
     }
     
-    // 게시글 수정api (이미지 수정 작업중)
+    // 게시글 수정api
     @Operation(summary = "게시글 수정 api", description = "등록된 게시글의 제목과 내용, 이미지, 공개,비공개 여부를 수정합니다.")
-    @PatchMapping("/article")
-    public ResponseEntity<Object> modifyArticle(@RequestParam Long uiSeq, @RequestParam Long aiSeq, @RequestBody ArticleModifyVO data){
-        Map<String, Object> resultMap = articleService.modifyArticle(uiSeq, aiSeq, data);
-        return new ResponseEntity<Object>(resultMap, (HttpStatus)resultMap.get("code"));
+    @PatchMapping(value = "/article", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ArticleModifyResponse> modifyArticle(@ModelAttribute ArticleModifyVO data){
+        ArticleModifyResponse response = articleService.modifyArticle(data);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 
     // 게시글 삭제
-    @Operation(summary = "게시글 삭제 api", description = "게시글을 삭제합니다(ai_public => 2로 변경).")
+    @Operation(summary = "게시글 삭제 api", description = "게시글을 삭제합니다.")
     @PatchMapping("/article/delete")
-    public ResponseEntity<Object> deleteArticle(
+    public ResponseEntity<ResponseMessageVO> deleteArticle(
         @Parameter(description = "현재 로그인한 사용자 번호") @RequestParam Long uiSeq,
         @Parameter(description = "삭제할 게시글 번호") @RequestParam Long aiSeq){
-        Map<String, Object> resultMap = articleService.deleteArticle(uiSeq, aiSeq);
-        return new ResponseEntity<Object>(resultMap, (HttpStatus)resultMap.get("code"));
+            ResponseMessageVO response = articleService.deleteArticle(uiSeq, aiSeq);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     // 댓글 작성
     @Operation(summary = "댓글 작성 api", description = "댓글작성")
     @PostMapping("/article/comment")
-    public ResponseEntity<Object> writeComment(
+    public ResponseEntity<CommentResponse> writeComment(
+    @Parameter(description = "댓글을 달 게시글의 번호", example = "1", required = true) @RequestParam Long acAiSeq,    
+    @Parameter(description = "현재 로그인된 사용자의 번호 ", example = "1", required = true) @RequestParam Long acUiSeq,
     @RequestBody PostWriterCommentVO data)
     {
-    Map<String, Object> resultMap = articleService.postWriteComment(data);
-    return new ResponseEntity<Object>(resultMap, (HttpStatus)resultMap.get("code"));
+        CommentResponse response = articleService.postComment(acAiSeq, acUiSeq, data);
+    return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    // 댓글 수정
+    @Operation(summary = "댓글 수정 api", description = "댓글 수정")
+    @PatchMapping("/article/comment")
+    public ResponseEntity<CommentResponse> modifyComment(
+        @Parameter(description = "현재 로그인한 사용자 번호") @RequestParam Long uiSeq,
+        @Parameter(description = "수정할 댓글 번호") @RequestParam Long acSeq,
+        @RequestBody PatchCommentVO data
+    ){
+        CommentResponse response = articleService.patchComment(uiSeq, acSeq, data);
+    return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    // 댓글 삭제
+    @Operation(summary = "댓글 삭제 api", description = "댓글 삭제")
+    @PatchMapping("/article/comment/delete")
+    public ResponseEntity<ResponseMessageVO> deleteComment(
+        @Parameter(description = "현재 로그인한 사용자 번호") @RequestParam Long uiSeq,
+        @Parameter(description = "삭제할 댓글 번호") @RequestParam Long acSeq)
+    {
+        ResponseMessageVO response = articleService.deleteComment(uiSeq, acSeq);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+        
     }
 }

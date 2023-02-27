@@ -1,158 +1,171 @@
 package com.readers.be3.service;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.LinkedHashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
+import java.util.NoSuchElementException;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.readers.be3.entity.BookInfoEntity;
-import com.readers.be3.entity.image.BookImgEntity;
+import com.readers.be3.entity.ScheduleInfoEntity;
 import com.readers.be3.repository.BookInfoRepository;
-import com.readers.be3.repository.image.BookImgRepository;
+import com.readers.be3.repository.ScheduleInfoRepository;
 import com.readers.be3.vo.book.InvalidInputException;
-import com.readers.be3.vo.book.BookInfoImgVO;
+import com.readers.be3.vo.book.PatchBookStatusVO;
+import com.readers.be3.vo.book.BookInfoAladinVO;
+import com.readers.be3.vo.book.GetBookListVO;
+import com.readers.be3.vo.book.GetMyBookVO;
 import com.readers.be3.vo.book.ResponseBookInfoVO;
+import com.readers.be3.vo.response.BasicResponse;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class BookService {
-    private final BookInfoRepository bookInfoRepository;
-    private final BookImgRepository bookImgRepository;
-    @Value("${file.image.book}") String book_img_path;
+    private final BookInfoRepository bookInfoAladinRepository;
+    private final ScheduleInfoRepository scheduleInfoRepository;
+    // @Value("${file.image.book}") String book_img_path;
 
-    public ResponseBookInfoVO addBookInfo(BookInfoImgVO data) {
-        BookInfoEntity entity = BookInfoEntity.builder()
-                .biName(data.getBiName())
-                .biAuthor(data.getBiAuthor())
-                .biPublisher(data.getBiPublisher())
-                .biPage(data.getBiPage())
-                .biIsbn(data.getBiIsbn()).build();
-                
-        String originalFileName = data.getImg().getOriginalFilename();
-        String[] split = originalFileName.split("\\.");
-        String ext = split[split.length - 1];
-        String filename = "";
-        for (int i=0; i<split.length-1; i++) {
-            filename += split[i];
-        }
-        String saveFilename = "book_" + Calendar.getInstance().getTimeInMillis() + "." + ext;
-        
-        Path forderLocation = Paths.get(book_img_path);
-        Path targetFile = forderLocation.resolve(saveFilename);
-        
-        try {
-            Files.copy(data.getImg().getInputStream(), targetFile, StandardCopyOption.REPLACE_EXISTING);
-        }
-        catch (Exception e) {
-            throw new InvalidInputException(e.getMessage());
-        }
-        
-        bookInfoRepository.save(entity);
-
-        BookImgEntity imgEntity = BookImgEntity.builder()
-                .bimgFilename(saveFilename)
-                .bimgUri(filename)
-                .bimgBiSeq(entity.getBiSeq()).build();
-        
-        bookImgRepository.save(imgEntity);
-        ResponseBookInfoVO vo = new ResponseBookInfoVO(data);
-        vo.setBimgUri(imgEntity.getBimgUri());
-
-        return vo;
-    }
-    
-    public List<ResponseBookInfoVO> searchBookInfo(String keyword) {
-        List<ResponseBookInfoVO> list = new ArrayList<ResponseBookInfoVO>();
-
-        for (BookInfoEntity data : bookInfoRepository.findByBiNameContainsOrBiAuthorContainsOrBiPublisherContains(keyword, keyword, keyword)) {
-            System.out.println(data.getBiName());
+    public ResponseBookInfoVO addBookInfo(BookInfoAladinVO data) {
+        if (bookInfoAladinRepository.findByBiIsbnEquals(data.getBiIsbn())==null) {
+            BookInfoEntity entity = BookInfoEntity.builder()
+                    .biName(data.getBiName())
+                    .biAuthor(data.getBiAuthor())
+                    .biPublisher(data.getBiPublisher())
+                    .biPage(data.getBiPage())
+                    .biIsbn(data.getBiIsbn())
+                    .biUri(data.getBimgUri()).build();
+            bookInfoAladinRepository.save(entity);
             ResponseBookInfoVO vo = new ResponseBookInfoVO(data);
-            // nullpointexception 회피코드. 나중에 check해서 수정
-            if (bookImgRepository.findByBimgBiSeq(data.getBiSeq())==null) {
-                vo.setBimgUri("");
+            vo.setBiSeq(entity.getBiSeq());
+            return vo;
+        }
+        else {
+            ResponseBookInfoVO vo = new ResponseBookInfoVO(bookInfoAladinRepository.findByBiIsbnEquals(data.getBiIsbn()));
+            return vo;
+        }
+    }
+
+    public GetMyBookVO getMyBookList(Long uiSeq, Integer status) {
+        List<GetBookListVO> list = new ArrayList<GetBookListVO>();
+        if (status==0) {
+            for (ScheduleInfoEntity entity : scheduleInfoRepository.findBySiUiSeqOrderBySiSeqDesc(uiSeq)) {
+                GetBookListVO vo = new GetBookListVO(entity);
+                list.add(vo);
             }
-            else {
-                vo.setBimgUri(bookImgRepository.findByBimgBiSeq(data.getBiSeq()).getBimgUri());
+        }
+        else if (status==4) {
+            for (ScheduleInfoEntity entity : scheduleInfoRepository.findBySiUiSeqAndSiStatus(uiSeq, status)) {
+                GetBookListVO vo = new GetBookListVO(entity);
+                list.add(vo);
             }
-            list.add(vo);
+        }
+        else if (status==9) {
+            List<Integer> statusList = Arrays.asList(1, 3);
+            for (ScheduleInfoEntity entity : scheduleInfoRepository.findBySiUiSeqAndSiStatusInOrderBySiSeqDesc(uiSeq, statusList)) {
+                GetBookListVO vo = new GetBookListVO(entity);
+                list.add(vo);
+            }
+        }
+        return new GetMyBookVO(uiSeq, list);
+    }
+
+    public BasicResponse patchBookStatus(PatchBookStatusVO data) {
+        if (scheduleInfoRepository.findById(data.getId()).isEmpty()) {
+            throw new InvalidInputException("이 회원이 등록하지 않은 책입니다.");
+        }
+        else if (scheduleInfoRepository.findById(data.getId()).get().getSiStatus()==data.getStatus()) {
+            throw new InvalidInputException("이미 설정된 상태값입니다.");
+        }
+        else {
+            ScheduleInfoEntity entity = scheduleInfoRepository.findById(data.getId()).get();
+            ScheduleInfoEntity newEntity = ScheduleInfoEntity.builder()
+                    .siSeq(entity.getSiSeq())
+                    .siContent(entity.getSiContent())
+                    .siStartDate(entity.getSiStartDate())
+                    .siEndDate(entity.getSiEndDate())
+                    .siUiSeq(entity.getSiUiSeq())
+                    .siBiSeq(entity.getSiBiSeq())
+                    .siStatus(data.getStatus()).build();
+            scheduleInfoRepository.save(newEntity);
+        }
+        return new BasicResponse("true", "상태값이 변경됐습니다.");
+    }
+
+
+    
+    public List<ResponseBookInfoVO> searchBookInfo(String keyword, Integer sortNo) {
+        List<ResponseBookInfoVO> list = new ArrayList<ResponseBookInfoVO>();
+        Sort sort = sortBySortNo(sortNo);
+        if (bookInfoAladinRepository.findByBiNameContainsOrBiAuthorContainsOrBiPublisherContains(keyword, keyword, keyword, sort).size()==0) {
+            throw new NoSuchElementException();
+        }
+        else {
+            for (BookInfoEntity data : bookInfoAladinRepository.findByBiNameContainsOrBiAuthorContainsOrBiPublisherContains(keyword, keyword, keyword, sort)) {
+                ResponseBookInfoVO vo = new ResponseBookInfoVO(data);
+                list.add(vo);
+            }
         }
         return list;
     }
 
-    public Map<String, Object> addBookImg(MultipartFile file) {
-        Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
-
-        String originalFileName = file.getOriginalFilename();
-        String[] split = originalFileName.split("\\.");
-        String ext = split[split.length - 1];
-        String filename = "";
-        for (int i=0; i<split.length-1; i++) {
-            filename += split[i];
+    private Sort sortBySortNo(Integer sortNo) {
+        if (sortNo==null || sortNo==1) {
+            return Sort.by(Sort.Direction.DESC, "biSeq");
         }
-        String saveFilename = "book_" + Calendar.getInstance().getTimeInMillis() + "." + ext;
-        
-        Path forderLocation = Paths.get(book_img_path);
-        Path targetFile = forderLocation.resolve(saveFilename);
-        
-        try {
-            Files.copy(file.getInputStream(), targetFile, StandardCopyOption.REPLACE_EXISTING);
+        else if (sortNo==2) {
+            return Sort.by(Sort.Direction.DESC, "biName");
         }
-        catch (Exception e) {
-            resultMap.put("status", false);
-            resultMap.put("message", "파일 전송에 실패했습니다..");
-            resultMap.put("code", HttpStatus.INTERNAL_SERVER_ERROR);
-            return resultMap;
+        else {
+            throw new InvalidInputException("유효하지 않은 검색조건 입니다.");
         }
-
-        BookImgEntity data = BookImgEntity.builder()
-                .bimgFilename(saveFilename)
-                .bimgUri(filename).build();
-        
-        bookImgRepository.save(data);
-
-        resultMap.put("status", true);
-        resultMap.put("message", "새로운 책 이미지가 등록됐습니다.");
-        resultMap.put("code", HttpStatus.OK);
-        return resultMap;
     }
 
-    public String getFilenameByUri(String uri) {
-        BookImgEntity img = bookImgRepository.findTopByBimgUri(uri);
-        if (img==null) {
-            throw new InvalidInputException("존재하지 않는 파일입니다.");
-        }
-        return img.getBimgFilename();
-    }
-
-    // 이미지 파일 업로드가 필요없고 알라딘에 있는 이미지 주소를 땡겨오면 되는 경우
-    // public Map<String, Object> addBookInfoTest(BookInfoImgUrlVO data) {
+    // public Map<String, Object> addBookImg(MultipartFile file) {
     //     Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
 
-    //     BookInfoTestEntity entity = BookInfoTestEntity.builder()
-    //             .bitName(data.getBiName())
-    //             .bitAuthor(data.getBiAuthor())
-    //             .bitPublisher(data.getBiPublisher())
-    //             .bitPage(data.getBiPage())
-    //             .bitIsbn(data.getBiIsbn())
-    //             .bitCover(data.getBimgUri()).build();
+    //     String originalFileName = file.getOriginalFilename();
+    //     String[] split = originalFileName.split("\\.");
+    //     String ext = split[split.length - 1];
+    //     String filename = "";
+    //     for (int i=0; i<split.length-1; i++) {
+    //         filename += split[i];
+    //     }
+    //     String saveFilename = "book_" + Calendar.getInstance().getTimeInMillis() + "." + ext;
         
-    //     testRepository.save(entity);
+    //     Path forderLocation = Paths.get(book_img_path);
+    //     Path targetFile = forderLocation.resolve(saveFilename);
+        
+    //     try {
+    //         Files.copy(file.getInputStream(), targetFile, StandardCopyOption.REPLACE_EXISTING);
+    //     }
+    //     catch (Exception e) {
+    //         resultMap.put("status", false);
+    //         resultMap.put("message", "파일 전송에 실패했습니다..");
+    //         resultMap.put("code", HttpStatus.INTERNAL_SERVER_ERROR);
+    //         return resultMap;
+    //     }
+
+    //     BookImgEntity data = BookImgEntity.builder()
+    //             .bimgFilename(saveFilename)
+    //             .bimgUri(filename).build();
+        
+    //     bookImgRepository.save(data);
 
     //     resultMap.put("status", true);
-    //     resultMap.put("message", "새로운 책 정보가 등록됐습니다.");
+    //     resultMap.put("message", "새로운 책 이미지가 등록됐습니다.");
     //     resultMap.put("code", HttpStatus.OK);
     //     return resultMap;
+    // }
+
+    // public String getFilenameByUri(String uri) {
+    //     BookImgEntity img = bookImgRepository.findTopByBimgUri(uri);
+    //     if (img==null) {
+    //         throw new InvalidInputException("존재하지 않는 파일입니다.");
+    //     }
+    //     return img.getBimgFilename();
     // }
 }

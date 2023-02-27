@@ -7,6 +7,7 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import com.readers.be3.entity.ArticleView;
 import com.readers.be3.entity.BookInfoEntity;
-import com.readers.be3.entity.FinishedBookView;
 import com.readers.be3.entity.MyPageView;
 import com.readers.be3.entity.OneCommentView;
 import com.readers.be3.entity.ScheduleInfoEntity;
@@ -29,13 +29,13 @@ import com.readers.be3.exception.ErrorResponse;
 import com.readers.be3.exception.ReadersProjectException;
 import com.readers.be3.repository.ArticleViewRepository;
 import com.readers.be3.repository.BookInfoRepository;
-import com.readers.be3.repository.FinishedBookViewRepository;
 import com.readers.be3.repository.MyPageViewRepository;
 import com.readers.be3.repository.OneCommentViewRepository;
 import com.readers.be3.repository.UserInfoRepository;
 import com.readers.be3.repository.ScheduleInfoRepository;
 import com.readers.be3.repository.image.UserImgRepository;
 import com.readers.be3.utilities.AESAlgorithm;
+import com.readers.be3.utilities.RandomNameUtils;
 import com.readers.be3.vo.mypage.RequestUserVO;
 import com.readers.be3.vo.mypage.ResponseBookInfoVO;
 import com.readers.be3.vo.mypage.ResponseFinishedBookVO;
@@ -55,7 +55,6 @@ public class UserInfoService {
     @Autowired MyPageViewRepository v_repo;
     @Autowired ArticleViewRepository a_repo;
     @Autowired OneCommentViewRepository o_repo;
-    @Autowired FinishedBookViewRepository f_repo;
     @Autowired BookInfoRepository b_repo;
     
     @Value("${file.image.user}") String user_img_path;
@@ -137,6 +136,7 @@ public class UserInfoService {
     }
     else {
       response = RequestUserVO.builder()
+      .uiSeq(loginUser.getUiSeq())
       .status(true)
       .message("로그인 되었습니다")
       .build();
@@ -160,7 +160,9 @@ public class UserInfoService {
           .build();
         }
         else {
+          Date now = new Date();
         login.setUiStatus(2); //상태값 변경
+        login.setUiLeaveDt(now);
         u_repo.save(login); //변경한 값 저장
         response = RequestUserVO.builder()
           .status(true)
@@ -192,6 +194,12 @@ public class UserInfoService {
           .message(data.getUiNickname()+"닉네임에 공백문자나 특수문자를 사용 할 수 없습니다")
           .build();
         } 
+        else if(data.getUiNickname()=="") {
+          response = RequestUserVO.builder()
+          .status(false)
+          .message(data.getUiNickname()+"잘못된 요청입니다")
+          .build();
+        }
         else {
         login.setUiNickname(data.getUiNickname());
         u_repo.save(login);
@@ -218,7 +226,7 @@ public class UserInfoService {
       for (int i=0; i<split.length-1; i++) {
         filename += split[i];
       }
-      String saveFilename = "user_" + LocalDateTime.now().getNano() + "."+ext;
+      String saveFilename = "user_" + Calendar.getInstance().getTimeInMillis() + "."+ext;
       
       Path forderLocation = Paths.get(user_img_path);
       Path targetFile = forderLocation.resolve(saveFilename);
@@ -235,7 +243,7 @@ public class UserInfoService {
 
       UserImgEntity imgEntity = UserImgEntity.builder()
       .uimgFilename(saveFilename)
-      .uimgUri(filename)
+      .uimgUri(RandomNameUtils.MakeRandomUri("first", data.getUiSeq()))
       .uimgUiSeq(login.getUiSeq()).build();
 
       i_repo.save(imgEntity);
@@ -253,7 +261,7 @@ public class UserInfoService {
       for (int i=0; i<split.length-1; i++) {
         filename += split[i];
       }
-      String saveFilename = "user_" + LocalDateTime.now().getNano() + "."+ext;
+      String saveFilename = "user_" + Calendar.getInstance().getTimeInMillis() + "."+ext;
       
       Path forderLocation = Paths.get(user_img_path);
       Path targetFile = forderLocation.resolve(saveFilename);
@@ -270,7 +278,7 @@ public class UserInfoService {
 
       UserImgEntity imgEntity = UserImgEntity.builder()
       .uimgFilename(saveFilename)
-      .uimgUri(filename)
+      .uimgUri(RandomNameUtils.MakeRandomUri("update", data.getUiSeq()))
       .uimgUiSeq(login.getUiSeq()).build();
 
       i_repo.save(imgEntity);

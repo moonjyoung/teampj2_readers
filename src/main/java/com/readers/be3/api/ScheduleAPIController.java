@@ -50,16 +50,16 @@ public class ScheduleAPIController {
     @Operation(summary = "일정 삭제", description = "일정을 삭제합니다.")
     @DeleteMapping("/delete")
     public ResponseEntity<BasicResponse> deleteSchedule(
-        @Parameter(description = "삭제할 일정 번호") @RequestParam Long siSeq
+        @Parameter(description = "삭제할 일정 번호") @RequestParam Long id
     ) {
-        scheduleService.deleteSchedule(siSeq);
+        scheduleService.deleteSchedule(id);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
     @Operation(summary = "일정 조회", description = "해당 회원이 등록한 일정을 조회합니다.")
     @GetMapping("/my")
     public ResponseEntity< List<ViewScheduleVO> > getSchedule(
-        @Parameter(description = "회원 번호", example = "87") @RequestParam Long uiSeq
+        @Parameter(description = "회원 번호", example = "110") @RequestParam Long uiSeq
     ) {
         return new ResponseEntity<>(scheduleService.getSchedule(uiSeq), HttpStatus.OK);
     }

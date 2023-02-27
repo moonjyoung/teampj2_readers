@@ -6,4 +6,5 @@ import com.readers.be3.entity.image.UserImgEntity;
 
 public interface UserImgRepository extends JpaRepository<UserImgEntity, Long>{
     public UserImgEntity findByUimgUiSeq(Long uimgUiSeq); 
+    public UserImgEntity findTopByUimgUriEquals(String uimgUri);
 }
