@@ -86,7 +86,7 @@ public class ScheduleService {
             sDate = data.getStart();
         }
         if (data.getEnd()!=null) {
-            eDate = data.getEnd();
+            eDate = data.getEnd().plusDays(1);
         }
         Integer status = 3;
         if ((sDate!=null && eDate!=null) && sDate.isAfter(eDate)) {

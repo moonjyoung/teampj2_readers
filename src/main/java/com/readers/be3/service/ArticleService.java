@@ -60,7 +60,6 @@ public class ArticleService {
     @Autowired ArticleCommentRepository articleCommentRepo;
     @Autowired ArticleRecommendRepository articleRecommendRepo;
     
-
     @Value("${file.image.article}") String ArticleImgPath;
 
     // 게시글 작성 
