@@ -1,5 +1,6 @@
 package com.readers.be3.vo.schedule;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.readers.be3.vo.book.ResponseBookInfoVO;
@@ -17,15 +18,14 @@ public class AddScheduleVO {
     @Schema(description = "책 번호", example = "1")
     private Long biSeq;
     @Schema(description = "시작 일(nullable)", example = "2023-02-07 01:23:45")
-    private LocalDateTime start;
+    private LocalDate start;
     @Schema(description = "종료 일(완독 일, nullable)", example = "2023-02-14 01:23:45")
-    private LocalDateTime end;
+    private LocalDate end;
     @Schema(description = "개인 작성(nullable)", example = "감동적이었습니다.")
     private String description;
 
     public AddScheduleVO(ResponseBookInfoVO data) {
         this.uiSeq = data.getUiSeq();
-        // this.status = data.getStatus();
         this.biSeq = data.getBiSeq();
     }
     public AddScheduleVO() {}

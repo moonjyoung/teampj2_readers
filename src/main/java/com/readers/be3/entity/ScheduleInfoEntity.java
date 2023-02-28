@@ -1,5 +1,6 @@
 package com.readers.be3.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.DynamicInsert;
@@ -31,8 +32,8 @@ public class ScheduleInfoEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "si_seq") private Long siSeq;
     @Column(name = "si_content") private String siContent;
-    @Column(name = "si_start_date") private LocalDateTime siStartDate;
-    @Column(name = "si_end_date") private LocalDateTime siEndDate;
+    @Column(name = "si_start_date") private LocalDate siStartDate;
+    @Column(name = "si_end_date") private LocalDate siEndDate;
     @Column(name = "si_status") private Integer siStatus;
     @Column(name = "si_ui_seq") private Long siUiSeq;
     @Column(name = "si_bi_seq") private Long siBiSeq;

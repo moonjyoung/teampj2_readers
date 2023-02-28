@@ -25,9 +25,11 @@ import com.readers.be3.entity.UserInfoEntity;
 import com.readers.be3.entity.image.UserImgEntity;
 import com.readers.be3.exception.ErrorResponse;
 import com.readers.be3.exception.ReadersProjectException;
+import com.readers.be3.repository.ArticleInfoRepository;
 import com.readers.be3.repository.ArticleViewRepository;
 import com.readers.be3.repository.BookInfoRepository;
 import com.readers.be3.repository.MyPageViewRepository;
+import com.readers.be3.repository.OneCommentRepository;
 import com.readers.be3.repository.OneCommentViewRepository;
 import com.readers.be3.repository.UserInfoRepository;
 import com.readers.be3.repository.ScheduleInfoRepository;
@@ -52,6 +54,8 @@ public class UserInfoService {
     @Autowired ArticleViewRepository a_repo;
     @Autowired OneCommentViewRepository o_repo;
     @Autowired BookInfoRepository b_repo;
+    @Autowired OneCommentRepository oneCommentRepository;
+    @Autowired ArticleInfoRepository articleInfoRepository;
     
     @Value("${file.image.user}") String user_img_path;
 
@@ -312,7 +316,31 @@ public class UserInfoService {
     // if (aView == null && oView ==null) {
       // throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND, String.format("not found  uiSeq : %d , biSeq : %d ", uiSeq, biSeq)));
     // }
-      return ResponseUserArticleVO.toResponse(aView, oView);
+    Long aiSeq = null;
+    Long ocSeq = null;
+    if (articleInfoRepository.findByAiUiSeqAndAiBiSeq(uiSeq, biSeq)!=null) aiSeq = articleInfoRepository.findByAiUiSeqAndAiBiSeq(uiSeq, biSeq).getAiSeq();
+    if (oneCommentRepository.findByOcUiSeqAndOcBiSeq(uiSeq, biSeq)!=null) ocSeq = oneCommentRepository.findByOcUiSeqAndOcBiSeq(uiSeq, biSeq).getOcSeq();
+
+    if (aView==null && oView==null) {
+      ResponseUserArticleVO vo = new ResponseUserArticleVO();
+      return vo;
+    }
+    else if (aView==null) {
+      ResponseUserArticleVO vo = new ResponseUserArticleVO(oView);
+      vo.setOcSeq(ocSeq);
+      return vo;
+    }
+    else if (oView==null) {
+      ResponseUserArticleVO vo = new ResponseUserArticleVO(aView);
+      vo.setAiSeq(aiSeq);
+      return vo;
+    }
+    else {
+      ResponseUserArticleVO vo = new ResponseUserArticleVO(aView, oView);
+      vo.setAiSeq(aiSeq);
+      vo.setOcSeq(ocSeq);
+      return vo;
+    }
   }
 }
 
