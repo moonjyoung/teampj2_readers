@@ -54,6 +54,10 @@ public class OneCommentService {
     if (oneCommentEntityList.size() > 0)
       throw new ReadersProjectException(ErrorResponse.of(HttpStatus.CREATED, String.format("already wrote oneComment")));
     OneCommentEntity oneCommentEntity = oneCommentRepository.save(OneCommentEntity.of(comment, score, userInfoEntity, bookInfoEntity));
+    
+    UserInfoEntity newEntity = new UserInfoEntity(userInfoEntity, 100);
+    useInfoRepository.save(newEntity);
+
     return oneCommentEntity;
   }
 
@@ -67,6 +71,10 @@ public class OneCommentService {
       throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND, String.format("%s not found oneComment", uiSeq)));
     oneEntity.setOcStatus(2);
     OneCommentEntity oneCommentEntity = oneCommentRepository.save(oneEntity);
+
+    UserInfoEntity newEntity = new UserInfoEntity(userInfoEntity, -200);
+    useInfoRepository.save(newEntity);
+
     return oneCommentEntity;
   }
 

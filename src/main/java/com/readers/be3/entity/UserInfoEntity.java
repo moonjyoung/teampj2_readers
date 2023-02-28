@@ -47,4 +47,43 @@ public class UserInfoEntity {
     public static UserInfoEntity ofSNS(String uiUid, String uiLoginType){
         return new UserInfoEntity(null, null, null, "user#"+Calendar.getInstance().getTimeInMillis(), null, null, null, null, uiUid, uiLoginType, null, null, null);
     }
+
+    // 도서 등록여부(true/false)에 따른 완독서 수/페이지수/포인트 업데이트
+    public UserInfoEntity(UserInfoEntity entity, Boolean book, Integer page) {
+        this.uiSeq = entity.getUiSeq();
+        this.uiEmail = entity.getUiEmail();
+        this.uiPwd = entity.getUiPwd();
+        this.uiNickname = entity.getUiNickname();
+        this.uiRegDt = entity.getUiRegDt();
+        if (book) {
+            this.uiPoint = entity.getUiPoint() + page;
+            this.uiTotalBook = entity.getUiTotalBook() + 1;
+            this.uiTotalPage = entity.getUiTotalPage() + page;
+        }
+        else {
+            this.uiPoint = entity.getUiPoint() - page;
+            this.uiTotalBook = entity.getUiTotalBook() - 1;
+            this.uiTotalPage = entity.getUiTotalPage() - page;
+        }
+        this.uiUid = entity.getUiUid();
+        this.uiLoginType = entity.getUiLoginType();
+        this.uiStatus = entity.getUiStatus();
+        this.uiLeaveDt = entity.getUiLeaveDt();
+    }
+
+    // 한줄평 & 독후감 작성에 따른 포인트 업데이트
+    public UserInfoEntity(UserInfoEntity entity, Integer point) {
+        this.uiSeq = entity.getUiSeq();
+        this.uiEmail = entity.getUiEmail();
+        this.uiPwd = entity.getUiPwd();
+        this.uiNickname = entity.getUiNickname();
+        this.uiRegDt = entity.getUiRegDt();
+        this.uiPoint = entity.getUiPoint() + point;
+        this.uiTotalBook = entity.getUiTotalBook();
+        this.uiTotalPage = entity.getUiTotalPage();
+        this.uiUid = entity.getUiUid();
+        this.uiLoginType = entity.getUiLoginType();
+        this.uiStatus = entity.getUiStatus();
+        this.uiLeaveDt = entity.getUiLeaveDt();
+    }
 }

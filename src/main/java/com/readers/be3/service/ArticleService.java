@@ -49,6 +49,7 @@ import com.readers.be3.vo.article.response.ArticleSearchResponseVO;
 import com.readers.be3.vo.article.response.CommentResponse;
 import com.readers.be3.vo.article.response.ResponseMessageVO;
 import com.readers.be3.vo.article.response.WriteArticleResponseVO;
+import com.readers.be3.vo.book.InvalidInputException;
 
 @Service
 public class ArticleService {
@@ -93,6 +94,11 @@ public class ArticleService {
                                 .aiStatus(1)
                                 .build();
             articleInfoRepo.save(articleInfoEntity);
+
+            // 게시글 작성에 따른 포인트 저장
+            UserInfoEntity newEntity = new UserInfoEntity(user, 500);
+            userInfoRepo.save(newEntity);
+
             // 이미지 저장
             try{
                 imgfileHandler(data.getFiles(), articleInfoEntity.getAiSeq());
@@ -287,6 +293,12 @@ public ResponseMessageVO deleteArticle(Long uiSeq, Long aiSeq){
     else{
         deletePost.setAiStatus(2);
         articleInfoRepo.save(deletePost);
+
+        // 게시글 작성에 따른 포인트 저장
+        UserInfoEntity uEntity = userInfoRepo.findById(uiSeq).orElseThrow(() -> new InvalidInputException("존재하지 않는 회원입니다."));
+        UserInfoEntity newEntity = new UserInfoEntity(uEntity, -600);
+        userInfoRepo.save(newEntity);
+
         response = ResponseMessageVO.builder()
         .status(true)
         .message(" 게시글이 삭제되었습니다.")

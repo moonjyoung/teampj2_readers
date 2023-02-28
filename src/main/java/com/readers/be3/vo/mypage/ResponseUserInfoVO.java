@@ -17,6 +17,10 @@ public class ResponseUserInfoVO {
     private String nickName;
     @Schema(description = "유저 포인트" , example = "3000")
     private Integer userPoint;
+    @Schema(description = "유저 완독서" , example = "5")
+    private Integer userBook;
+    @Schema(description = "유저 완독서 페이지 수" , example = "3000")
+    private Integer userPage;
     @Schema(description = "유저 프로필 사진" , example = "레서판다")
     private String userImg;
 
@@ -24,6 +28,8 @@ public class ResponseUserInfoVO {
         return new ResponseUserInfoVO(myPageView.getRankSeq(),
         myPageView.getUiNickName(),
         myPageView.getUiPoint(),
+        myPageView.getUiTotalBook(),
+        myPageView.getUiTotalPage(),
         myPageView.getUimgUri());
     }
 }
