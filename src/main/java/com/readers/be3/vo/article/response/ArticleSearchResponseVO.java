@@ -12,7 +12,7 @@ public interface ArticleSearchResponseVO {
     public Integer getAiSeq();
     @Schema(name = "aiTitle", description = "게시글 제목", example="안녕하세요.")
     public String getAiTitle();
-    @Schema(name = "aiTitle", description = "게시글 내용", example="반가워요(내용).")
+    @Schema(name = "aiContent", description = "게시글 내용", example="반가워요(내용).")
     public String getAiContent();
     @Schema(name = "aiRegDt" ,description = "등록일")
     public LocalDateTime getAiRegDt();
