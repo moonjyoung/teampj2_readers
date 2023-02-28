@@ -71,10 +71,10 @@ public class OneCommentService {
   }
 
   @Transactional
-  public Page<OneCommentListDTO> oneCommentList(Long bookSeq, Pageable pageable){
-    BookInfoEntity bookInfoEntity = bookRepository.findByBiSeq(bookSeq);
+  public Page<OneCommentListDTO> oneCommentList(String isbn, Pageable pageable){
+    BookInfoEntity bookInfoEntity = bookRepository.findByBiIsbnEquals(isbn);
     if (bookInfoEntity == null)
-      throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND, String.format("%s not found book", bookSeq)));
+      throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND, String.format("%s not found book", isbn)));
     Page<OneCommentEntity> commentList = oneCommentRepository.findByBookInfoEntityAndOcStatus(bookInfoEntity,pageable, 1);
     Page<OneCommentListDTO> onecommentDto = commentList.map(e-> OneCommentListDTO.toDto(e));
     return onecommentDto;
