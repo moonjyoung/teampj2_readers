@@ -1,19 +1,8 @@
 package com.readers.be3.api;
 
 import java.util.List;
-import java.util.Map;
 
-import com.readers.be3.entity.ArticleCommentEntity;
-import com.readers.be3.entity.ArticleInfoEntity;
-
-import com.readers.be3.entity.ArticleCommentEntity;
-import com.readers.be3.entity.ArticleInfoEntity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,11 +18,7 @@ import org.springframework.http.MediaType;
 
 import com.readers.be3.service.ArticleService;
 import com.readers.be3.vo.article.ArticleDetailVO;
-import com.readers.be3.vo.article.ArticleDetailVO;
 import com.readers.be3.vo.article.ArticleModifyVO;
-import com.readers.be3.vo.article.GetSearchArticleVO;
-import com.readers.be3.vo.article.PatchCommentVO;
-import com.readers.be3.vo.article.GetSearchArticleVO;
 import com.readers.be3.vo.article.PatchCommentVO;
 import com.readers.be3.vo.article.PostArticleVO;
 import com.readers.be3.vo.article.PostWriterCommentVO;
@@ -42,7 +27,6 @@ import com.readers.be3.vo.article.response.ArticleSearchResponseVO;
 import com.readers.be3.vo.article.response.CommentResponse;
 import com.readers.be3.vo.article.response.ResponseMessageVO;
 import com.readers.be3.vo.article.response.WriteArticleResponseVO;
-import com.readers.be3.vo.article.responseVO.ArticleResponseVO;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

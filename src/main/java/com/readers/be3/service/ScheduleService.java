@@ -7,7 +7,9 @@ import java.util.NoSuchElementException;
 
 import org.springframework.stereotype.Service;
 
+import com.readers.be3.entity.BookInfoEntity;
 import com.readers.be3.entity.ScheduleInfoEntity;
+import com.readers.be3.entity.UserInfoEntity;
 import com.readers.be3.repository.BookInfoRepository;
 import com.readers.be3.repository.ScheduleInfoRepository;
 import com.readers.be3.repository.UserInfoRepository;
@@ -39,21 +41,20 @@ public class ScheduleService {
         return list;
     }
 
-    public ViewScheduleVO addInitSchedule(AddScheduleVO data) {
+    public ViewScheduleVO addInitSchedule(AddScheduleVO data, Integer status) {
+        UserInfoEntity uEntity = userInfoRepository.findById(data.getUiSeq()).orElseThrow(() -> new InvalidInputException("존재하지 않는 회원 번호 입니다."));
+        BookInfoEntity bEntity = bookInfoRepository.findById(data.getBiSeq()).orElseThrow(() -> new InvalidInputException("존재하지 않는 책 번호 입니다."));
         ViewScheduleVO vo = new ViewScheduleVO();
         LocalDateTime sDate = null;
         LocalDateTime eDate = null;
-        Integer status = 1;
-        if (bookInfoRepository.findById(data.getBiSeq()).isEmpty()) {
-            throw new InvalidInputException("존재하지 않는 책 번호 입니다.");
-        }
+
         if (scheduleInfoRepository.findBySiUiSeqAndSiBiSeq(data.getUiSeq(), data.getBiSeq())!=null) {
             throw new InvalidInputException("이미 내 서재에 등록된 책입니다.");
         }
-        vo.setTitle(bookInfoRepository.findById(data.getBiSeq()).get().getBiName());
+        vo.setTitle(bEntity.getBiName());
         vo.setDescription(data.getDescription());
-        vo.setStart(sDate);
-        vo.setEnd(eDate);
+        vo.setStart("");
+        vo.setEnd("");
         vo.setStatus(status);
 
         ScheduleInfoEntity entity = ScheduleInfoEntity.builder()
@@ -66,9 +67,18 @@ public class ScheduleService {
 
         scheduleInfoRepository.save(entity);
         vo.setId(entity.getSiSeq());
+        
+        Integer page = bEntity.getBiPage();
+        if (status==4) {
+            UserInfoEntity newEntity = new UserInfoEntity(uEntity, true, page);
+            userInfoRepository.save(newEntity);
+        }
         return vo;
     }
+
     public ViewScheduleVO addSchedule(AddScheduleVO data) {
+        userInfoRepository.findById(data.getUiSeq()).orElseThrow(() -> new InvalidInputException("존재하지 않는 회원 번호 입니다."));
+        bookInfoRepository.findById(data.getBiSeq()).orElseThrow(() -> new InvalidInputException("존재하지 않는 책 번호 입니다."));
         ViewScheduleVO vo = new ViewScheduleVO();
         LocalDateTime sDate = null;
         LocalDateTime eDate = null;
@@ -76,22 +86,16 @@ public class ScheduleService {
             sDate = data.getStart();
         }
         if (data.getEnd()!=null) {
-            eDate = data.getEnd().plusDays(1);
+            eDate = data.getEnd();
         }
         Integer status = 3;
-        if (bookInfoRepository.findById(data.getBiSeq()).isEmpty()) {
-            throw new InvalidInputException("존재하지 않는 책 번호 입니다.");
-        }
         if ((sDate!=null && eDate!=null) && sDate.isAfter(eDate)) {
             throw new InvalidInputException("종료일은 시작일보다 빠를 수 없습니다.");
         }
         vo.setTitle(bookInfoRepository.findById(data.getBiSeq()).get().getBiName());
-        vo.setTitle(bookInfoRepository.findById(data.getBiSeq()).get().getBiName());
         vo.setDescription(data.getDescription());
-        vo.setStart(sDate);
-        vo.setEnd(eDate);
-        vo.setStart(sDate);
-        vo.setEnd(eDate);
+        vo.setStart(sDate.toLocalDate().toString());
+        vo.setEnd(eDate.toLocalDate().toString());
         vo.setStatus(status);
 
         ScheduleInfoEntity entity = ScheduleInfoEntity.builder()
@@ -104,14 +108,20 @@ public class ScheduleService {
 
         scheduleInfoRepository.save(entity);
         vo.setId(entity.getSiSeq());
-        vo.setId(entity.getSiSeq());
         return vo;
     }
 
     public BasicResponse deleteSchedule(Long id) {
-        ScheduleInfoEntity entity = scheduleInfoRepository.findById(id)
-                .orElseThrow(() -> new InvalidInputException("존재하지 않는 계획입니다."));
+        ScheduleInfoEntity entity = scheduleInfoRepository.findById(id).orElseThrow(() -> new InvalidInputException("존재하지 않는 계획입니다."));
+        UserInfoEntity uEntity = userInfoRepository.findById(entity.getSiUiSeq()).orElseThrow(() -> new InvalidInputException("존재하지 않는 회원 번호 입니다."));
+        BookInfoEntity bEntity = bookInfoRepository.findById(entity.getSiBiSeq()).orElseThrow(() -> new InvalidInputException("존재하지 않는 책 번호 입니다."));
+        Integer status = entity.getSiStatus();
         scheduleInfoRepository.delete(entity);
+        if (status==4) {
+            Integer page = bEntity.getBiPage();
+            UserInfoEntity newEntity = new UserInfoEntity(uEntity, false, page);
+            userInfoRepository.save(newEntity);
+        }
         return new BasicResponse("true", "계획을 삭제했습니다.");
     }
 
@@ -150,8 +160,8 @@ public class ScheduleService {
         responseVO.setId(newEntity.getSiSeq());
         responseVO.setTitle(bookInfoRepository.findByBiSeq(newEntity.getSiBiSeq()).getBiName());
         responseVO.setDescription(newEntity.getSiContent());
-        responseVO.setStart(newEntity.getSiStartDate());
-        responseVO.setEnd(newEntity.getSiEndDate());
+        responseVO.setStart(newEntity.getSiStartDate().toLocalDate().toString());
+        responseVO.setEnd(newEntity.getSiEndDate().toLocalDate().toString());
         responseVO.setStatus(status);
         return responseVO;
     }
@@ -165,6 +175,8 @@ public class ScheduleService {
         }
         else {
             ScheduleInfoEntity entity = scheduleInfoRepository.findById(id).get();
+            UserInfoEntity uEntity = userInfoRepository.findById(entity.getSiUiSeq()).orElseThrow(() -> new InvalidInputException("존재하지 않는 회원 번호 입니다."));
+            BookInfoEntity bEntity = bookInfoRepository.findById(entity.getSiBiSeq()).orElseThrow(() -> new InvalidInputException("존재하지 않는 책 번호 입니다."));
             ScheduleInfoEntity newEntity = ScheduleInfoEntity.builder()
                     .siSeq(entity.getSiSeq())
                     .siContent(entity.getSiContent())
@@ -174,6 +186,10 @@ public class ScheduleService {
                     .siBiSeq(entity.getSiBiSeq())
                     .siStatus(4).build();
             scheduleInfoRepository.save(newEntity);
+
+            Integer page = bEntity.getBiPage();
+            UserInfoEntity newUserEntity = new UserInfoEntity(uEntity, true, page);
+            userInfoRepository.save(newUserEntity);
         }
         return new BasicResponse("true", "상태값이 완독으로 변경됐습니다.");
     }

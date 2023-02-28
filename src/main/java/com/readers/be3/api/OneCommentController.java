@@ -20,7 +20,6 @@ import org.springframework.data.domain.Sort;
 import com.readers.be3.dto.request.OneCommentDeleteRequest;
 import com.readers.be3.dto.request.OneCommentRequest;
 import com.readers.be3.dto.request.OneCommentUpdateRequest;
-import com.readers.be3.dto.request.OneCommentViewsDTO;
 import com.readers.be3.dto.response.OneCommentListDTO;
 import com.readers.be3.dto.response.OneCommentResponse;
 import com.readers.be3.service.OneCommentService;
@@ -28,7 +27,6 @@ import com.readers.be3.service.OneCommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 
 @Tag(name = "한줄평", description = "한줄평 crd api")
 @RestController
