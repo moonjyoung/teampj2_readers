@@ -8,4 +8,4 @@ java, gradle, springboot, jpa, mysql, swagger, redis
 - 코드 및 버전관리
 git
 - 협업 툴
-notion, slack
+slack
