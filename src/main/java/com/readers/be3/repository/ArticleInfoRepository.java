@@ -33,4 +33,5 @@ public interface ArticleInfoRepository extends JpaRepository<ArticleInfoEntity, 
     // public Page<ArticleInfoEntity> findByiUiSeqContains(String keyword, Pageable pageable);
     // public Page<ArticleInfoEntity> findByAiTitleContains(String keyword, Pageable pageable);
 
+    public ArticleInfoEntity findByAiUiSeqAndAiBiSeq(Long aiUiSeq, Long aiBiSeq);
 }

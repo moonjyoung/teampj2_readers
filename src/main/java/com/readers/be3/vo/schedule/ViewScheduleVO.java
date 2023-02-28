@@ -33,8 +33,8 @@ public class ViewScheduleVO {
         this.id = entity.getSiSeq();
         this.title = entity.getBookInfoEntity().getBiName();
         this.biUri = entity.getBookInfoEntity().getBiUri();
-        this.start = entity.getSiStartDate().toLocalDate().toString();
-        this.end = entity.getSiEndDate().toLocalDate().toString();
+        this.start = entity.getSiStartDate().toString();
+        this.end = entity.getSiEndDate().toString();
         this.description = entity.getSiContent();
         this.status = entity.getSiStatus();
     }

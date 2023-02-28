@@ -1,5 +1,6 @@
 package com.readers.be3.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,8 +46,8 @@ public class ScheduleService {
         UserInfoEntity uEntity = userInfoRepository.findById(data.getUiSeq()).orElseThrow(() -> new InvalidInputException("존재하지 않는 회원 번호 입니다."));
         BookInfoEntity bEntity = bookInfoRepository.findById(data.getBiSeq()).orElseThrow(() -> new InvalidInputException("존재하지 않는 책 번호 입니다."));
         ViewScheduleVO vo = new ViewScheduleVO();
-        LocalDateTime sDate = null;
-        LocalDateTime eDate = null;
+        LocalDate sDate = null;
+        LocalDate eDate = null;
 
         if (scheduleInfoRepository.findBySiUiSeqAndSiBiSeq(data.getUiSeq(), data.getBiSeq())!=null) {
             throw new InvalidInputException("이미 내 서재에 등록된 책입니다.");
@@ -80,13 +81,13 @@ public class ScheduleService {
         userInfoRepository.findById(data.getUiSeq()).orElseThrow(() -> new InvalidInputException("존재하지 않는 회원 번호 입니다."));
         bookInfoRepository.findById(data.getBiSeq()).orElseThrow(() -> new InvalidInputException("존재하지 않는 책 번호 입니다."));
         ViewScheduleVO vo = new ViewScheduleVO();
-        LocalDateTime sDate = null;
-        LocalDateTime eDate = null;
+        LocalDate sDate = null;
+        LocalDate eDate = null;
         if (data.getStart()!=null) {
             sDate = data.getStart();
         }
         if (data.getEnd()!=null) {
-            eDate = data.getEnd().plusDays(1);
+            eDate = data.getEnd();
         }
         Integer status = 3;
         if ((sDate!=null && eDate!=null) && sDate.isAfter(eDate)) {
@@ -94,8 +95,8 @@ public class ScheduleService {
         }
         vo.setTitle(bookInfoRepository.findById(data.getBiSeq()).get().getBiName());
         vo.setDescription(data.getDescription());
-        vo.setStart(sDate.toLocalDate().toString());
-        vo.setEnd(eDate.toLocalDate().toString());
+        vo.setStart(sDate.toString());
+        vo.setEnd(eDate.toString());
         vo.setStatus(status);
 
         ScheduleInfoEntity entity = ScheduleInfoEntity.builder()
@@ -135,8 +136,8 @@ public class ScheduleService {
         }
         Long uiSeq = entity.getSiUiSeq();
         Long biSeq = entity.getSiBiSeq();
-        LocalDateTime sDate = null;
-        LocalDateTime eDate = null;
+        LocalDate sDate = null;
+        LocalDate eDate = null;
         if (data.getStart()!=null) {
             sDate = data.getStart();
         }
@@ -160,8 +161,8 @@ public class ScheduleService {
         responseVO.setId(newEntity.getSiSeq());
         responseVO.setTitle(bookInfoRepository.findByBiSeq(newEntity.getSiBiSeq()).getBiName());
         responseVO.setDescription(newEntity.getSiContent());
-        responseVO.setStart(newEntity.getSiStartDate().toLocalDate().toString());
-        responseVO.setEnd(newEntity.getSiEndDate().toLocalDate().toString());
+        responseVO.setStart(newEntity.getSiStartDate().toString());
+        responseVO.setEnd(newEntity.getSiEndDate().toString());
         responseVO.setStatus(status);
         return responseVO;
     }
