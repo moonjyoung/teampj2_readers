@@ -319,7 +319,7 @@ public class UserInfoService {
     Long aiSeq = null;
     Long ocSeq = null;
     if (articleInfoRepository.findByAiUiSeqAndAiBiSeq(uiSeq, biSeq)!=null) aiSeq = articleInfoRepository.findByAiUiSeqAndAiBiSeq(uiSeq, biSeq).getAiSeq();
-    if (oneCommentRepository.findByOcUiSeqAndOcBiSeq(uiSeq, biSeq)!=null) ocSeq = oneCommentRepository.findByOcUiSeqAndOcBiSeq(uiSeq, biSeq).getOcSeq();
+    if (oneCommentRepository.findByOcUiSeqAndOcBiSeq(uiSeq, biSeq)!=null)  ocSeq = oneCommentRepository.findByOcUiSeqAndOcBiSeq(uiSeq, biSeq).getOcSeq();
 
     if (aView==null && oView==null) {
       ResponseUserArticleVO vo = new ResponseUserArticleVO();
