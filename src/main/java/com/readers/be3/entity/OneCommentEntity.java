@@ -55,8 +55,9 @@ public class OneCommentEntity {
         return oneCommentEntity;
     }
 
-    public static OneCommentEntity update(OneCommentEntity oneCommentEntity, String comment){
+    public static OneCommentEntity update(OneCommentEntity oneCommentEntity, String comment, Integer score){
         oneCommentEntity.setOcComment(comment);
+        oneCommentEntity.setOcScore(score);
         return oneCommentEntity;
     }
 }

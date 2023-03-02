@@ -13,4 +13,6 @@ public class OneCommentUpdateRequest {
     private Long onecommentSeq;
     @Schema(description = "수정한줄평 내용")
     private String content;
+    @Schema(description = "수정할 평점")
+    private Integer score;
 }

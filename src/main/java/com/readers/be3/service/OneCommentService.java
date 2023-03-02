@@ -88,7 +88,11 @@ public class OneCommentService {
     return onecommentDto;
   }
 
-  public OneCommentEntity OneCommentUpdate(Long uiSeq, Long oneCommentSeq, String content) {
+  public OneCommentEntity OneCommentUpdate(Long uiSeq, Long oneCommentSeq, String content, Integer score) {
+    if (content == "" || content == null)
+      throw new ReadersProjectException(ErrorResponse.of(HttpStatus.BAD_REQUEST,String.format("update content is null or empty")));
+    if (score > 5 || score < 0)
+      throw new ReadersProjectException(ErrorResponse.of(HttpStatus.BAD_REQUEST,String.format("The score value is greater than 5 or less than 0")));  
     UserInfoEntity userInfoEntity = useInfoRepository.findByUiSeq(uiSeq);
     if (userInfoEntity == null)
       throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND,String.format("%s   not found userSeq", uiSeq)));
@@ -99,7 +103,7 @@ public class OneCommentService {
       throw new ReadersProjectException(ErrorResponse.of(HttpStatus.CREATED,String.format("content is equals")));
     if(oneCommentEntity.getUserInfoEntity().equals(oneCommentSeq))
       throw new ReadersProjectException(ErrorResponse.of(HttpStatus.CREATED,String.format("not my comment")));
-    return oneCommentRepository.save(OneCommentEntity.update(oneCommentEntity, content));
+    return oneCommentRepository.save(OneCommentEntity.update(oneCommentEntity, content, score));
   }
 
   public OneCommentViewsDTO getOneComment(Long oneCommentSeq) {
