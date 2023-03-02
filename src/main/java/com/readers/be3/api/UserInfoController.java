@@ -62,7 +62,7 @@ public class UserInfoController {
       @Parameter(description = "회원번호", example = "87") @RequestParam Long uiSeq, @RequestBody UserNameVO data) throws Exception{
     return new ResponseEntity<>(uService.updateUserName(uiSeq, data), HttpStatus.OK);
   }
-  
+
   @Operation(summary = "회원 사진추가", description = "회원정보 번호(uiSeq)를 통해 회원사진을 수정(추가)합니다. filename과 uri은 입력 안해도 됩니다")
     @PutMapping(value = "/update/photo", consumes= MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RequestUserVO> updateUserPhoto(
