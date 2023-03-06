@@ -4,6 +4,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -292,9 +294,20 @@ public class UserInfoService {
 
   public ResponseUserInfoVO getUserInfo(Long uiSeq) { //마이페이지 정보출력
     MyPageView mView= v_repo.findByUiSeq(uiSeq);
-    if (mView == null)
-      throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND, String.format("not found user %d ", uiSeq)));
-    return ResponseUserInfoVO.toResponse(mView);
+    if (mView == null) throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND, String.format("not found user %d ", uiSeq)));
+    
+    ResponseUserInfoVO vo = new ResponseUserInfoVO(mView);
+    vo.setUserArticle(articleInfoRepository.countByAiUiSeq(uiSeq));
+    vo.setUserOneComment(oneCommentRepository.countByOcUiSeq(uiSeq));
+    Long userDays = 0L;
+    for (ScheduleInfoEntity entity : scheduleInfoRepository.findBySiUiSeq(uiSeq)) {
+      // if (entity.getSiStartDate()==null || entity.getSiEndDate()==null) {
+      //   continue;
+      // }
+      userDays += ChronoUnit.DAYS.between(entity.getSiStartDate(), entity.getSiEndDate())+1L;
+    }
+    vo.setUserDays(userDays);
+    return vo;
   }
 
   public List<ResponseFinishedBookVO> getUserBook(Long uiSeq) { //완독한 책 출력

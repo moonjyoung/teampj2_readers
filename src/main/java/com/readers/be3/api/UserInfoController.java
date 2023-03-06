@@ -75,7 +75,7 @@ public class UserInfoController {
   @Operation(summary = "회원 정보", description = "회원정보 번호(uiSeq)를 통해 회원의 정보를 조회합니다. 마이페이지 화면 중앙의 데이터 입니다")
     @GetMapping("/info") //회원정보 조회
     public ResponseEntity<ResponseUserInfoVO> getUserInfo(
-      @Parameter(description = "회원번호", example = "87") @RequestParam Long uiSeq){
+      @Parameter(description = "회원번호", example = "172") @RequestParam Long uiSeq){
       return new ResponseEntity<>(uService.getUserInfo(uiSeq),HttpStatus.OK);
     }  
 

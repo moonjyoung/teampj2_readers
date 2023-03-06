@@ -83,7 +83,7 @@ public class OneCommentService {
     BookInfoEntity bookInfoEntity = bookRepository.findByBiIsbnEquals(isbn);
     if (bookInfoEntity == null)
       throw new ReadersProjectException(ErrorResponse.of(HttpStatus.NOT_FOUND, String.format("%s not found book", isbn)));
-    Page<OneCommentEntity> commentList = oneCommentRepository.findByBookInfoEntityAndOcStatus(bookInfoEntity,pageable, 1);
+    Page<OneCommentEntity> commentList = oneCommentRepository.findByBookInfoEntityAndOcStatusOrderByOcRegDtDesc(bookInfoEntity,pageable, 1);
     Page<OneCommentListDTO> onecommentDto = commentList.map(e-> OneCommentListDTO.toDto(e));
     return onecommentDto;
   }

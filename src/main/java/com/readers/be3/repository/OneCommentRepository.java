@@ -16,7 +16,7 @@ import com.readers.be3.entity.UserInfoEntity;
 public interface OneCommentRepository extends JpaRepository<OneCommentEntity, Long>{
   OneCommentEntity findByOcSeq(Long ocSeq);
 
-  Page<OneCommentEntity> findByBookInfoEntityAndOcStatus(BookInfoEntity bookInfoEntity, Pageable pageable, Integer ocStatus);
+  Page<OneCommentEntity> findByBookInfoEntityAndOcStatusOrderByOcRegDtDesc(BookInfoEntity bookInfoEntity, Pageable pageable, Integer ocStatus);
   List<OneCommentEntity> findByBookInfoEntity(BookInfoEntity bookInfoEntity);
 
   List<OneCommentEntity> findByUserInfoEntityAndBookInfoEntity(UserInfoEntity userInfoEntity, BookInfoEntity bookInfoEntity);
@@ -31,4 +31,7 @@ public interface OneCommentRepository extends JpaRepository<OneCommentEntity, Lo
 
   @Query(value = "select * from one_comment where oc_ui_seq = :ocUiSeq and oc_bi_seq = :ocBiSeq", nativeQuery = true)
   public OneCommentEntity findByOcUiSeqAndOcBiSeq(@Param("ocUiSeq") Long ocUiSeq, @Param("ocBiSeq") Long ocBiSeq);
+
+  @Query(value = "select count(*) from one_comment where oc_ui_seq = :ocUiSeq", nativeQuery = true)
+  public Integer countByOcUiSeq(@Param("ocUiSeq") Long ocUiSeq);
 }

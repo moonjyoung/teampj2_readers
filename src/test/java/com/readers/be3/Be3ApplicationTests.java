@@ -1,6 +1,8 @@
 package com.readers.be3;
 
 import java.time.LocalDate;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,5 +76,16 @@ class Be3ApplicationTests {
 		uEntity = UserInfoEntity.builder().uiTotalBook(totalBook+1).uiTotalPage(totalPage+bEntity.getBiPage()).build();
 		System.out.println("totalBook : " + totalBook + ", totalPage : " + totalPage);
 		userInfoRepository.save(uEntity);
+	}
+
+	@Test
+	void testLocalDate2() {
+		// LocalDate date1 = LocalDate.of(2022, 12, 19);
+		LocalDate date1 = LocalDate.of(2023, 03, 03);
+		LocalDate date2 = LocalDate.now();
+		
+		Period period = Period.between(date1, date2);
+		System.out.println(period.getDays());
+		System.out.println(ChronoUnit.DAYS.between(date1, date2));
 	}
 }

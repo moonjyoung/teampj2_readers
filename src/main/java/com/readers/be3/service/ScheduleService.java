@@ -89,7 +89,6 @@ public class ScheduleService {
         if (data.getEnd()!=null) {
             eDate = data.getEnd();
         }
-        Integer status = 3;
         if ((sDate!=null && eDate!=null) && sDate.isAfter(eDate)) {
             throw new InvalidInputException("종료일은 시작일보다 빠를 수 없습니다.");
         }
@@ -97,13 +96,13 @@ public class ScheduleService {
         vo.setDescription(data.getDescription());
         vo.setStart(sDate.toString());
         vo.setEnd(eDate.toString());
-        vo.setStatus(status);
+        vo.setStatus(3);
 
         ScheduleInfoEntity entity = ScheduleInfoEntity.builder()
                 .siContent(data.getDescription())
                 .siStartDate(sDate)
                 .siEndDate(eDate)
-                .siStatus(status)
+                .siStatus(3)
                 .siUiSeq(data.getUiSeq())
                 .siBiSeq(data.getBiSeq()).build();
 
