@@ -1,6 +1,6 @@
-2차 팀프로젝트 - 독서일정관리 프로그램
+# 2차 팀프로젝트 - 독서일정관리 프로그램
 
-<BE 사용 프로그램>
+## <BE 사용 프로그램>
 - 개발환경 및 개발툴
 Windows 10, VSCODE, DBEAVER
 - 사용된 기술 및 언어 
@@ -10,5 +10,5 @@ git
 - 협업 툴
 slack
 
-<페이지 시연 동영상 링크(프론트 git)>
+## <페이지 시연 동영상 링크(프론트 git)>
 https://github.com/songmok/ggoBook/issues/26
